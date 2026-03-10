@@ -11,7 +11,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     const { t } = useTranslation();
     const { theme, toggleTheme } = useApp();
     const { isSupported, isLocked, requestWakeLock, releaseWakeLock } = useWakeLock();
-    
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
@@ -23,16 +23,16 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
             {/* Mobile Sidebar Overlay/Drawer */}
             {isMenuOpen && (
-                <div 
+                <div
                     className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm md:hidden animate-in fade-in duration-300"
                     onClick={() => setIsMenuOpen(false)}
                 >
-                    <div 
+                    <div
                         className="absolute right-0 top-0 bottom-0 w-[280px] bg-white dark:bg-gray-900 animate-in slide-in-from-right duration-300 shadow-2xl"
                         onClick={e => e.stopPropagation()}
                     >
                         <div className="p-4 flex justify-end">
-                            <button 
+                            <button
                                 onClick={() => setIsMenuOpen(false)}
                                 className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                             >
@@ -53,8 +53,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-6">
                             <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                                <img src="/today/favicon.png" alt="Logo" className="w-16 h-16 rounded-xl shadow-sm" />
-                                <h1 className="text-3xl font-bold text-[#2c6de3]">
+                                <img src="/today/icon-192.png?v=6" alt="Logo" className="w-16 h-16 rounded-xl shadow-sm" />
+                                <h1 className="text-3xl font-bold text-primary">
                                     today
                                 </h1>
                             </Link>
@@ -63,11 +63,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                             {isSupported && (
                                 <button
                                     onClick={() => isLocked ? releaseWakeLock() : requestWakeLock()}
-                                    className={`p-2 rounded-full transition-colors ${
-                                        isLocked 
-                                            ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400' 
-                                            : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                    }`}
+                                    className={`p-2 rounded-full transition-colors ${isLocked
+                                        ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400'
+                                        : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                        }`}
                                     title={t('settings.wakeLock')}
                                 >
                                     {isLocked ? <Eye size={22} /> : <EyeOff size={22} />}

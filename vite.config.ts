@@ -10,25 +10,25 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.png', 'favicon.ico', 'apple-touch-icon.png'],
+      includeAssets: ['favicon.png', 'favicon.ico', 'icon-192.png'],
       manifest: {
-        name: 'Buy milk',
-        short_name: 'Buy milk',
-        description: 'A progressive list management app',
+        name: 'Today',
+        short_name: 'Today',
+        description: 'A simple todo app for today',
         theme_color: '#ffffff',
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: 'icon-192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'icon-512.png',
             sizes: '512x512',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'icon-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'

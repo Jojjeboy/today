@@ -308,7 +308,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                 <button
                                     type="submit"
                                     disabled={!newItemText.trim()}
-                                    className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/25 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale"
+                                    className="p-3 bg-primary text-white rounded-xl hover:bg-primary/90 shadow-lg shadow-primary/25 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale"
                                 >
                                     <Plus size={22} strokeWidth={2.5} />
                                 </button>

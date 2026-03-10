@@ -1,4 +1,4 @@
-# Validation Output (2026-03-10T09:48:27.772Z)
+# Validation Output (2026-03-10T10:41:59.203Z)
 
 ```bash
 
@@ -10,16 +10,16 @@ transforming...
 [32m✓[39m 2467 modules transformed.
 rendering chunks...
 computing gzip size...
-[2mdist/[22m[32mmanifest.webmanifest                        [39m[1m[2m    0.45 kB[22m[1m[22m
+[2mdist/[22m[32mmanifest.webmanifest                        [39m[1m[2m    0.43 kB[22m[1m[22m
 [2mdist/[22m[32mindex.html                                  [39m[1m[2m    0.73 kB[22m[1m[22m[2m │ gzip:   0.39 kB[22m
-[2mdist/[22m[35massets/index-CeTStSdh.css                   [39m[1m[2m   50.62 kB[22m[1m[22m[2m │ gzip:   8.46 kB[22m
+[2mdist/[22m[35massets/index-BdW6dRCI.css                   [39m[1m[2m   50.96 kB[22m[1m[22m[2m │ gzip:   8.48 kB[22m
 [2mdist/[22m[36massets/workbox-window.prod.es5-BIl4cyR9.js  [39m[1m[2m    5.76 kB[22m[1m[22m[2m │ gzip:   2.37 kB[22m
-[2mdist/[22m[36massets/index-BJXWfqD3.js                    [39m[1m[2m1,293.07 kB[22m[1m[22m[2m │ gzip: 395.78 kB[22m
-[32m✓ built in 7.72s[39m
+[2mdist/[22m[36massets/index-noUf_TVK.js                    [39m[1m[2m1,293.37 kB[22m[1m[22m[2m │ gzip: 395.96 kB[22m
+[32m✓ built in 7.99s[39m
 
 PWA v1.2.0
 mode      generateSW
-precache  9 entries (1318.54 KiB)
+precache  8 entries (1319.16 KiB)
 files generated
   dist/sw.js
   dist/workbox-8c29f6e4.js
@@ -63,7 +63,7 @@ act(() => {
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
 
- [32m✓[39m src/context/ToastContext.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32m✓[39m src/context/ToastContext.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 49[2mms[22m[39m
 [90mstderr[2m | src/hooks/useFirestoreSync.test.ts[2m > [22m[2museFirestoreSync[2m > [22m[2mshould handle snapshot errors
 [22m[39mFirestore sync error for users/test-user-id/test-collection: Error: Firestore error
     at C:/kod/today/src/hooks/useFirestoreSync.test.ts:102:27
@@ -116,11 +116,11 @@ This ensures that you're testing the behavior the user would see in the browser.
     at trace [90m(file:///C:/kod/today/[39mnode_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
     at runTest [90m(file:///C:/kod/today/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1653:12[90m)[39m
 
- [32m✓[39m src/context/AuthContext.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 56[2mms[22m[39m
- [32m✓[39m src/hooks/useFirestoreSync.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 70[2mms[22m[39m
- [32m✓[39m src/components/SearchResults.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 79[2mms[22m[39m
- [32m✓[39m src/components/Modal.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 135[2mms[22m[39m
- [32m✓[39m src/context/AppContext.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+ [32m✓[39m src/context/AuthContext.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+ [32m✓[39m src/hooks/useFirestoreSync.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 83[2mms[22m[39m
+ [32m✓[39m src/components/Modal.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 157[2mms[22m[39m
+ [32m✓[39m src/components/SearchResults.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 87[2mms[22m[39m
+ [32m✓[39m src/context/AppContext.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 62[2mms[22m[39m
 [90mstderr[2m | src/components/ListDetail.test.tsx[2m > [22m[2mListDetail[2m > [22m[2madds a new item
 [22m[39mAn update to ListDetail2 inside a test was not wrapped in act(...).
 
@@ -153,12 +153,12 @@ act(() => {
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
 
- [32m✓[39m src/components/ListDetail.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 118[2mms[22m[39m
+ [32m✓[39m src/components/ListDetail.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 164[2mms[22m[39m
 
 [2m Test Files [22m [1m[32m7 passed[39m[22m[90m (7)[39m
 [2m      Tests [22m [1m[32m37 passed[39m[22m[90m (37)[39m
-[2m   Start at [22m 10:48:47
-[2m   Duration [22m 1.84s[2m (transform 793ms, setup 1.36s, import 2.06s, tests 550ms, environment 4.98s)[22m
+[2m   Start at [22m 11:42:20
+[2m   Duration [22m 2.37s[2m (transform 1.12s, setup 1.87s, import 2.91s, tests 678ms, environment 6.31s)[22m
 
 JUNIT report written to C:/kod/today/dist/test-results.xml
 [34m % [39m[2mCoverage report from [22m[33mv8[39m

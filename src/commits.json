@@ -1,5 +1,15 @@
 [
   {
+    "hash": "1afcd676a6386992873ed864692e6758a589f5e8",
+    "date": "2026-03-10 10:53:22 +0100",
+    "message": "feat: Implement core application structure with internationalization support for Swedish and English."
+  },
+  {
+    "hash": "b97e42607aa807d5d9d3f1308939897d87fe67e1",
+    "date": "2026-03-10 10:37:23 +0100",
+    "message": "fixes"
+  },
+  {
     "hash": "a99772c34ca72a4d44e97cc08af46c1d70d07896",
     "date": "2026-03-10 10:05:13 +0100",
     "message": "rename"
