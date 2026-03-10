@@ -1,5 +1,10 @@
 [
   {
+    "hash": "a99772c34ca72a4d44e97cc08af46c1d70d07896",
+    "date": "2026-03-10 10:05:13 +0100",
+    "message": "rename"
+  },
+  {
     "hash": "b7bd2d65d5467ba12c21a7253cc8045a1566ad03",
     "date": "2026-03-10 09:28:56 +0100",
     "message": "first commit"
