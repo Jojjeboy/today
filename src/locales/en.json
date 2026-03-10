@@ -5,7 +5,7 @@
         "settings": "Settings"
     },
     "app": {
-        "title": "BuyMilk",
+        "title": "today",
         "searchPlaceholder": "Search groceries...",
         "settings": "Settings",
         "toggleTheme": "Toggle theme",
@@ -196,7 +196,7 @@
         "justNow": "Just now"
     },
     "landing": {
-        "welcome": "Welcome to BuyMilk",
+        "welcome": "Welcome to today",
         "subtitle": "Food shopping list",
         "signIn": "Sign in with Google"
     },

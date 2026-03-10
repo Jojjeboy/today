@@ -60,7 +60,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
 
     React.useEffect(() => {
         if (list) {
-            document.title = `BuyMilk - ${list.name}`;
+            document.title = `today - ${list.name}`;
             setEditedTitle(list.name);
             updateListAccess(list.id);
         }
@@ -446,7 +446,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
         // Format event description: bullet points for items + HTML link
         const itemsText = list.items.map(item => `• ${item.text}`).join('\n');
         const linkText = t('lists.settings.calendar.linkText');
-        const deepLink = `https://jojjeboy.github.io/buymilk/#/list/${list.id}`;
+        const deepLink = `https://jojjeboy.github.io/today/#/list/${list.id}`;
         const htmlLink = `<a href="${deepLink}">${linkText}</a>`;
         const description = encodeURIComponent(`${itemsText}\n\n${htmlLink}`);
 

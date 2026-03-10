@@ -19,7 +19,7 @@ Here is a sequential history of the prompts made during the development of this 
 
 **Date:** 2025-11-21
 
-> I want a new colorful favicon that that represent a checkbox that is checked, also update the Page title to 'BuyMilk' and on a specific Category page, print 'BuyMilk - <category>' And on List page print out 'BuyMilk <List>'
+> I want a new colorful favicon that that represent a checkbox that is checked, also update the Page title to 'today' and on a specific Category page, print 'today - <category>' And on List page print out 'today <List>'
 
 ## 4. Header Update
 
@@ -73,7 +73,7 @@ Here is a sequential history of the prompts made during the development of this 
 
 **Date:** 2025-11-21
 
-> add following remote for the git repo: https://github.com/Jojjeboy/buymilk.git
+> add following remote for the git repo: https://github.com/Jojjeboy/today.git
 
 ## 13. Git Status
 

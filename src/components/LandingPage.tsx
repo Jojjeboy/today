@@ -11,7 +11,7 @@ export function LandingPage() {
             <div className="max-w-md w-full space-y-8 text-center">
                 <div className="space-y-2">
                     <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        {t('landing.welcome', 'Welcome to BuyMilk')}
+                        {t('landing.welcome', 'Welcome to today')}
                     </h1>
                     <p className="text-muted-foreground text-lg">
                         {t('landing.subtitle', 'Reusable lists app')}

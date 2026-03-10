@@ -5,7 +5,7 @@
         "settings": "Inställningar"
     },
     "app": {
-        "title": "BuyMilk",
+        "title": "today",
         "searchPlaceholder": "Sök matvaror",
         "settings": "Inställningar",
         "toggleTheme": "Växla tema",
@@ -196,7 +196,7 @@
         "justNow": "Just nu"
     },
     "landing": {
-        "welcome": "Välkommen till BuyMilk",
+        "welcome": "Välkommen till today",
         "subtitle": "Inhandlingslista för mat",
         "signIn": "Logga in med Google"
     },
