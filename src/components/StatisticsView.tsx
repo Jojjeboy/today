@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import {
     List, CheckCircle2,
-    ListTodo, ShoppingCart, Activity
+    ListTodo, CheckCircle, Activity
 } from 'lucide-react';
 
 export const StatisticsView: React.FC = () => {
@@ -81,8 +81,8 @@ export const StatisticsView: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-               {/* Priorities Distribution - Only show if there are todos */}
-               {todos.length > 0 && (
+                {/* Priorities Distribution - Only show if there are todos */}
+                {todos.length > 0 && (
                     <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
                         <div className="flex items-center gap-2 mb-6">
                             <ListTodo className="text-orange-500" size={20} />
@@ -112,12 +112,12 @@ export const StatisticsView: React.FC = () => {
                         </div>
                     </div>
                 )}
-               
-               {/* Most Used Items Chart */}
-               {topItemsData.length > 0 && (
+
+                {/* Most Used Items Chart */}
+                {topItemsData.length > 0 && (
                     <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
                         <div className="flex items-center gap-2 mb-6">
-                            <ShoppingCart className="text-blue-500" size={20} />
+                            <CheckCircle className="text-blue-500" size={20} />
                             <h3 className="font-bold text-gray-900 dark:text-white uppercase tracking-wider text-sm">{t('stats.topItems', 'Most Added Items')}</h3>
                         </div>
                         <div className="h-[280px] w-full mb-6">
@@ -125,15 +125,15 @@ export const StatisticsView: React.FC = () => {
                                 <BarChart data={topItemsData} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
                                     <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#E5E7EB" />
                                     <XAxis type="number" hide />
-                                    <YAxis 
-                                        dataKey="name" 
-                                        type="category" 
-                                        width={100} 
-                                        tick={{ fill: '#6B7280', fontSize: 12 }} 
+                                    <YAxis
+                                        dataKey="name"
+                                        type="category"
+                                        width={100}
+                                        tick={{ fill: '#6B7280', fontSize: 12 }}
                                         axisLine={false}
                                         tickLine={false}
                                     />
-                                    <Tooltip 
+                                    <Tooltip
                                         cursor={{ fill: 'transparent' }}
                                         contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                                     />
@@ -141,7 +141,7 @@ export const StatisticsView: React.FC = () => {
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
-                        
+
                         <div className="space-y-3">
                             {topItemsData.map((item, index) => (
                                 <div key={item.name} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
@@ -158,7 +158,7 @@ export const StatisticsView: React.FC = () => {
                             ))}
                         </div>
                     </div>
-               )}
+                )}
             </div>
 
             <div className="pb-8"></div>

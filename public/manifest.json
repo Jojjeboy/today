@@ -1,7 +1,7 @@
 {
-  "name": "Buy Milk",
-  "short_name": "Buy Milk",
-  "description": "A smart task and grocery list management application",
+  "name": "Today",
+  "short_name": "Today",
+  "description": "A simple todo app for today",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -54,7 +54,10 @@
       "type": "image/svg+xml"
     }
   ],
-  "categories": ["productivity", "lifestyle"],
+  "categories": [
+    "productivity",
+    "lifestyle"
+  ],
   "shortcuts": [
     {
       "name": "New Task",

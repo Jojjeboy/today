@@ -6,7 +6,7 @@
     },
     "app": {
         "title": "today",
-        "searchPlaceholder": "Sök matvaror",
+        "searchPlaceholder": "Sök uppgifter",
         "settings": "Inställningar",
         "toggleTheme": "Växla tema",
         "notes": "Anteckningar",
@@ -57,11 +57,11 @@
             "completed": "Omarkerade först"
         },
         "reset": "Återställ",
-        "addItemPlaceholder": "Lägg till matvara",
+        "addItemPlaceholder": "Vad behöver göras?",
         "itemExists": "Varan finns redan i listan",
         "added": "Tillagd",
-        "groceryList": "Inköpslista",
-        "groceryTitle": "Vad ska handlas?",
+        "groceryList": "Att göra",
+        "groceryTitle": "Vad behöver göras idag?",
         "emptyList": "Listan är tom.",
         "emptySection": "Tom sektion",
         "completedItems": "Handlade varor",
@@ -197,7 +197,7 @@
     },
     "landing": {
         "welcome": "Välkommen till today",
-        "subtitle": "Inhandlingslista för mat",
+        "subtitle": "Enkel att-göra-lista",
         "signIn": "Logga in med Google"
     },
     "import": {
@@ -258,9 +258,9 @@
         "todosPriority": "Prioriteringar",
         "completionRate": "Genomförandegrad",
         "metrics": {
-            "totalItems": "Totala varor",
-            "completedItems": "Klara objekt",
-            "totalTodos": "Att göra"
+            "totalItems": "Totala uppgifter",
+            "completedItems": "Klara uppgifter",
+            "totalTodos": "Detaljerade to-dos"
         }
     }
 }

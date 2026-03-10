@@ -6,7 +6,7 @@
     },
     "app": {
         "title": "today",
-        "searchPlaceholder": "Search groceries...",
+        "searchPlaceholder": "Search tasks...",
         "settings": "Settings",
         "toggleTheme": "Toggle theme",
         "notes": "Notes",
@@ -58,10 +58,10 @@
             "completed": "Unresolved First"
         },
         "reset": "Reset",
-        "addItemPlaceholder": "Add item...",
-        "itemExists": "Item is already in the list",
+        "addItemPlaceholder": "What needs to be done?",
+        "itemExists": "Task is already in the list",
         "added": "Added",
-        "groceryTitle": "What should we buy?",
+        "groceryTitle": "What needs to be done today?",
         "emptyList": "List is empty.",
         "emptySection": "Empty section",
         "completedItems": "Completed Items",
@@ -197,7 +197,7 @@
     },
     "landing": {
         "welcome": "Welcome to today",
-        "subtitle": "Food shopping list",
+        "subtitle": "Simple todo list",
         "signIn": "Sign in with Google"
     },
     "import": {
@@ -258,9 +258,9 @@
         "todosPriority": "To-do Priorities",
         "completionRate": "Completion Rate",
         "metrics": {
-            "totalItems": "Total Items",
-            "completedItems": "Done Items",
-            "totalTodos": "To-dos"
+            "totalItems": "Total Tasks",
+            "completedItems": "Done Tasks",
+            "totalTodos": "Detailed To-dos"
         }
     }
 }

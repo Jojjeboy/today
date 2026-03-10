@@ -11,7 +11,7 @@ vi.mock('react-i18next', () => ({
 
 // Mock Lucide icons
 vi.mock('lucide-react', () => ({
-    ShoppingBasket: () => <div data-testid="shopping-basket-icon" />,
+    ListTodo: () => <div data-testid="shopping-basket-icon" />,
     CheckSquare: () => <div data-testid="check-square-icon" />,
     CloudUpload: () => <div data-testid="cloud-sync-icon" />,
     ChevronRight: () => <div data-testid="chevron-right-icon" />
@@ -51,9 +51,9 @@ describe('SearchResults', () => {
         expect(screen.queryByText(/Results for/)).toBeNull();
     });
 
-    it('filters grocery items by text', () => {
+    it('filters tasks by text', () => {
         setup('Milk');
-        expect(screen.getByText('Groceries')).toBeDefined();
+        expect(screen.getByText('Tasks')).toBeDefined();
         expect(screen.getByText('Milk')).toBeDefined();
         expect(screen.getByText(/In Inköpslista/)).toBeDefined();
     });

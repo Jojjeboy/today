@@ -1,7 +1,7 @@
 import { NavLink, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-    LayoutGrid,
+    ListTodo,
     SquareCheck,
     Settings,
     Activity,
@@ -24,7 +24,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNavClick }) => {
     const latestCommit = commits[0];
 
     const navItems = [
-        { path: '/', icon: LayoutGrid, label: t('nav.home') },
+        { path: '/', icon: ListTodo, label: t('nav.home') },
         { path: '/todos', icon: SquareCheck, label: t('nav.todos') },
         { path: '/activity', icon: Activity, label: t('history.title', 'Activity') },
         { path: '/statistics', icon: BarChart3, label: t('history.statistics', 'Statistics') },

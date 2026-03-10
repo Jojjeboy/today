@@ -40,8 +40,8 @@ describe('useFirestoreSync', () => {
         (onSnapshot as Mock).mockImplementation((_query: unknown, options: { includeMetadataChanges?: boolean }, onNext: (snapshot: Partial<QuerySnapshot<DocumentData>>) => void) => {
             if (typeof options === 'function') {
                 // Fallback for old signature if needed, but we want to test the new one
-                (options as Function)({
-                    forEach: () => {}
+                (options as (_: unknown) => void)({
+                    forEach: () => { }
                 });
             } else {
                 onNext({
@@ -75,7 +75,7 @@ describe('useFirestoreSync', () => {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 forEach: (callback: (doc: any) => void) => {
                     mockData.forEach(item => {
-                        callback({ 
+                        callback({
                             data: () => item,
                             metadata: { hasPendingWrites: false }
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { InlineAutocompleteInput } from './InlineAutocompleteInput';
 
 
-export const GroceryListView: React.FC = React.memo(function GroceryListView() {
+export const TodoListView: React.FC = React.memo(function TodoListView() {
     const { t } = useTranslation();
     const { lists, defaultListId, updateListItems, deleteItem, updateListAccess, loading, itemHistory, addToHistory } = useApp();
     const { showToast } = useToast();
@@ -73,9 +73,9 @@ export const GroceryListView: React.FC = React.memo(function GroceryListView() {
         }
 
         const searchText = newItemText.toLowerCase();
-        
+
         // Filter history
-        const historyMatches = itemHistory.filter(h => 
+        const historyMatches = itemHistory.filter(h =>
             h.text.toLowerCase().includes(searchText)
         );
 
@@ -95,13 +95,13 @@ export const GroceryListView: React.FC = React.memo(function GroceryListView() {
     const handleAddItem = async (e?: React.FormEvent, textOverride?: string) => {
         if (e) e.preventDefault();
         const textToAdd = (textOverride || newItemText).trim();
-        
+
         if (list && textToAdd) {
             try {
                 // Check if item exists (completed) -> Restore it
                 const normalize = (s: string) => s.trim().toLowerCase().normalize("NFC");
                 const existingItem = list.items.find(i => normalize(i.text) === normalize(textToAdd));
-            
+
                 if (existingItem) {
                     if (existingItem.completed) {
                         // Clear input immediately for "Optimistic" feel
@@ -234,7 +234,7 @@ export const GroceryListView: React.FC = React.memo(function GroceryListView() {
                                     <div className="space-y-2 animate-in slide-in-from-top-2 duration-200">
                                         {completedItems.map(item => (
                                             <div key={item.id} className="opacity-60 hover:opacity-100 transition-opacity">
-                                                 <SortableItem
+                                                <SortableItem
                                                     item={{ ...item, isPending: item.isPending || list.isPending }}
                                                     onToggle={handleToggle}
                                                     onDelete={handleDelete}
@@ -255,67 +255,67 @@ export const GroceryListView: React.FC = React.memo(function GroceryListView() {
             {document.body && createPortal(
                 <div className="fixed bottom-0 left-0 right-0 md:left-72 bg-gradient-to-t from-white via-white/95 to-white/0 dark:from-gray-900 dark:via-gray-900/95 dark:to-gray-900/0 pt-10 pb-6 px-4 z-[100] transition-all duration-300 pointer-events-none">
                     <div className="max-w-4xl mx-auto pointer-events-auto">
-                            <div className="relative group">
-                                <form onSubmit={handleAddItem} className="flex gap-3 items-center bg-white dark:bg-gray-800 p-2 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 dark:border-gray-700 focus-within:ring-2 focus-within:ring-blue-500/50 transition-all">
-                                    <div className="relative flex-1">
-                                        <Plus className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors pointer-events-none z-10" size={20} />
-                                        <InlineAutocompleteInput
-                                            value={newItemText}
-                                            onChange={setNewItemText}
-                                            onSubmit={() => handleAddItem()}
-                                            suggestions={suggestions}
-                                            placeholder={t('lists.addItemPlaceholder')}
-                                            className="w-full pl-10 pr-4 py-3 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none font-medium"
-                                            inputPaddingClass="pl-10"
-                                        />
-                                        {showSuggestions && suggestions.length > 0 && (
-                                            <div className="absolute bottom-full left-0 right-0 mb-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-2xl z-50 overflow-hidden max-h-60 overflow-y-auto animate-in slide-in-from-bottom-2 duration-200">
-                                                {suggestions.map((suggestion) => {
-                                                    const normalize = (s: string) => s.trim().toLowerCase().normalize("NFC");
-                                                    const existingItem = list?.items.find(i => normalize(i.text) === normalize(suggestion.text));
-                                                    const isCompleted = existingItem?.completed;
-                                                    const isActive = existingItem && !isCompleted;
-                                                    
-                                                    return (
-                                                        <button
-                                                            key={suggestion.id}
-                                                            type="button"
-                                                            onClick={() => handleSuggestionClick(suggestion.text)}
-                                                            className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center justify-between group transition-colors"
-                                                        >
-                                                            <div className="flex items-center gap-3">
-                                                                <RotateCcw size={14} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
-                                                                <span className={`font-medium ${isActive ? 'text-gray-400 dark:text-gray-500 decoration-gray-400' : 'text-gray-700 dark:text-gray-200'}`}>
-                                                                    {suggestion.text}
-                                                                </span>
-                                                            </div>
-                                                            {isCompleted && (
-                                                                <span className="text-[10px] text-blue-500 font-bold bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-full uppercase tracking-tighter">
-                                                                    {t('lists.restore', 'Restore')}
-                                                                </span>
-                                                            )}
-                                                            {isActive && (
-                                                                <span className="text-[10px] text-green-600 font-bold bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-full uppercase tracking-tighter">
-                                                                    {t('lists.added', 'Added')}
-                                                                </span>
-                                                            )}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        disabled={!newItemText.trim()}
-                                        className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/25 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale"
-                                    >
-                                        <Plus size={22} strokeWidth={2.5} />
-                                    </button>
-                                </form>
-                            </div>
+                        <div className="relative group">
+                            <form onSubmit={handleAddItem} className="flex gap-3 items-center bg-white dark:bg-gray-800 p-2 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 dark:border-gray-700 focus-within:ring-2 focus-within:ring-blue-500/50 transition-all">
+                                <div className="relative flex-1">
+                                    <Plus className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors pointer-events-none z-10" size={20} />
+                                    <InlineAutocompleteInput
+                                        value={newItemText}
+                                        onChange={setNewItemText}
+                                        onSubmit={() => handleAddItem()}
+                                        suggestions={suggestions}
+                                        placeholder={t('lists.addItemPlaceholder')}
+                                        className="w-full pl-10 pr-4 py-3 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none font-medium"
+                                        inputPaddingClass="pl-10"
+                                    />
+                                    {showSuggestions && suggestions.length > 0 && (
+                                        <div className="absolute bottom-full left-0 right-0 mb-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-2xl z-50 overflow-hidden max-h-60 overflow-y-auto animate-in slide-in-from-bottom-2 duration-200">
+                                            {suggestions.map((suggestion) => {
+                                                const normalize = (s: string) => s.trim().toLowerCase().normalize("NFC");
+                                                const existingItem = list?.items.find(i => normalize(i.text) === normalize(suggestion.text));
+                                                const isCompleted = existingItem?.completed;
+                                                const isActive = existingItem && !isCompleted;
+
+                                                return (
+                                                    <button
+                                                        key={suggestion.id}
+                                                        type="button"
+                                                        onClick={() => handleSuggestionClick(suggestion.text)}
+                                                        className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center justify-between group transition-colors"
+                                                    >
+                                                        <div className="flex items-center gap-3">
+                                                            <RotateCcw size={14} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
+                                                            <span className={`font-medium ${isActive ? 'text-gray-400 dark:text-gray-500 decoration-gray-400' : 'text-gray-700 dark:text-gray-200'}`}>
+                                                                {suggestion.text}
+                                                            </span>
+                                                        </div>
+                                                        {isCompleted && (
+                                                            <span className="text-[10px] text-blue-500 font-bold bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-full uppercase tracking-tighter">
+                                                                {t('lists.restore', 'Restore')}
+                                                            </span>
+                                                        )}
+                                                        {isActive && (
+                                                            <span className="text-[10px] text-green-600 font-bold bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-full uppercase tracking-tighter">
+                                                                {t('lists.added', 'Added')}
+                                                            </span>
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={!newItemText.trim()}
+                                    className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/25 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale"
+                                >
+                                    <Plus size={22} strokeWidth={2.5} />
+                                </button>
+                            </form>
                         </div>
-                    </div>,
+                    </div>
+                </div>,
                 document.body
             )}
         </div>

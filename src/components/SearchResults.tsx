@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ShoppingBasket, CheckSquare, CloudUpload, ChevronRight } from 'lucide-react';
+import { ListTodo, CheckSquare, CloudUpload, ChevronRight } from 'lucide-react';
 
 export const SearchResults: React.FC = () => {
     const { lists, todos } = useApp();
@@ -10,14 +10,14 @@ export const SearchResults: React.FC = () => {
 
     if (!query) return null;
 
-    const matchedGroceries = lists.flatMap(list => 
+    const matchedGroceries = lists.flatMap(list =>
         list.items
             .filter(item => item.text.toLowerCase().includes(query))
             .map(item => ({ ...item, listId: list.id, listName: list.name, listIsPending: list.isPending }))
     );
 
-    const matchedTodos = todos.filter(todo => 
-        todo.title.toLowerCase().includes(query) || 
+    const matchedTodos = todos.filter(todo =>
+        todo.title.toLowerCase().includes(query) ||
         todo.content.toLowerCase().includes(query)
     );
 
@@ -27,7 +27,7 @@ export const SearchResults: React.FC = () => {
         return (
             <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-3xl border border-dashed border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-300">
                 <div className="w-16 h-16 bg-gray-50 dark:bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <ShoppingBasket className="text-gray-300 dark:text-gray-600" size={32} />
+                    <ListTodo size={20} />
                 </div>
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No items found</h3>
                 <p className="text-gray-500 dark:text-gray-400">Try searching for something else like &quot;milk&quot; or &quot;call&quot;</p>
@@ -49,7 +49,7 @@ export const SearchResults: React.FC = () => {
             {matchedGroceries.length > 0 && (
                 <div className="space-y-4">
                     <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                        <ShoppingBasket size={16} /> Groceries
+                        <ListTodo size={16} /> Tasks
                     </h3>
                     <div className="grid gap-3">
                         {matchedGroceries.map((item) => (
@@ -59,7 +59,7 @@ export const SearchResults: React.FC = () => {
                                 className="group flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-500/10 transition-all"
                             >
                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${item.completed ? 'bg-green-50 dark:bg-green-900/20 text-green-500' : 'bg-blue-50 dark:bg-blue-900/20 text-blue-500'}`}>
-                                    <ShoppingBasket size={20} />
+                                    <ListTodo size={20} />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <h4 className={`font-semibold truncate ${item.completed ? 'text-gray-400 line-through decoration-2' : 'text-gray-900 dark:text-white'}`}>
