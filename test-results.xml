@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="55" failures="0" errors="0" time="32.713">
+    <testsuite name="src/context/AppContext.test.tsx" timestamp="2025-12-15T14:07:00.083Z" hostname="W410790" tests="8" failures="0" errors="0" skipped="0" time="0.416514">
+        <testcase classname="src/context/AppContext.test.tsx" name="AppContext - Combinations &gt; addCombination calls firestore addItem" time="0.2226052">
+        </testcase>
+        <testcase classname="src/context/AppContext.test.tsx" name="AppContext - Combinations &gt; updateCombination calls firestore updateItem" time="0.019063">
+        </testcase>
+        <testcase classname="src/context/AppContext.test.tsx" name="AppContext - Combinations &gt; deleteCombination calls firestore deleteItem" time="0.0440927">
+        </testcase>
+        <testcase classname="src/context/AppContext.test.tsx" name="AppContext - Combinations &gt; deleteList cascades correctly (Update 3+ lists, Delete 2 lists)" time="0.0185367">
+        </testcase>
+        <testcase classname="src/context/AppContext.test.tsx" name="AppContext - Combinations &gt; addList calls firestore addItem" time="0.0505377">
+        </testcase>
+        <testcase classname="src/context/AppContext.test.tsx" name="AppContext - Combinations &gt; addSession calls firestore addItem" time="0.0170579">
+        </testcase>
+        <testcase classname="src/context/AppContext.test.tsx" name="AppContext - Combinations &gt; addCategory calls firestore addItem" time="0.0152901">
+        </testcase>
+        <testcase classname="src/context/AppContext.test.tsx" name="AppContext - Combinations &gt; deleteCategory calls firestore deleteItem" time="0.0172853">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/context/AuthContext.test.tsx" timestamp="2025-12-15T14:07:00.095Z" hostname="W410790" tests="4" failures="0" errors="0" skipped="0" time="0.1866729">
+        <testcase classname="src/context/AuthContext.test.tsx" name="AuthContext &gt; initializes with loading state and checks auth status" time="0.1032825">
+        </testcase>
+        <testcase classname="src/context/AuthContext.test.tsx" name="AuthContext &gt; updates user when auth state changes" time="0.0311512">
+        </testcase>
+        <testcase classname="src/context/AuthContext.test.tsx" name="AuthContext &gt; signInWithGoogle calls firebase signInWithPopup" time="0.0231334">
+        </testcase>
+        <testcase classname="src/context/AuthContext.test.tsx" name="AuthContext &gt; logout calls firebase signOut" time="0.0201572">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/context/ToastContext.test.tsx" timestamp="2025-12-15T14:07:00.101Z" hostname="W410790" tests="3" failures="0" errors="0" skipped="0" time="0.2573985">
+        <testcase classname="src/context/ToastContext.test.tsx" name="ToastContext &gt; showToast adds a toast" time="0.2182978">
+            <system-err>
+An update to ToastProvider inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() =&gt; {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you&apos;re testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/context/ToastContext.test.tsx" name="ToastContext &gt; removeToast removes a toast by id" time="0.0179012">
+            <system-err>
+An update to ToastProvider inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() =&gt; {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you&apos;re testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/context/ToastContext.test.tsx" name="ToastContext &gt; auto removes toast after 5 seconds" time="0.0143389">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/CategoryDetail.test.tsx" timestamp="2025-12-15T14:07:00.107Z" hostname="W410790" tests="3" failures="0" errors="0" skipped="0" time="0.8164884">
+        <testcase classname="src/components/CategoryDetail.test.tsx" name="CategoryDetail &gt; renders category and lists" time="0.4590051">
+        </testcase>
+        <testcase classname="src/components/CategoryDetail.test.tsx" name="CategoryDetail &gt; adds a new list" time="0.1870647">
+            <system-err>
+An update to CategoryDetail inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() =&gt; {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you&apos;re testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/CategoryDetail.test.tsx" name="CategoryDetail &gt; opens delete modal and deletes list" time="0.1625872">
+            <system-err>
+An update to CategoryDetail inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() =&gt; {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you&apos;re testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+            </system-err>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/CategoryView.test.tsx" timestamp="2025-12-15T14:07:00.113Z" hostname="W410790" tests="4" failures="0" errors="0" skipped="0" time="0.7728441">
+        <testcase classname="src/components/CategoryView.test.tsx" name="CategoryView &gt; renders categories and combinations" time="0.4377032">
+        </testcase>
+        <testcase classname="src/components/CategoryView.test.tsx" name="CategoryView &gt; adds a new category" time="0.1771008">
+        </testcase>
+        <testcase classname="src/components/CategoryView.test.tsx" name="CategoryView &gt; opens session picker when Multi-Session button is clicked" time="0.0853119">
+        </testcase>
+        <testcase classname="src/components/CategoryView.test.tsx" name="CategoryView &gt; disables multi-session button if no lists" time="0.065221">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/CombinationEditor.test.tsx" timestamp="2025-12-15T14:07:00.117Z" hostname="W410790" tests="6" failures="0" errors="0" skipped="0" time="1.371128">
+        <testcase classname="src/components/CombinationEditor.test.tsx" name="CombinationEditor &gt; renders correctly when open" time="0.6469571">
+        </testcase>
+        <testcase classname="src/components/CombinationEditor.test.tsx" name="CombinationEditor &gt; does not render when closed" time="0.0147417">
+        </testcase>
+        <testcase classname="src/components/CombinationEditor.test.tsx" name="CombinationEditor &gt; disables save button initially (no name, no lists)" time="0.084726">
+        </testcase>
+        <testcase classname="src/components/CombinationEditor.test.tsx" name="CombinationEditor &gt; enables save button only when name and 2+ lists selected" time="0.2027302">
+        </testcase>
+        <testcase classname="src/components/CombinationEditor.test.tsx" name="CombinationEditor &gt; calls onSave with correct data" time="0.2365016">
+        </testcase>
+        <testcase classname="src/components/CombinationEditor.test.tsx" name="CombinationEditor &gt; filters lists by search query" time="0.1702795">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/ListDetail.test.tsx" timestamp="2025-12-15T14:07:00.123Z" hostname="W410790" tests="4" failures="0" errors="0" skipped="0" time="0.9437617">
+        <testcase classname="src/components/ListDetail.test.tsx" name="ListDetail &gt; renders list items" time="0.5561887">
+        </testcase>
+        <testcase classname="src/components/ListDetail.test.tsx" name="ListDetail &gt; adds a new item" time="0.1831598">
+            <system-err>
+An update to ListDetail inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() =&gt; {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you&apos;re testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/ListDetail.test.tsx" name="ListDetail &gt; toggles item completion" time="0.1250075">
+            <system-err>
+An update to ListDetail inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() =&gt; {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you&apos;re testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/ListDetail.test.tsx" name="ListDetail &gt; sorts alphabetical" time="0.0689294">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/MarqueeText.test.tsx" timestamp="2025-12-15T14:07:00.130Z" hostname="W410790" tests="3" failures="0" errors="0" skipped="0" time="0.1020612">
+        <testcase classname="src/components/MarqueeText.test.tsx" name="MarqueeText &gt; renders the text" time="0.0779906">
+        </testcase>
+        <testcase classname="src/components/MarqueeText.test.tsx" name="MarqueeText &gt; should not have marquee animation when text does not overflow" time="0.005426">
+        </testcase>
+        <testcase classname="src/components/MarqueeText.test.tsx" name="MarqueeText &gt; should have marquee animation when text overflows" time="0.0150217">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/Modal.test.tsx" timestamp="2025-12-15T14:07:00.135Z" hostname="W410790" tests="6" failures="0" errors="0" skipped="0" time="0.9217225">
+        <testcase classname="src/components/Modal.test.tsx" name="Modal &gt; renders correctly when open" time="0.3044739">
+        </testcase>
+        <testcase classname="src/components/Modal.test.tsx" name="Modal &gt; does not render when closed" time="0.0136353">
+        </testcase>
+        <testcase classname="src/components/Modal.test.tsx" name="Modal &gt; calls onClose when close button (x) is clicked" time="0.5219335">
+        </testcase>
+        <testcase classname="src/components/Modal.test.tsx" name="Modal &gt; calls onClose when Cancel is clicked" time="0.0232027">
+        </testcase>
+        <testcase classname="src/components/Modal.test.tsx" name="Modal &gt; calls onConfirm and onClose when Confirm is clicked" time="0.0237352">
+        </testcase>
+        <testcase classname="src/components/Modal.test.tsx" name="Modal &gt; renders with destructive styling" time="0.0230617">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/SearchResults.test.tsx" timestamp="2025-12-15T14:07:00.142Z" hostname="W410790" tests="5" failures="0" errors="0" skipped="0" time="0.5192779">
+        <testcase classname="src/components/SearchResults.test.tsx" name="SearchResults &gt; renders nothing when query is empty" time="0.2824753">
+        </testcase>
+        <testcase classname="src/components/SearchResults.test.tsx" name="SearchResults &gt; filters categories by name" time="0.0965095">
+        </testcase>
+        <testcase classname="src/components/SearchResults.test.tsx" name="SearchResults &gt; filters lists by name" time="0.0461226">
+        </testcase>
+        <testcase classname="src/components/SearchResults.test.tsx" name="SearchResults &gt; filters lists by item text" time="0.0509227">
+        </testcase>
+        <testcase classname="src/components/SearchResults.test.tsx" name="SearchResults &gt; shows no results found" time="0.0322575">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/SessionDetail.test.tsx" timestamp="2025-12-15T14:07:00.149Z" hostname="W410790" tests="5" failures="0" errors="0" skipped="0" time="1.2011596">
+        <testcase classname="src/components/SessionDetail.test.tsx" name="SessionDetail &gt; renders session details correctly" time="0.4198096">
+        </testcase>
+        <testcase classname="src/components/SessionDetail.test.tsx" name="SessionDetail &gt; displays correct progress" time="0.0730959">
+        </testcase>
+        <testcase classname="src/components/SessionDetail.test.tsx" name="SessionDetail &gt; toggles item completion" time="0.4837792">
+        </testcase>
+        <testcase classname="src/components/SessionDetail.test.tsx" name="SessionDetail &gt; completes session" time="0.1857982">
+        </testcase>
+        <testcase classname="src/components/SessionDetail.test.tsx" name="SessionDetail &gt; renders not found state" time="0.0300725">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/SessionPicker.test.tsx" timestamp="2025-12-15T14:07:00.155Z" hostname="W410790" tests="4" failures="0" errors="0" skipped="0" time="1.0640062">
+        <testcase classname="src/components/SessionPicker.test.tsx" name="SessionPicker &gt; renders correctly" time="0.4390374">
+        </testcase>
+        <testcase classname="src/components/SessionPicker.test.tsx" name="SessionPicker &gt; validates minimum 2 lists required" time="0.2342532">
+        </testcase>
+        <testcase classname="src/components/SessionPicker.test.tsx" name="SessionPicker &gt; calls onCreateSession with selected lists" time="0.1538067">
+        </testcase>
+        <testcase classname="src/components/SessionPicker.test.tsx" name="SessionPicker &gt; calls onSaveCombination if checkbox is checked" time="0.226694">
+        </testcase>
+    </testsuite>
+</testsuites>

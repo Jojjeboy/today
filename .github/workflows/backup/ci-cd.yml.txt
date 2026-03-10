@@ -1,0 +1,125 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+      - develop # Lägg till develop här
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # Dessa används för miljövariabler i bygget eller för sed-ersättning
+    env:
+      FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+      FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+      FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+      FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+      FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+      FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Security Audit
+        run: npm audit --audit-level=high
+
+      - name: Lint and Typecheck
+        run: |
+          npm run lint
+          npx tsc -b
+
+      - name: Run Tests & Coverage
+        run: npm run test
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # NYTT STEG: Injicera hemligheter i din Angular config-fil före bygget
+      - name: Inject Firebase Secrets
+        run: |
+          CONFIG_FILE="./src/app/core/firebase.config.ts"
+          sed -i "s|PLACEHOLDER_API_KEY|$FIREBASE_API_KEY|g" $CONFIG_FILE
+          sed -i "s|PLACEHOLDER_AUTH_DOMAIN|$FIREBASE_AUTH_DOMAIN|g" $CONFIG_FILE
+          sed -i "s|PLACEHOLDER_PROJECT_ID|$FIREBASE_PROJECT_ID|g" $CONFIG_FILE
+          sed -i "s|PLACEHOLDER_STORAGE_BUCKET|$FIREBASE_STORAGE_BUCKET|g" $CONFIG_FILE
+          sed -i "s|PLACEHOLDER_MESSAGING_SENDER_ID|$FIREBASE_MESSAGING_SENDER_ID|g" $CONFIG_FILE
+          sed -i "s|PLACEHOLDER_APP_ID|$FIREBASE_APP_ID|g" $CONFIG_FILE
+
+      - name: Build
+        run: npm run build
+
+      # Vi laddar bara upp artifact om vi faktiskt ska deploya (på master)
+      - name: Upload artifact
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./dist"
+
+  deploy:
+    # Denna körs nu ENDAST om vi är på master-branchen
+    if: github.ref == 'refs/heads/master'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  lighthouse:
+    # Denna körs också ENDAST på master efter lyckad deploy
+    if: github.ref == 'refs/heads/master'
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Lighthouse with Assertions
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: "https://jojjeboy.github.io/buymilk/"
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          assertions: |
+            {
+              "categories:performance": ["error", {"minScore": 0.9}],
+              "categories:accessibility": ["error", {"minScore": 0.9}],
+              "categories:best-practices": ["error", {"minScore": 0.9}],
+              "categories:seo": ["error", {"minScore": 0.9}],
+              "categories:pwa": ["warn", {"minScore": 0.8}]
+            }
