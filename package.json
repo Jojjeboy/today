@@ -12,7 +12,8 @@
     "test": "vitest run --coverage",
     "lint": "eslint .",
     "check-any": "eslint . --config eslint.strict.config.ts",
-    "validate": "node scripts/run-validate.js"
+    "validate": "node scripts/run-validate.js",
+    "generate-assets": "node scripts/generate-brand-assets.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

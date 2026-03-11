@@ -140,7 +140,7 @@
         "auto": "Auto",
         "wakeLock": "Håll skärmen vaken",
         "wakeLockDesc": "Förhindra att skärmen släcks",
-        "reloadUpdate": "Uppdatera & Ladda om",
+        "reloadUpdate": "Uppdatera & ladda om",
         "reloadUpdateDesc": "Tvinga uppdatering",
         "dataManagement": "Datahantering",
         "importTitle": "Importera lista",

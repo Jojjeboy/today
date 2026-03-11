@@ -1,5 +1,30 @@
 [
   {
+    "hash": "667f59b6f1f11cb9ca9506d7c17910a5103b4f9e",
+    "date": "2026-03-11 07:53:23 +0100",
+    "message": "New fix"
+  },
+  {
+    "hash": "859e1f345fcdb0e5e2ebb08d22df425b016d5da3",
+    "date": "2026-03-11 07:40:32 +0100",
+    "message": "fix"
+  },
+  {
+    "hash": "42070cea94b1e9026c70fa8a85162499e1a6172a",
+    "date": "2026-03-11 07:39:24 +0100",
+    "message": "fix"
+  },
+  {
+    "hash": "a366d9673917490f5f50d89125c8099b7b3357aa",
+    "date": "2026-03-10 16:59:16 +0100",
+    "message": "PWA fixes"
+  },
+  {
+    "hash": "4c62ed901de83059b2d21bb5d9ddd09977ffa4bb",
+    "date": "2026-03-10 11:42:26 +0100",
+    "message": "feat: Implement core todo list view with PWA manifest updates and new assets."
+  },
+  {
     "hash": "1afcd676a6386992873ed864692e6758a589f5e8",
     "date": "2026-03-10 10:53:22 +0100",
     "message": "feat: Implement core application structure with internationalization support for Swedish and English."

@@ -9,6 +9,7 @@ interface InlineAutocompleteInputProps {
     className?: string; // Class for the input element
     autoFocus?: boolean;
     inputPaddingClass?: string; // Padding class to align shadow text (e.g., "pl-10")
+    id?: string;
 }
 
 export const InlineAutocompleteInput: React.FC<InlineAutocompleteInputProps> = ({
@@ -19,11 +20,12 @@ export const InlineAutocompleteInput: React.FC<InlineAutocompleteInputProps> = (
     placeholder = '',
     className = '',
     autoFocus = false,
-    inputPaddingClass = 'px-4'
+    inputPaddingClass = 'px-4',
+    id
 }) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [showTooltip, setShowTooltip] = useState(false);
-    
+
     // Get the top suggestion that matches current input
     const topSuggestion = suggestions.length > 0 && value.trim()
         ? suggestions.find(s => s.text.toLowerCase().startsWith(value.toLowerCase()))
@@ -68,11 +70,11 @@ export const InlineAutocompleteInput: React.FC<InlineAutocompleteInputProps> = (
 
     return (
         <div className="relative">
-            {/* Shadow text layer */ }
-            <div 
+            {/* Shadow text layer */}
+            <div
                 className="absolute inset-0 flex items-center pointer-events-none"
                 aria-hidden="true"
-                style={{ zIndex: 0 }} 
+                style={{ zIndex: 0 }}
             >
                 {/* Debug border can be added here if needed: border border-red-500 */}
                 <div className={`${inputPaddingClass} text-gray-400 dark:text-gray-500 select-none whitespace-pre overflow-hidden w-full font-medium`}>
@@ -80,9 +82,10 @@ export const InlineAutocompleteInput: React.FC<InlineAutocompleteInputProps> = (
                     <span>{shadowText}</span>
                 </div>
             </div>
-            
+
             {/* Actual input */}
             <input
+                id={id}
                 ref={inputRef}
                 type="text"
                 value={value}

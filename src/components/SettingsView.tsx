@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, SortAsc, Calendar, ChevronDown, Settings, Eye, EyeOff, CloudUpload, FileJson, Copy } from 'lucide-react';
+import { LogOut, SortAsc, Calendar, ChevronDown, Settings, Eye, EyeOff, CloudUpload, FileJson, Copy, Check } from 'lucide-react';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
@@ -21,7 +21,7 @@ export const SettingsView: React.FC = () => {
     const { isSupported, isLocked, requestWakeLock, releaseWakeLock } = useWakeLock();
 
     const [calendarAccordionOpen, setCalendarAccordionOpen] = React.useState(false);
-    
+
     const toLocalISOString = (date: Date) => {
         const offset = date.getTimezoneOffset() * 60000;
         const localDate = new Date(date.getTime() - offset);
@@ -54,7 +54,7 @@ export const SettingsView: React.FC = () => {
         const title = encodeURIComponent(t('lists.groceryTitle'));
         const itemsText = list.items.map(item => `• ${item.text}`).join('\n');
         const linkText = t('lists.settings.calendar.linkText');
-        const deepLink = window.location.origin; 
+        const deepLink = window.location.origin;
         const description = encodeURIComponent(`${itemsText}\n\n${linkText}: ${deepLink}`);
 
         const formatGoogleTime = (isoString: string) => {
@@ -78,22 +78,22 @@ export const SettingsView: React.FC = () => {
             } catch {
                 throw new Error('Invalid JSON');
             }
-            
+
             if (!Array.isArray(data)) throw new Error('Format must be an array');
 
             const newItems: Item[] = [];
             for (const entry of data) {
-                 let text = '';
-                 if (typeof entry === 'string') text = entry;
-                 else if (typeof entry === 'object' && entry !== null && entry.text) text = entry.text;
-                 
-                 if (text) {
-                     newItems.push({
-                         id: uuidv4(),
-                         text: text.trim(),
-                         completed: false
-                     });
-                 }
+                let text = '';
+                if (typeof entry === 'string') text = entry;
+                else if (typeof entry === 'object' && entry !== null && entry.text) text = entry.text;
+
+                if (text) {
+                    newItems.push({
+                        id: uuidv4(),
+                        text: text.trim(),
+                        completed: false
+                    });
+                }
             }
 
             if (newItems.length > 0) {
@@ -148,11 +148,12 @@ export const SettingsView: React.FC = () => {
                                 <button
                                     key={lang.code}
                                     onClick={() => i18n.changeLanguage(lang.code)}
-                                    className={`p-4 rounded-2xl border-2 transition-all flex items-center justify-center font-semibold ${i18n.language === lang.code
+                                    className={`p-4 rounded-2xl border-2 transition-all flex items-center justify-center gap-2 font-semibold ${i18n.language.startsWith(lang.code)
                                         ? 'bg-blue-50 border-blue-500 text-blue-600 dark:bg-blue-900/30 dark:border-blue-500 dark:text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.1)]'
                                         : 'border-gray-100 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-blue-200 dark:hover:border-blue-800'
                                         }`}
                                 >
+                                    {i18n.language.startsWith(lang.code) && <Check size={18} />}
                                     {lang.label}
                                 </button>
                             ))}
@@ -162,7 +163,7 @@ export const SettingsView: React.FC = () => {
                     <div className="space-y-4">
                         <h3 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest px-1">{t('settings.display', 'Skärm')}</h3>
                         <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
-                             <div className="p-4 flex items-center justify-between">
+                            <div className="p-4 flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <div className={`p-2.5 rounded-xl transition-colors ${isLocked ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-400'}`}>
                                         {isLocked ? <Eye size={22} /> : <EyeOff size={22} />}
@@ -175,14 +176,12 @@ export const SettingsView: React.FC = () => {
                                 <button
                                     onClick={() => isLocked ? releaseWakeLock() : requestWakeLock()}
                                     disabled={!isSupported}
-                                    className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                                        isLocked ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
-                                    } ${!isSupported ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                    className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isLocked ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
+                                        } ${!isSupported ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                                 >
                                     <span
-                                        className={`${
-                                            isLocked ? 'translate-x-6' : 'translate-x-1'
-                                        } inline-block h-5 w-5 transform rounded-full bg-white transition-transform`}
+                                        className={`${isLocked ? 'translate-x-6' : 'translate-x-1'
+                                            } inline-block h-5 w-5 transform rounded-full bg-white transition-transform`}
                                     />
                                 </button>
                             </div>
@@ -275,7 +274,7 @@ export const SettingsView: React.FC = () => {
 
                     <div className="space-y-4">
                         <h3 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest px-1">{t('settings.dataManagement', 'Data Management')}</h3>
-                        
+
                         <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 hover:border-blue-200 dark:hover:border-gray-600 transition-all">
                             <button
                                 onClick={() => setImportAccordionOpen(!importAccordionOpen)}
@@ -314,9 +313,9 @@ export const SettingsView: React.FC = () => {
                                             </button>
                                         </div>
                                         <div className="text-gray-600 dark:text-gray-400 pl-2 border-l-2 border-gray-200 dark:border-gray-700">
-                                            [<br/>
-                                            &nbsp;&nbsp;{'{ "text": "Milk" }'},<br/>
-                                            &nbsp;&nbsp;{'{ "text": "Eggs" }'}<br/>
+                                            [<br />
+                                            &nbsp;&nbsp;{'{ "text": "Milk" }'},<br />
+                                            &nbsp;&nbsp;{'{ "text": "Eggs" }'}<br />
                                             ]
                                         </div>
                                     </div>
@@ -334,11 +333,10 @@ export const SettingsView: React.FC = () => {
                                         <button
                                             onClick={() => handleImportJson(jsonText)}
                                             disabled={!jsonText.trim()}
-                                            className={`flex items-center justify-center gap-2 p-3 rounded-xl font-bold transition-all ${
-                                                jsonText.trim()
-                                                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 active:scale-[0.98]' 
+                                            className={`flex items-center justify-center gap-2 p-3 rounded-xl font-bold transition-all ${jsonText.trim()
+                                                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 active:scale-[0.98]'
                                                     : 'bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed'
-                                            }`}
+                                                }`}
                                         >
                                             <FileJson size={18} />
                                             <span>{t('settings.importText', 'Import Text')}</span>
@@ -347,11 +345,11 @@ export const SettingsView: React.FC = () => {
                                         <label className="flex items-center justify-center gap-2 p-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-bold cursor-pointer transition-all active:scale-[0.98]">
                                             <CloudUpload size={18} />
                                             <span>{t('settings.selectFile', 'Upload File')}</span>
-                                            <input 
-                                                type="file" 
-                                                accept=".json" 
-                                                className="hidden" 
-                                                onChange={handleFileUpload} 
+                                            <input
+                                                type="file"
+                                                accept=".json"
+                                                className="hidden"
+                                                onChange={handleFileUpload}
                                             />
                                         </label>
                                     </div>

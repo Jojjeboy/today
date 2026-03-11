@@ -211,8 +211,21 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                         </DndContext>
 
                         {activeItems.length === 0 && (
-                            <div className="flex flex-col items-center justify-center py-20 opacity-50">
-                                <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
+                            <div
+                                onClick={() => {
+                                    const input = document.getElementById('add-item-input');
+                                    if (input) {
+                                        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        // Slight delay to allow smooth scrolling to finish before focusing 
+                                        setTimeout(() => input.focus(), 300);
+                                    }
+                                }}
+                                className="flex flex-col items-center justify-center py-20 opacity-50 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors rounded-3xl mt-4"
+                                role="button"
+                                tabIndex={0}
+                                aria-label={t('lists.addItemPlaceholder')}
+                            >
+                                <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4 transition-transform hover:scale-110">
                                     <Plus className="text-gray-400" size={32} />
                                 </div>
                                 <p className="text-gray-500 font-medium">{t('lists.emptyList')}</p>
@@ -260,6 +273,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                 <div className="relative flex-1">
                                     <Plus className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors pointer-events-none z-10" size={20} />
                                     <InlineAutocompleteInput
+                                        id="add-item-input"
                                         value={newItemText}
                                         onChange={setNewItemText}
                                         onSubmit={() => handleAddItem()}
