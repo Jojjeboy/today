@@ -1,5 +1,10 @@
 [
   {
+    "hash": "1f2a76bca18744205f7291980478bb9a8e6bd469",
+    "date": "2026-03-11 09:26:54 +0100",
+    "message": "feat: Add internationalization support with Swedish locale, new Todo and Settings views, and initial project setup."
+  },
+  {
     "hash": "667f59b6f1f11cb9ca9506d7c17910a5103b4f9e",
     "date": "2026-03-11 07:53:23 +0100",
     "message": "New fix"

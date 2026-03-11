@@ -10,9 +10,6 @@ Currently, when transitioning from offline to online, the app relies heavily on 
 The service worker uses `registerType: 'autoUpdate'`. This update strategy quietly reloads in the background, but users might lose intermediate typed data or get interrupted.
 **Suggestion:** Switch `vite-plugin-pwa` to `prompt` type and use the existing `UpdatePrompt.tsx` component to deliberately ask the user to click "Refresh to Update", giving them control over when the app reloads.
 
-## 3. Advanced Filtering & Tags
-Currently, lists can be sorted alphabetically, manually, or by completion. 
-**Suggestion:** Add the ability to #tag items. E.g., adding `#work` or `#home` in the input field would categorize the task visually and allow filtering the list view to only show specific tags.
 
 ## 4. Input Validation & Constraints
 The `handleAddItem` function relies heavily on `text.trim()`. 

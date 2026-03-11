@@ -10,6 +10,7 @@ import {
     TrailingActions,
     Type as ListType,
 } from 'react-swipeable-list';
+import { getTagColorClass, extractTags } from '../utils/tags';
 import 'react-swipeable-list/dist/styles.css';
 
 interface SortableItemProps {
@@ -22,12 +23,15 @@ interface SortableItemProps {
 
 export const SortableItem: React.FC<SortableItemProps> = ({ item, onToggle, onDelete, onEdit, disabled }) => {
     const [localText, setLocalText] = React.useState(item.text);
+    const [isEditing, setIsEditing] = React.useState(false);
+    const inputRef = React.useRef<HTMLInputElement>(null);
 
     React.useEffect(() => {
         setLocalText(item.text);
     }, [item.text]);
 
     const handleBlur = () => {
+        setIsEditing(false);
         if (onEdit && localText !== item.text) {
             onEdit(item.id, localText);
         }
@@ -35,8 +39,52 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onToggle, onDe
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
-            (e.target as HTMLInputElement).blur();
+            setIsEditing(false);
+            if (onEdit && localText !== item.text) {
+                onEdit(item.id, localText);
+            }
         }
+    };
+
+    // Auto-focus input when entering edit mode
+    React.useEffect(() => {
+        if (isEditing && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [isEditing]);
+
+    const renderTextWithTags = () => {
+        if (!localText) return null;
+        const tags = extractTags(localText);
+        if (tags.length === 0) return <span>{localText}</span>;
+
+        // Split the text by tags and interleave with styled tag spans
+        let remainingText = localText;
+        const parts: React.ReactNode[] = [];
+        
+        tags.forEach((tag, i) => {
+            const index = remainingText.indexOf(tag);
+            if (index > -1) {
+                if (index > 0) {
+                    parts.push(<span key={`text-${i}`}>{remainingText.slice(0, index)}</span>);
+                }
+                parts.push(
+                    <span 
+                        key={`tag-${i}`} 
+                        className={`inline-block px-1.5 py-0.5 mx-0.5 rounded text-xs font-semibold ${getTagColorClass(tag)}`}
+                    >
+                        {tag}
+                    </span>
+                );
+                remainingText = remainingText.slice(index + tag.length);
+            }
+        });
+        
+        if (remainingText) {
+            parts.push(<span key="text-end">{remainingText}</span>);
+        }
+
+        return <>{parts}</>;
     };
 
     const {
@@ -107,22 +155,37 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onToggle, onDe
                             })()}
                         </button>
 
-                        <input
-                            type="text"
-                            value={localText}
-                            onChange={(e) => setLocalText(e.target.value)}
-                            onBlur={handleBlur}
-                            onKeyDown={handleKeyDown}
-                            disabled={isReadOnly}
-                            aria-label="Edit item text"
-                            className={`flex-1 min-w-0 bg-transparent outline-none p-1 ${(() => {
-                                if (item.completed) return 'line-through text-gray-400';
-                                return 'text-gray-700 dark:text-gray-200';
-                            })()} ${isReadOnly ? 'cursor-not-allowed' : ''}`}
-                            // Stop propagation to prevent swipe start when interacting with input
-                            onMouseDown={(e) => e.stopPropagation()}
-                            onTouchStart={(e) => e.stopPropagation()}
-                        />
+                        <div className="flex-1 min-w-0 flex items-center h-full">
+                            {isEditing && !isReadOnly ? (
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    value={localText}
+                                    onChange={(e) => setLocalText(e.target.value)}
+                                    onBlur={handleBlur}
+                                    onKeyDown={handleKeyDown}
+                                    aria-label="Edit item text"
+                                    className="w-full bg-transparent outline-none p-1 text-gray-700 dark:text-gray-200"
+                                    onMouseDown={(e) => e.stopPropagation()}
+                                    onTouchStart={(e) => e.stopPropagation()}
+                                />
+                            ) : (
+                                <div
+                                    onClick={(e) => {
+                                        if (!isReadOnly) {
+                                            e.stopPropagation();
+                                            setIsEditing(true);
+                                        }
+                                    }}
+                                    className={`w-full p-1 min-h-[1.5rem] truncate cursor-text ${(() => {
+                                        if (item.completed) return 'line-through text-gray-400';
+                                        return 'text-gray-700 dark:text-gray-200';
+                                    })()} ${isReadOnly ? 'cursor-not-allowed' : ''}`}
+                                >
+                                    {renderTextWithTags()}
+                                </div>
+                            )}
+                        </div>
 
                         {item.isPending && (
                             <div className="flex-shrink-0 text-blue-400 dark:text-blue-500 animate-in fade-in duration-300" title="Syncing...">

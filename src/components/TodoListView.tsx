@@ -11,6 +11,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { Confetti } from './Confetti';
 import { useTranslation } from 'react-i18next';
 import { InlineAutocompleteInput } from './InlineAutocompleteInput';
+import { getUniqueTags, extractTags, getTagColorClass } from '../utils/tags';
+
 
 
 export const TodoListView: React.FC = React.memo(function TodoListView() {
@@ -22,6 +24,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     const [suggestions, setSuggestions] = useState<(typeof itemHistory)>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [completedAccordionOpen, setCompletedAccordionOpen] = useState(false);
+    const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
     const list: List | undefined = lists.find((l) => l.id === defaultListId);
 
@@ -49,7 +52,15 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
 
     const sortedItems = React.useMemo(() => {
         if (!list) return [];
-        const items = [...list.items];
+        let items = [...list.items];
+
+        if (selectedTag) {
+            items = items.filter(item => {
+                const tags = extractTags(item.text).map(t => t.toLowerCase());
+                return tags.includes(selectedTag.toLowerCase());
+            });
+        }
+
         if (sortBy === 'alphabetical') {
             items.sort((a, b) => a.text.localeCompare(b.text));
         } else if (sortBy === 'completed') {
@@ -62,7 +73,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
             });
         }
         return items;
-    }, [list, sortBy]);
+    }, [list, sortBy, selectedTag]);
 
     // Autocomplete Logic
     useEffect(() => {
@@ -186,6 +197,41 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                 </div>
             </div>
 
+            {/* Tag Filter Bar */}
+            {(() => {
+                const tags = getUniqueTags(list?.items || []);
+                if (tags.length === 0 && !selectedTag) return null;
+                
+                return (
+                    <div className="flex flex-wrap gap-2 mb-4 animate-in fade-in slide-in-from-top-2">
+                        {tags.map(tag => {
+                            const colorClass = getTagColorClass(tag);
+                            const isSelected = selectedTag === tag;
+                            return (
+                                <button
+                                    key={tag}
+                                    onClick={() => setSelectedTag(isSelected ? null : tag)}
+                                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+                                        isSelected 
+                                            ? `${colorClass} ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900 shadow-md transform scale-105` 
+                                            : `${colorClass} bg-opacity-70 hover:bg-opacity-100 hover:shadow-sm`
+                                    }`}
+                                >
+                                    {tag}
+                                </button>
+                            );
+                        })}
+                        {selectedTag && !tags.includes(selectedTag) && (
+                            <button
+                                onClick={() => setSelectedTag(null)}
+                                className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${getTagColorClass(selectedTag)} ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900 shadow-md flex items-center gap-1`}
+                            >
+                                {selectedTag} <span className="opacity-75 hover:opacity-100">✕</span>
+                            </button>
+                        )}
+                    </div>
+                );
+            })()}
 
             {/* Active Items */}
             {(() => {
@@ -281,6 +327,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                         placeholder={t('lists.addItemPlaceholder')}
                                         className="w-full pl-10 pr-4 py-3 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none font-medium"
                                         inputPaddingClass="pl-10"
+                                        autoFocus={true}
                                     />
                                     {showSuggestions && suggestions.length > 0 && (
                                         <div className="absolute bottom-full left-0 right-0 mb-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-2xl z-50 overflow-hidden max-h-60 overflow-y-auto animate-in slide-in-from-bottom-2 duration-200">
