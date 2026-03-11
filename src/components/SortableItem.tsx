@@ -71,7 +71,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onToggle, onDe
                 parts.push(
                     <span 
                         key={`tag-${i}`} 
-                        className={`inline-block px-1.5 py-0.5 mx-0.5 rounded text-xs font-semibold ${getTagColorClass(tag)}`}
+                        className={`inline-block px-2.5 py-0.5 mx-1 rounded-full text-xs font-medium ${getTagColorClass(tag)}`}
                     >
                         {tag}
                     </span>

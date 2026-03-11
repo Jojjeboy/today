@@ -24,7 +24,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     const [suggestions, setSuggestions] = useState<(typeof itemHistory)>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [completedAccordionOpen, setCompletedAccordionOpen] = useState(false);
-    const [selectedTag, setSelectedTag] = useState<string | null>(null);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
     const list: List | undefined = lists.find((l) => l.id === defaultListId);
 
@@ -54,10 +54,11 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
         if (!list) return [];
         let items = [...list.items];
 
-        if (selectedTag) {
+        if (selectedTags.length > 0) {
             items = items.filter(item => {
-                const tags = extractTags(item.text).map(t => t.toLowerCase());
-                return tags.includes(selectedTag.toLowerCase());
+                const itemTags = extractTags(item.text).map(t => t.toLowerCase());
+                // Item must have ALL selected tags (AND filtering)
+                return selectedTags.every(selectedTag => itemTags.includes(selectedTag.toLowerCase()));
             });
         }
 
@@ -73,7 +74,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
             });
         }
         return items;
-    }, [list, sortBy, selectedTag]);
+    }, [list, sortBy, selectedTags]);
 
     // Autocomplete Logic
     useEffect(() => {
@@ -200,17 +201,25 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
             {/* Tag Filter Bar */}
             {(() => {
                 const tags = getUniqueTags(list?.items || []);
-                if (tags.length === 0 && !selectedTag) return null;
+                if (tags.length === 0 && selectedTags.length === 0) return null;
+                
+                const toggleTag = (tag: string) => {
+                    setSelectedTags(prev => 
+                        prev.includes(tag) 
+                            ? prev.filter(t => t !== tag) 
+                            : [...prev, tag]
+                    );
+                };
                 
                 return (
                     <div className="flex flex-wrap gap-2 mb-4 animate-in fade-in slide-in-from-top-2">
                         {tags.map(tag => {
                             const colorClass = getTagColorClass(tag);
-                            const isSelected = selectedTag === tag;
+                            const isSelected = selectedTags.includes(tag);
                             return (
                                 <button
                                     key={tag}
-                                    onClick={() => setSelectedTag(isSelected ? null : tag)}
+                                    onClick={() => toggleTag(tag)}
                                     className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
                                         isSelected 
                                             ? `${colorClass} ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900 shadow-md transform scale-105` 
@@ -221,12 +230,25 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                 </button>
                             );
                         })}
-                        {selectedTag && !tags.includes(selectedTag) && (
+                        {selectedTags.some(tag => !tags.includes(tag)) && (
+                            // Render selected tags that are no longer in any active items (e.g. they were from completed items or deleted)
+                            selectedTags.filter(tag => !tags.includes(tag)).map(tag => (
+                                <button
+                                    key={tag}
+                                    onClick={() => toggleTag(tag)}
+                                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${getTagColorClass(tag)} ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900 shadow-md flex items-center gap-1`}
+                                >
+                                    {tag} <span className="opacity-75 hover:opacity-100">✕</span>
+                                </button>
+                            ))
+                        )}
+                        {selectedTags.length > 0 && (
                             <button
-                                onClick={() => setSelectedTag(null)}
-                                className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${getTagColorClass(selectedTag)} ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900 shadow-md flex items-center gap-1`}
+                                onClick={() => setSelectedTags([])}
+                                className="px-3 py-1 rounded-full text-sm font-medium transition-colors bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+                                aria-label="Clear filters"
                             >
-                                {selectedTag} <span className="opacity-75 hover:opacity-100">✕</span>
+                                {t('lists.clearFilters', 'Clear filter')}
                             </button>
                         )}
                     </div>
