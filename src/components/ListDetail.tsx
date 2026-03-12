@@ -8,6 +8,8 @@ import { SortableItem } from './SortableItem';
 import { Plus, ChevronLeft, Settings, RotateCcw, ChevronDown, Trash2, Edit2, Pin } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { Modal } from './Modal';
+import { InlineAutocompleteInput } from './InlineAutocompleteInput';
+import { MAX_ITEM_LENGTH } from '../constants';
 
 import { useTranslation } from 'react-i18next';
 
@@ -554,16 +556,19 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
 
             {!list?.archived && (
                 <div className="relative">
-                     <form onSubmit={handleAddItem} className="flex gap-2">
+                    <form onSubmit={handleAddItem} className="flex gap-2 items-start bg-white dark:bg-gray-800 p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 focus-within:ring-2 focus-within:ring-blue-500/50 transition-all">
                         <div className="relative flex-1">
-                            <input
-                                type="text"
+                            <Plus className="absolute left-3 top-4 text-gray-400 pointer-events-none z-10" size={20} />
+                            <InlineAutocompleteInput
+                                id="add-item-input"
                                 value={newItemText}
-                                onChange={(e) => setNewItemText(e.target.value)}
+                                onChange={setNewItemText}
+                                onSubmit={handleAddItem}
+                                suggestions={suggestions}
                                 placeholder={t('lists.addItemPlaceholder')}
-                                className="w-full p-3 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                                onFocus={() => newItemText && setShowSuggestions(true)}
+                                className="w-full pl-10 pr-4 py-3 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none font-medium"
+                                inputPaddingClass="pl-10"
+                                maxLength={MAX_ITEM_LENGTH}
                             />
                             {showSuggestions && suggestions.length > 0 && (
                                 <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 overflow-hidden max-h-60 overflow-y-auto">
@@ -573,6 +578,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
                                          return (
                                             <button
                                                 key={suggestion.id}
+                                                type="button"
                                                 onClick={() => handleSuggestionClick(suggestion.text)}
                                                 className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center justify-between group transition-colors"
                                             >
@@ -593,13 +599,15 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
                         </div>
                         <button
                             type="submit"
-                            className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-md transition-colors"
+                            disabled={!newItemText.trim()}
+                            className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:grayscale self-center"
                         >
                             <Plus />
                         </button>
                         <button
+                            type="button"
                             onClick={() => setSettingsOpen(true)}
-                            className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-300"
+                            className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-300 self-center"
                         >
                             <Settings size={20} />
                         </button>

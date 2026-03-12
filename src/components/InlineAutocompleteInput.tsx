@@ -10,6 +10,7 @@ interface InlineAutocompleteInputProps {
     autoFocus?: boolean;
     inputPaddingClass?: string; // Padding class to align shadow text (e.g., "pl-10")
     id?: string;
+    maxLength?: number;
 }
 
 export const InlineAutocompleteInput: React.FC<InlineAutocompleteInputProps> = ({
@@ -21,10 +22,19 @@ export const InlineAutocompleteInput: React.FC<InlineAutocompleteInputProps> = (
     className = '',
     autoFocus = false,
     inputPaddingClass = 'px-4',
-    id
+    id,
+    maxLength
 }) => {
-    const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLTextAreaElement>(null);
     const [showTooltip, setShowTooltip] = useState(false);
+
+    // Auto-resize logic
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.style.height = 'auto';
+            inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
+        }
+    }, [value]);
 
     // Get the top suggestion that matches current input
     const topSuggestion = suggestions.length > 0 && value.trim()
@@ -37,12 +47,12 @@ export const InlineAutocompleteInput: React.FC<InlineAutocompleteInputProps> = (
         : '';
 
     // Handle Tab key or Right Arrow to complete
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if ((e.key === 'Tab' || e.key === 'ArrowRight') && shadowText) {
             e.preventDefault();
             onChange(topSuggestion!.text);
             setShowTooltip(false);
-        } else if (e.key === 'Enter') {
+        } else if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             onSubmit();
         }
@@ -77,25 +87,33 @@ export const InlineAutocompleteInput: React.FC<InlineAutocompleteInputProps> = (
                 style={{ zIndex: 0 }}
             >
                 {/* Debug border can be added here if needed: border border-red-500 */}
-                <div className={`${inputPaddingClass} text-gray-400 dark:text-gray-500 select-none whitespace-pre overflow-hidden w-full font-medium`}>
+                <div className={`${inputPaddingClass} text-gray-400 dark:text-gray-500 select-none whitespace-pre-wrap break-words overflow-hidden w-full font-medium leading-normal pt-[13px]`}>
                     <span className="opacity-0">{value}</span>
                     <span>{shadowText}</span>
                 </div>
             </div>
 
             {/* Actual input */}
-            <input
+            <textarea
                 id={id}
                 ref={inputRef}
-                type="text"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder}
                 autoFocus={autoFocus}
-                className={`relative z-10 bg-transparent ${className}`}
+                maxLength={maxLength}
+                rows={1}
+                className={`relative z-10 bg-transparent resize-none overflow-hidden leading-normal ${className}`}
                 style={{ backgroundColor: 'transparent' }} // Force transparency
             />
+
+            {/* Character counter if near limit */}
+            {maxLength && value.length > maxLength * 0.8 && (
+                <div className="absolute right-3 -bottom-5 text-[10px] font-bold text-gray-400 animate-in fade-in duration-300">
+                    {value.length}/{maxLength}
+                </div>
+            )}
 
             {/* Tap target for mobile (invisible overlay on shadow text) */}
             {shadowText && (

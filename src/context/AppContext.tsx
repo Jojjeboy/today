@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { List, ListDB, Item, Todo, ListSettings, Section, Category, HistoryItem } from '../types';
+import { MAX_ITEM_LENGTH } from '../constants';
 
 type Priority = 'low' | 'medium' | 'high';
 import { useToast } from './ToastContext';
@@ -205,7 +206,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const itemOrder = items.map(i => i.id);
  
         items.forEach(item => {
-            itemsMap[item.id] = item;
+            const truncatedItem = { ...item, text: item.text.substring(0, MAX_ITEM_LENGTH) };
+            itemsMap[item.id] = truncatedItem;
         });
         if (isLegacyArray) {
             // Full overwrite to move to map paradigm
@@ -224,7 +226,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
             // Add fields to update
             items.forEach(item => {
-                 updates[`items.${item.id}`] = item;
+                 const truncatedItem = { ...item, text: item.text.substring(0, MAX_ITEM_LENGTH) };
+                 updates[`items.${item.id}`] = truncatedItem;
             });
 
             // Add fields to delete natively

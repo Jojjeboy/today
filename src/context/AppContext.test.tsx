@@ -78,7 +78,8 @@ describe('AppContext', () => {
         expect(mockAddItem).toHaveBeenCalledWith(expect.objectContaining({
             name: 'New List',
             categoryId: 'cat1',
-            items: []
+            items: {},
+            itemOrder: []
         }));
     });
 

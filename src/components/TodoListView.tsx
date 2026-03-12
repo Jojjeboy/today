@@ -12,6 +12,7 @@ import { Confetti } from './Confetti';
 import { useTranslation } from 'react-i18next';
 import { InlineAutocompleteInput } from './InlineAutocompleteInput';
 import { getUniqueTags, extractTags, getTagColorClass } from '../utils/tags';
+import { MAX_ITEM_LENGTH } from '../constants';
 
 
 
@@ -350,6 +351,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                         className="w-full pl-10 pr-4 py-3 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none font-medium"
                                         inputPaddingClass="pl-10"
                                         autoFocus={true}
+                                        maxLength={MAX_ITEM_LENGTH}
                                     />
                                     {showSuggestions && suggestions.length > 0 && (
                                         <div className="absolute bottom-full left-0 right-0 mb-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-2xl z-50 overflow-hidden max-h-60 overflow-y-auto animate-in slide-in-from-bottom-2 duration-200">

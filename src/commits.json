@@ -1,5 +1,15 @@
 [
   {
+    "hash": "65c7ddb85eab0e58dbf38bd0e1c0241aa2a52216",
+    "date": "2026-03-12 06:28:52 +0100",
+    "message": "feat: Introduce `AppContext` and shared types, and update markdown documentation."
+  },
+  {
+    "hash": "9a54161aa0a1430f2de787961535173e3efc7a3c",
+    "date": "2026-03-11 14:09:18 +0100",
+    "message": "feat: Introduce Todo list view, tag utilities, and commit data files."
+  },
+  {
     "hash": "e112e252f5b808312c7da317a8d2f40df3e8d1ad",
     "date": "2026-03-11 13:22:49 +0100",
     "message": "mc"

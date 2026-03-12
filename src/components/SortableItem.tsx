@@ -11,6 +11,7 @@ import {
     Type as ListType,
 } from 'react-swipeable-list';
 import { getTagColorClass, extractTags } from '../utils/tags';
+import { MAX_ITEM_LENGTH } from '../constants';
 import 'react-swipeable-list/dist/styles.css';
 
 interface SortableItemProps {
@@ -24,7 +25,15 @@ interface SortableItemProps {
 export const SortableItem: React.FC<SortableItemProps> = ({ item, onToggle, onDelete, onEdit, disabled }) => {
     const [localText, setLocalText] = React.useState(item.text);
     const [isEditing, setIsEditing] = React.useState(false);
-    const inputRef = React.useRef<HTMLInputElement>(null);
+    const inputRef = React.useRef<HTMLTextAreaElement>(null);
+
+    // Auto-resize logic for editing
+    React.useEffect(() => {
+        if (isEditing && inputRef.current) {
+            inputRef.current.style.height = 'auto';
+            inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
+        }
+    }, [isEditing, localText]);
 
     React.useEffect(() => {
         setLocalText(item.text);
@@ -155,20 +164,32 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onToggle, onDe
                             })()}
                         </button>
 
-                        <div className="flex-1 min-w-0 flex items-center h-full">
+                        <div className="flex-1 min-w-0 flex items-center h-full relative">
                             {isEditing && !isReadOnly ? (
-                                <input
-                                    ref={inputRef}
-                                    type="text"
-                                    value={localText}
-                                    onChange={(e) => setLocalText(e.target.value)}
-                                    onBlur={handleBlur}
-                                    onKeyDown={handleKeyDown}
-                                    aria-label="Edit item text"
-                                    className="w-full bg-transparent outline-none p-1 text-gray-700 dark:text-gray-200"
-                                    onMouseDown={(e) => e.stopPropagation()}
-                                    onTouchStart={(e) => e.stopPropagation()}
-                                />
+                                <div className="w-full relative">
+                                    <textarea
+                                        ref={inputRef}
+                                        value={localText}
+                                        onChange={(e) => setLocalText(e.target.value)}
+                                        onBlur={handleBlur}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && !e.shiftKey) {
+                                                handleKeyDown(e);
+                                            }
+                                        }}
+                                        aria-label="Edit item text"
+                                        maxLength={MAX_ITEM_LENGTH}
+                                        rows={1}
+                                        className="w-full bg-transparent outline-none p-1 text-gray-700 dark:text-gray-200 resize-none overflow-hidden leading-normal"
+                                        onMouseDown={(e) => e.stopPropagation()}
+                                        onTouchStart={(e) => e.stopPropagation()}
+                                    />
+                                    {localText.length > MAX_ITEM_LENGTH * 0.8 && (
+                                        <div className="absolute right-0 -bottom-4 text-[9px] font-bold text-gray-400 animate-in fade-in duration-300">
+                                            {localText.length}/{MAX_ITEM_LENGTH}
+                                        </div>
+                                    )}
+                                </div>
                             ) : (
                                 <div
                                     onClick={(e) => {
