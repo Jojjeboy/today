@@ -20,10 +20,11 @@ interface UseFirestoreSyncResult<T> {
 }
 
 /**
- * Custom hook for syncing a Firestore collection with React state
- * @param collectionPath - Path to the Firestore collection (e.g., 'users/{uid}/categories')
- * @param userId - The authenticated user's ID
- * @returns Object with data, loading state, error, and CRUD operations
+ * Custom hook för att synkronisera en Firestore-collection med React state.
+ * Den här hooken lyssnar på ändringar i realtid och uppdaterar 'data' automatiskt.
+ * @param collectionPath - Sökväg till Firestore-collection (t.ex. 'users/{uid}/categories').
+ * @param userId - Den inloggade användarens ID.
+ * @returns Objekt med data, loading-status, felmeddelanden och CRUD-operationer.
  */
 export function useFirestoreSync<T extends { id: string }>(
     collectionPath: string,

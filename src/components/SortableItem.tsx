@@ -130,13 +130,46 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onToggle, onDe
         <div
             ref={setNodeRef}
             style={style}
-            className={`relative group ${isDragging ? 'z-50' : ''}`}
+            className={`relative group todo-item-row ${isDragging ? 'z-50' : ''}`}
+            tabIndex={disabled ? -1 : 0}
+            aria-label={`Todo item: ${item.text}`}
+            onKeyDown={(e) => {
+                // Ignore keys if we are in editing mode (the textarea handles its own keys)
+                // Om vi editerar (textarea är öppen) så låter vi den sköta sina egna tangenter.
+                if (isEditing) return;
+
+                if (e.key === ' ') {
+                    // Mellanslag växlar om en todo är färdig eller inte.
+                    e.preventDefault();
+                    if (onToggle) onToggle(item.id);
+                } else if (e.key === 'ArrowDown') {
+                    // Pil ner flyttar fokus till nästa todo i listan.
+                    e.preventDefault();
+                    const allItems = Array.from(document.querySelectorAll('.todo-item-row')) as HTMLElement[];
+                    const currentIndex = allItems.indexOf(e.currentTarget);
+                    if (currentIndex < allItems.length - 1) {
+                        allItems[currentIndex + 1].focus();
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    // Pil upp flyttar fokus till föregående todo.
+                    e.preventDefault();
+                    const allItems = Array.from(document.querySelectorAll('.todo-item-row')) as HTMLElement[];
+                    const currentIndex = allItems.indexOf(e.currentTarget);
+                    if (currentIndex > 0) {
+                        allItems[currentIndex - 1].focus();
+                    }
+                } else if (e.key === 'Enter') {
+                    // Enter startar editering av todon.
+                    e.preventDefault();
+                    if (!isReadOnly) setIsEditing(true);
+                }
+            }}
         >
             <SwipeableList threshold={0.25} type={ListType.IOS}>
                 <SwipeableListItem
                     trailingActions={trailingActions()}
                 >
-                    <div className="w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
+                    <div className="w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm focus-within:ring-2 focus-within:ring-primary/50 group-focus:ring-2 group-focus:ring-primary/50 outline-none transition-all">
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();

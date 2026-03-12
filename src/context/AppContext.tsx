@@ -210,10 +210,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             itemsMap[item.id] = truncatedItem;
         });
         if (isLegacyArray) {
-            // Full overwrite to move to map paradigm
+            // Full overwrite to move to map paradigm. 
+            // Den här delen migrerar gamla listor (arrays) till det nya Map-formatet.
             await listsSync.updateItem(listId, { items: itemsMap, itemOrder } as unknown as Partial<ListDB>);
         } else {
-            // Granular dot notation updates for existing maps to prevent overwrites
+            // Granular dot notation updates for existing maps to prevent overwrites.
+            // Här skickar vi bara de ändringar som faktiskt skett. Genom att använda punkt-notation 
+            // (t.ex. "items.id") kan vi uppdatera enstaka todos utan att skriva över hela listan.
             const dbMap = (existingList.items as Record<string, Item>) || {};
             
             // Find what was deleted
