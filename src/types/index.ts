@@ -34,7 +34,8 @@ export interface ListSettings {
 export interface List {
   id: string;
   name: string;
-  items: Item[];
+  items: Item[]; // UI always expects an array
+  itemOrder?: string[]; // Drives ordering of the Map-based items
   sections?: Section[];
   categoryId: string; // Kept for legacy/default support
   order?: number;
@@ -42,6 +43,14 @@ export interface List {
   lastAccessedAt?: string;
   archived?: boolean; // Kept for interface compatibility
   isPending?: boolean;
+}
+
+/**
+ * Database-specific representation of a list.
+ * items can be a Map (Record) for granular offline-friendly updates.
+ */
+export interface ListDB extends Omit<List, 'items'> {
+    items: Item[] | Record<string, Item>;
 }
 
 export interface Commit {

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { List, Item, Todo, ListSettings, Section, Category, HistoryItem } from '../types';
+import { List, ListDB, Item, Todo, ListSettings, Section, Category, HistoryItem } from '../types';
 
 type Priority = 'low' | 'medium' | 'high';
 import { useToast } from './ToastContext';
@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 import { useFirestoreSync } from '../hooks/useFirestoreSync';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { deleteField } from 'firebase/firestore';
 
 interface AppContextType {
     lists: List[]; // Keep lists array for now but we only use one
@@ -74,7 +75,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user } = useAuth();
 
-    const listsSync = useFirestoreSync<List>('users/{uid}/lists', user?.uid);
+    const listsSync = useFirestoreSync<ListDB>('users/{uid}/lists', user?.uid);
     const todosSync = useFirestoreSync<Todo>('users/{uid}/notes', user?.uid);
     const categoriesSync = useFirestoreSync<Category>('users/{uid}/categories', user?.uid);
     const historySync = useFirestoreSync<HistoryItem>('users/{uid}/history', user?.uid);
@@ -83,6 +84,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const { showToast } = useToast();
     const { t } = useTranslation();
     const [isCreatingDefault, setIsCreatingDefault] = React.useState(false);
+
+    // Helper: Convert Document from DB into our local UI format (always array)
+    const listsWithArrayItems = React.useMemo(() => {
+        return listsSync.data.map((list) => {
+            if (Array.isArray(list.items)) {
+                return list as List & { items: Item[] };
+            }
+            
+            // Convert map to array locally for UI based on itemOrder
+            const itemsMap = (list.items as Record<string, Item>) || {};
+            const order = list.itemOrder || [];
+            
+            // Filter out ids that no longer exist in the map
+            const sortedItems = order
+                .filter(id => itemsMap[id])
+                .map(id => itemsMap[id]);
+            
+            // Catch any items that might be in map but not in order array
+            const unorderedIds = Object.keys(itemsMap).filter(id => !order.includes(id));
+            const unorderedItems = unorderedIds.map(id => itemsMap[id]);
+            
+            return {
+                ...list,
+                items: [...sortedItems, ...unorderedItems]
+            } as List;
+        });
+    }, [listsSync.data]);
 
     // Ensure we have at least one list
     useEffect(() => {
@@ -153,7 +181,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     const updateListAccess = async (id: string) => {
-        const list = listsSync.data.find((l: List) => l.id === id);
+        const list = listsWithArrayItems.find((l: List) => l.id === id);
         if (list) {
             const lastAccessed = list.lastAccessedAt ? new Date(list.lastAccessedAt).getTime() : 0;
             const now = Date.now();
@@ -165,11 +193,52 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     const updateListItems = async (listId: string, items: Item[]) => {
-        await listsSync.updateItem(listId, { items });
+        // Find existing list to deduce if we need to migrate from array to map
+        const existingList = listsSync.data.find((l) => l.id === listId);
+        if (!existingList) return;
+
+        const isLegacyArray = Array.isArray(existingList.items);
+        
+        // If it's still an array, overwrite as an array to avoid breaking legacy before full migration
+        // But let's actually migrate it right now!
+        const itemsMap: Record<string, Item> = {};
+        const itemOrder = items.map(i => i.id);
+ 
+        items.forEach(item => {
+            itemsMap[item.id] = item;
+        });
+        if (isLegacyArray) {
+            // Full overwrite to move to map paradigm
+            await listsSync.updateItem(listId, { items: itemsMap, itemOrder } as unknown as Partial<ListDB>);
+        } else {
+            // Granular dot notation updates for existing maps to prevent overwrites
+            const dbMap = (existingList.items as Record<string, Item>) || {};
+            
+            // Find what was deleted
+            const currentIds = new Set(itemOrder);
+            const deletedIds = Object.keys(dbMap).filter(id => !currentIds.has(id));
+            
+            const updates: Record<string, Item | string[] | ReturnType<typeof deleteField>> = {
+                itemOrder
+            };
+
+            // Add fields to update
+            items.forEach(item => {
+                 updates[`items.${item.id}`] = item;
+            });
+
+            // Add fields to delete natively
+            deletedIds.forEach(id => {
+                 updates[`items.${id}`] = deleteField();
+            });
+
+            // We explicitly bypass typing here for the field-path updates
+            await listsSync.updateItem(listId, updates as unknown as Partial<ListDB>);
+        }
     };
 
     const deleteItem = async (listId: string, itemId: string) => {
-        const list = listsSync.data.find((l: List) => l.id === listId);
+        const list = listsWithArrayItems.find((l: List) => l.id === listId);
         if (list) {
             const itemToDelete = list.items.find((i: Item) => i.id === itemId);
             if (itemToDelete) {
@@ -179,7 +248,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 showToast(t('toasts.itemDeleted'), 'info', {
                     label: t('common.undo'),
                     onClick: async () => {
-                        const currentList = listsSync.data.find((l: List) => l.id === listId);
+                        const currentList = listsWithArrayItems.find((l: List) => l.id === listId);
                         if (currentList) {
                             await updateListItems(listId, [...currentList.items, itemToDelete]);
                         }
@@ -226,7 +295,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     const addSection = async (listId: string, name: string) => {
-        const list = listsSync.data.find((l: List) => l.id === listId);
+        const list = listsWithArrayItems.find((l: List) => l.id === listId);
         if (list) {
             const sections = list.sections || [];
             const newSection: Section = {
@@ -245,7 +314,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     const updateSection = async (listId: string, sectionId: string, name: string) => {
-        const list = listsSync.data.find((l: List) => l.id === listId);
+        const list = listsWithArrayItems.find((l: List) => l.id === listId);
         if (list && list.sections) {
             const updatedSections = list.sections.map(section =>
                 section.id === sectionId ? { ...section, name } : section
@@ -255,16 +324,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     const deleteSection = async (listId: string, sectionId: string) => {
-        const list = listsSync.data.find((l: List) => l.id === listId);
+        const list = listsWithArrayItems.find((l: List) => l.id === listId);
         if (list) {
             const updatedSections = (list.sections || []).filter(s => s.id !== sectionId);
             const updatedItems = list.items.map(item =>
                 item.sectionId === sectionId ? { ...item, sectionId: undefined } : item
             );
 
+            await updateListItems(listId, updatedItems);
+            // After triggering items update (which handles map vs array automatically), manually update sections
             await listsSync.updateItem(listId, {
-                sections: updatedSections,
-                items: updatedItems
+                sections: updatedSections
             });
         }
     };
@@ -278,7 +348,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             id: uuidv4(),
             name,
             categoryId,
-            items: [],
+            items: {} as Record<string, Item>, // Init as map right away!
+            itemOrder: [],
             lastAccessedAt: new Date().toISOString()
         });
     };
@@ -333,12 +404,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         await Promise.all(deletePromises);
     };
 
-    const defaultListId = listsSync.data.length > 0 ? listsSync.data[0].id : undefined;
+    const defaultListId = listsWithArrayItems.length > 0 ? listsWithArrayItems[0].id : undefined;
 
     return (
         <AppContext.Provider
             value={{
-                lists: listsSync.data,
+                lists: listsWithArrayItems as List[],
                 defaultListId,
                 theme,
                 updateListName,
