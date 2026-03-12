@@ -60,6 +60,10 @@ Skriptet (som använder bildbehandlingsbiblioteket `sharp`) kommer automatiskt a
 
 ---
 
+## Arkitektur & Dokumentation
+
+För en djupare genomgång av hur appen är uppbyggd tekniskt, se vår **[Arkitekturöversikt (Svenska)](file:///c:/kod/today/architecture.md)**. Denna guide är särskilt framtagen för att hjälpa nya utvecklare att snabbt förstå systemets hjärna och dataflöden.
+
 ## Teknisk Stack
 
 Detta projekt använder moderna webbstandarder och verktyg:
