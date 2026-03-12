@@ -94,7 +94,8 @@
         "states": {
             "unresolved": "Olöst",
             "completed": "Avklarad"
-        }
+        },
+        "addSubtask": "Lägg till deluppgift"
     },
     "todos": {
         "title": "Att göra",

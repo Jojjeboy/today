@@ -5,6 +5,8 @@ export interface Item {
   state?: "unresolved" | "ongoing" | "completed";
   sectionId?: string;
   isPending?: boolean;
+  /** Optional: if set, this item is a subtask of the item with this id. */
+  parentId?: string;
 }
 
 export interface Section {

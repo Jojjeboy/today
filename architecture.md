@@ -23,7 +23,7 @@ Välkommen till den kompletta tekniska guiden för "Today". Detta dokument är f
 ## 2. Datamodell & Typer
 All data definieras i [src/types/index.ts](/src/types/index.ts).
 
-- **Item**: Representerar en enskild todo (id, text, completed status).
+- **Item**: Representerar en enskild uppgift (id, text, completed status). Kan ha ett valfritt `parentId`-fält som pekar på en annan items `id` – i så fall är det en *deluppgift* (subtask). Hierarkin är alltid maxtvå nivåer djup (förälder → barn).
 - **List**: En samling av Items, inklusive metadata som kategori och inställningar.
 - **ListDB**: Den interna representationen som lagras i Firestore. Märk väl att `items` här lagras som en `Record<string, Item>` (en Map) istället för en array.
 
@@ -57,8 +57,8 @@ Se funktionen `updateListItems` i `AppContext.tsx`. Den beräknar exakt vilka ra
 ## 5. Komponentarkitektur
 Vi använder en modulär struktur med fokus på återanvändbarhet.
 
-- **[TodoListView.tsx](src/components/TodoListView.tsx)**: Huvudvyn för den dagliga listan. Hanterar filtrering på taggar och sortering.
-- **[SortableItem.tsx](src/components/SortableItem.tsx)**: Representerar en rad i listan. Innehåller logik för swipe-to-delete, editering och keyboard-navigering.
+- **[TodoListView.tsx](src/components/TodoListView.tsx)**: Huvudvyn för den dagliga listan. Hanterar filtrering på taggar och sortering. Filtrerar ut `parentId`-satta items ur den draggbara listan och skickar dem som `subtasks` till respektive förälder-`SortableItem`. Hanterar `handleAddSubtask` som skapar ett nytt Item med `parentId` satt.
+- **[SortableItem.tsx](src/components/SortableItem.tsx)**: Representerar en rad i listan. Innehåller logik för swipe-to-delete, editering och keyboard-navigering. Renderar en inbäddad `SubtaskRow`-lista (indragen med vänsterkant) för sina barn. En `ListTree`-knapp triggar `onAddSubtask` – synlig på hover (desktop) eller alltid (mobil via Tailwind `sm:opacity-0`).
 - **[InlineAutocompleteInput.tsx](src/components/InlineAutocompleteInput.tsx)**: En smart textruta som föreslår ord baserat på historik och hanterar taggar.
 
 ---

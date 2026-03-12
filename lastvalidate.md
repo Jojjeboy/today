@@ -1,4 +1,4 @@
-# Validation Output (2026-03-12T05:52:44.680Z)
+# Validation Output (2026-03-12T15:02:42.077Z)
 
 ```bash
 
@@ -11,20 +11,20 @@ transforming...
 rendering chunks...
 computing gzip size...
 [2mdist/[22m[32mmanifest.webmanifest                        [39m[1m[2m    0.49 kB[22m[1m[22m
+[2mdist/[22m[32mindex.html                                  [39m[1m[2m    0.68 kB[22m[1m[22m[2m │ gzip:   0.37 kB[22m
+[2mdist/[22m[35massets/index-BtOxkxqp.css                   [39m[1m[2m   56.47 kB[22m[1m[22m[2m │ gzip:   9.16 kB[22m
+[2mdist/[22m[36massets/workbox-window.prod.es5-BIl4cyR9.js  [39m[1m[2m    5.76 kB[22m[1m[22m[2m │ gzip:   2.37 kB[22m
+[2mdist/[22m[36massets/index-D0CM1bwr.js                    [39m[1m[33m1,305.72 kB[39m[22m[2m │ gzip: 399.55 kB[22m
 [33m
 (!) Some chunks are larger than 1300 kB after minification. Consider:
 - Using dynamic import() to code-split the application
 - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
-[2mdist/[22m[32mindex.html                                  [39m[1m[2m    0.68 kB[22m[1m[22m[2m │ gzip:   0.38 kB[22m
-[2mdist/[22m[35massets/index-8NDt_5wi.css                   [39m[1m[2m   55.39 kB[22m[1m[22m[2m │ gzip:   9.04 kB[22m
-[2mdist/[22m[36massets/workbox-window.prod.es5-BIl4cyR9.js  [39m[1m[2m    5.76 kB[22m[1m[22m[2m │ gzip:   2.37 kB[22m
-[2mdist/[22m[36massets/index-lMN6uqRQ.js                    [39m[1m[33m1,301.32 kB[39m[22m[2m │ gzip: 398.73 kB[22m
-[32m✓ built in 10.68s[39m
+[32m✓ built in 1m[39m
 
 PWA v1.2.0
 mode      generateSW
-precache  8 entries (1331.19 KiB)
+precache  8 entries (1336.55 KiB)
 files generated
   dist/sw.js
   dist/workbox-1ef09536.js
@@ -45,31 +45,6 @@ files generated
       [2mCoverage enabled with [22m[33mv8[39m
 
  [32m✓[39m src/utils/tags.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 7[2mms[22m[39m
-[90mstderr[2m | src/context/ToastContext.test.tsx[2m > [22m[2mToastContext[2m > [22m[2mshowToast adds a toast
-[22m[39mAn update to ToastProvider inside a test was not wrapped in act(...).
-
-When testing, code that causes React state updates should be wrapped into act(...):
-
-act(() => {
-  /* fire events that update state */
-});
-/* assert on the output */
-
-This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
-
-[90mstderr[2m | src/context/ToastContext.test.tsx[2m > [22m[2mToastContext[2m > [22m[2mremoveToast removes a toast by id
-[22m[39mAn update to ToastProvider inside a test was not wrapped in act(...).
-
-When testing, code that causes React state updates should be wrapped into act(...):
-
-act(() => {
-  /* fire events that update state */
-});
-/* assert on the output */
-
-This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
-
- [32m✓[39m src/context/ToastContext.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 47[2mms[22m[39m
 [90mstderr[2m | src/hooks/useFirestoreSync.test.ts[2m > [22m[2museFirestoreSync[2m > [22m[2mshould handle snapshot errors
 [22m[39mFirestore sync error for users/test-user-id/test-collection: Error: Firestore error
     at C:/kod/today/src/hooks/useFirestoreSync.test.ts:102:27
@@ -122,11 +97,36 @@ This ensures that you're testing the behavior the user would see in the browser.
     at trace [90m(file:///C:/kod/today/[39mnode_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
     at runTest [90m(file:///C:/kod/today/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1653:12[90m)[39m
 
- [32m✓[39m src/context/AuthContext.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 61[2mms[22m[39m
- [32m✓[39m src/hooks/useFirestoreSync.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 100[2mms[22m[39m
- [32m✓[39m src/components/Modal.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 149[2mms[22m[39m
- [32m✓[39m src/components/SearchResults.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 78[2mms[22m[39m
- [32m✓[39m src/context/AppContext.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+ [32m✓[39m src/context/AuthContext.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+ [32m✓[39m src/hooks/useFirestoreSync.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 83[2mms[22m[39m
+ [32m✓[39m src/components/Modal.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 119[2mms[22m[39m
+[90mstderr[2m | src/context/ToastContext.test.tsx[2m > [22m[2mToastContext[2m > [22m[2mshowToast adds a toast
+[22m[39mAn update to ToastProvider inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | src/context/ToastContext.test.tsx[2m > [22m[2mToastContext[2m > [22m[2mremoveToast removes a toast by id
+[22m[39mAn update to ToastProvider inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [32m✓[39m src/context/ToastContext.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32m✓[39m src/components/SearchResults.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 68[2mms[22m[39m
+ [32m✓[39m src/context/AppContext.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 49[2mms[22m[39m
 [90mstderr[2m | src/components/ListDetail.test.tsx[2m > [22m[2mListDetail[2m > [22m[2madds a new item
 [22m[39mAn update to ListDetail2 inside a test was not wrapped in act(...).
 
@@ -159,19 +159,19 @@ act(() => {
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
 
- [32m✓[39m src/components/ListDetail.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 155[2mms[22m[39m
+ [32m✓[39m src/components/ListDetail.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 118[2mms[22m[39m
 
 [2m Test Files [22m [1m[32m8 passed[39m[22m[90m (8)[39m
 [2m      Tests [22m [1m[32m45 passed[39m[22m[90m (45)[39m
-[2m   Start at [22m 06:53:11
-[2m   Duration [22m 2.52s[2m (transform 1.33s, setup 2.28s, import 2.99s, tests 664ms, environment 7.57s)[22m
+[2m   Start at [22m 16:06:26
+[2m   Duration [22m 42.51s[2m (transform 2.00s, setup 51.34s, import 26.56s, tests 546ms, environment 238.17s)[22m
 
 JUNIT report written to C:/kod/today/dist/test-results.xml
 [34m % [39m[2mCoverage report from [22m[33mv8[39m
 -------------------|---------|----------|---------|---------|-------------------
 File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
 -------------------|---------|----------|---------|---------|-------------------
-All files          |   52.18 |    36.28 |   41.81 |   53.92 |                   
+All files          |   51.71 |    36.28 |   41.44 |   53.54 |                   
  src               |     100 |      100 |     100 |     100 |                   
   constants.ts     |     100 |      100 |     100 |     100 |                   
   firebase.ts      |     100 |      100 |     100 |     100 |                   
@@ -181,8 +181,8 @@ All files          |   52.18 |    36.28 |   41.81 |   53.92 |
   ListDetail.tsx   |   43.49 |       31 |   28.57 |   45.25 | ...0-855,872-1124 
   Modal.tsx        |    91.3 |    88.23 |   85.71 |   90.47 | 35-36             
   ...chResults.tsx |     100 |    77.77 |     100 |     100 | 61-69,94-102      
- src/context       |   50.22 |    27.38 |   40.84 |    52.7 |                   
-  AppContext.tsx   |   41.43 |    24.35 |      25 |   44.78 | ...03,407-410,458 
+ src/context       |   48.69 |    27.38 |   39.72 |   51.45 |                   
+  AppContext.tsx   |   39.78 |    24.35 |   24.13 |   43.37 | ...08,412-415,463 
   AuthContext.tsx  |      80 |       75 |     100 |   79.16 | 38-39,47-48,62    
   ToastContext.tsx |   94.73 |       50 |     100 |   93.75 | 49                
  src/hooks         |   82.45 |    36.66 |     100 |   81.13 |                   

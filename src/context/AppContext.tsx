@@ -248,7 +248,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (list) {
             const itemToDelete = list.items.find((i: Item) => i.id === itemId);
             if (itemToDelete) {
-                const newItems = list.items.filter((i: Item) => i.id !== itemId);
+                // Also collect any subtasks that belong to this parent
+                const subtasksToDelete = list.items.filter((i: Item) => i.parentId === itemId);
+                const idsToRemove = new Set([itemId, ...subtasksToDelete.map(i => i.id)]);
+                const deletedItems = [itemToDelete, ...subtasksToDelete];
+
+                const newItems = list.items.filter((i: Item) => !idsToRemove.has(i.id));
                 await updateListItems(listId, newItems);
 
                 showToast(t('toasts.itemDeleted'), 'info', {
@@ -256,7 +261,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                     onClick: async () => {
                         const currentList = listsWithArrayItems.find((l: List) => l.id === listId);
                         if (currentList) {
-                            await updateListItems(listId, [...currentList.items, itemToDelete]);
+                            await updateListItems(listId, [...currentList.items, ...deletedItems]);
                         }
                     }
                 });

@@ -7,6 +7,7 @@ En snabb, offline-first "progressive web application" (PWA) för uppgiftshanteri
 - **PWA (Installationsbar)**: Kan installeras på Android, iOS och datorer för en plattformsoberoende och app-liknande upplevelse. Hanterar offline-lägen fullt ut via Service Workers.
 - **Offline First**: Alla uppgifter synkas lokalt först och i bakgrunden mot Firebase när en nätverksuppkoppling finns, vilket garanterar att appen alltid fungerar oavsett täckning.
 - **Dra och Släpp (Drag & Drop)**: Sortera och prioritera dina uppgifter enkelt genom att dra dem dit du vill ha dem.
+- **Deluppgifter (Subtasks)**: Klicka på deluppgiftsknappen på valfritt listobjekt för att skapa hierarkiska underuppgifter. Stöds på både mobil och desktop.
 - **Aktivitetslogg & Statistik**: Håll koll på vad du har åstadkommit över tid och få insikter i din produktivitet.
 - **Dark/Light Mode**: Ett visuellt tilltalande gränssnitt byggt med Tailwind CSS som automatiskt respekterar ditt systems färginställningar.
 - **Flerspråkigt (i18n)**: Stöd för flera språk direkt samt enkelt att skala upp med fler språk.

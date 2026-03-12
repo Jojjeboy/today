@@ -94,7 +94,9 @@
         "states": {
             "unresolved": "Unresolved",
             "completed": "Completed"
-        }
+        },
+        "addSubtask": "Add subtask",
+        "clearFilters": "Clear filter"
     },
     "todos": {
         "title": "To-do",

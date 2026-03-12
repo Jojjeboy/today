@@ -183,6 +183,11 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
         await updateListItems(list.id, newItems);
     };
 
+    const handleAddSubtask = async (parentId: string) => {
+        const newSubtask: Item = { id: uuidv4(), text: '', completed: false, parentId };
+        await updateListItems(list.id, [...list.items, newSubtask]);
+    };
+
     return (
         <div className="flex flex-col min-h-[calc(100vh-8rem)] relative pb-40 md:pb-32">
             {showConfetti && <Confetti trigger={true} />}
@@ -258,8 +263,9 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
 
             {/* Active Items */}
             {(() => {
-                const activeItems = sortedItems.filter(i => !i.completed);
-                const completedItems = sortedItems.filter(i => i.completed);
+                // Only top-level items in the main sorted/draggable list
+            const activeItems = sortedItems.filter(i => !i.completed && !i.parentId);
+                const completedItems = sortedItems.filter(i => i.completed && !i.parentId);
 
                 return (
                     <>
@@ -273,6 +279,10 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                             onToggle={handleToggle}
                                             onDelete={handleDelete}
                                             onEdit={handleEdit}
+                                            subtasks={list.items
+                                                .filter(i => i.parentId === item.id)
+                                                .map(i => ({ ...i, isPending: i.isPending || list.isPending }))}
+                                            onAddSubtask={handleAddSubtask}
                                         />
                                     ))}
                                 </div>
@@ -321,6 +331,9 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                                     onToggle={handleToggle}
                                                     onDelete={handleDelete}
                                                     onEdit={handleEdit}
+                                                    subtasks={list.items
+                                                        .filter(i => i.parentId === item.id)
+                                                        .map(i => ({ ...i, isPending: i.isPending || list.isPending }))}
                                                     disabled={true} // Disable drag for completed items
                                                 />
                                             </div>
