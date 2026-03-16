@@ -206,7 +206,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const itemOrder = items.map(i => i.id);
  
         items.forEach(item => {
-            const truncatedItem = { ...item, text: item.text.substring(0, MAX_ITEM_LENGTH) };
+            const truncatedItem: any = { ...item, text: item.text.substring(0, MAX_ITEM_LENGTH) };
+            if (truncatedItem.parentId === undefined) {
+                delete truncatedItem.parentId;
+            }
             itemsMap[item.id] = truncatedItem;
         });
         if (isLegacyArray) {
@@ -229,7 +232,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
             // Add fields to update
             items.forEach(item => {
-                 const truncatedItem = { ...item, text: item.text.substring(0, MAX_ITEM_LENGTH) };
+                 const truncatedItem: any = { ...item, text: item.text.substring(0, MAX_ITEM_LENGTH) };
+                 // Firestore throws an error if we try to save `undefined` directly.
+                 // The parentId property is often undefined for root tasks.
+                 if (truncatedItem.parentId === undefined) {
+                     delete truncatedItem.parentId;
+                 }
                  updates[`items.${item.id}`] = truncatedItem;
             });
 
@@ -338,9 +346,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const list = listsWithArrayItems.find((l: List) => l.id === listId);
         if (list) {
             const updatedSections = (list.sections || []).filter(s => s.id !== sectionId);
-            const updatedItems = list.items.map(item =>
-                item.sectionId === sectionId ? { ...item, sectionId: undefined } : item
-            );
+            const updatedItems = list.items.map(item => {
+                if (item.sectionId === sectionId) {
+                    const newItem = { ...item };
+                    delete newItem.sectionId;
+                    return newItem;
+                }
+                return item;
+            });
 
             await updateListItems(listId, updatedItems);
             // After triggering items update (which handles map vs array automatically), manually update sections
