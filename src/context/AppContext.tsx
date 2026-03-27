@@ -81,7 +81,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const categoriesSync = useFirestoreSync<Category>('users/{uid}/categories', user?.uid);
     const historySync = useFirestoreSync<HistoryItem>('users/{uid}/history', user?.uid);
 
-    const [theme, setTheme] = useState<'light' | 'dark'>('light');
+    const [theme, setTheme] = useState<'light' | 'dark'>('dark');
     const { showToast } = useToast();
     const { t } = useTranslation();
     const [isCreatingDefault, setIsCreatingDefault] = React.useState(false);
@@ -147,29 +147,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const savedTheme = localStorage.getItem('theme') as 'light' | 'dark';
         if (savedTheme) {
             setTheme(savedTheme);
-        }
-
-        const manualTheme = localStorage.getItem('manual_theme');
-        if (!manualTheme) {
-            try {
-                // Use Europe/Stockholm time
-                const formatter = new Intl.DateTimeFormat('en-US', {
-                    timeZone: 'Europe/Stockholm',
-                    hour: 'numeric',
-                    hour12: false
-                });
-
-                const hour = parseInt(formatter.format(new Date()), 10);
-
-                // Light mode between 08:00 and 18:00
-                const isDay = hour >= 8 && hour < 18;
-                setTheme(isDay ? 'light' : 'dark');
-            } catch (error) {
-                console.error("Error setting time-based theme:", error);
-                const hour = new Date().getHours();
-                const isDay = hour >= 8 && hour < 18;
-                setTheme(isDay ? 'light' : 'dark');
-            }
+        } else {
+            // Default to dark mode for new users
+            setTheme('dark');
+            document.documentElement.classList.add('dark');
         }
     }, []);
 

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useBlocker, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import type { Item, ListSettings, List } from '../types';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent, useDroppable } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
-import { Plus, ChevronLeft, Settings, RotateCcw, ChevronDown, Trash2, Edit2, Pin } from 'lucide-react';
+import { Plus, ChevronLeft, Settings, RotateCcw, ChevronDown, Trash2, Edit2, Pin, X } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { Modal } from './Modal';
 import { InlineAutocompleteInput } from './InlineAutocompleteInput';
@@ -26,7 +27,7 @@ const DroppableSection = ({ sectionId, children }: { sectionId: string, children
 export const ListDetail: React.FC = React.memo(function ListDetail() {
     const { t } = useTranslation();
     const { listId } = useParams<{ listId: string }>();
-    const { lists, updateListItems, deleteItem, updateListName, updateListSettings, updateListAccess, archiveList, addSection, updateSection, deleteSection, itemHistory, addToHistory } = useApp();
+    const { lists, updateListItems, deleteItem, updateListName, updateListSettings, updateListAccess, archiveList, addSection, updateSection, deleteSection, itemHistory, addToHistory, deleteFromHistory } = useApp();
     const [newItemText, setNewItemText] = useState('');
     const [uncheckModalOpen, setUncheckModalOpen] = useState(false);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -554,66 +555,6 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
                 </div>
             )}
 
-            {!list?.archived && (
-                <div className="relative">
-                    <form onSubmit={handleAddItem} className="flex gap-2 items-start bg-white dark:bg-gray-800 p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 focus-within:ring-2 focus-within:ring-blue-500/50 transition-all">
-                        <div className="relative flex-1">
-                            <Plus className="absolute left-3 top-4 text-gray-400 pointer-events-none z-10" size={20} />
-                            <InlineAutocompleteInput
-                                id="add-item-input"
-                                value={newItemText}
-                                onChange={setNewItemText}
-                                onSubmit={handleAddItem}
-                                suggestions={suggestions}
-                                placeholder={t('lists.addItemPlaceholder')}
-                                className="w-full pl-10 pr-4 py-3 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none font-medium"
-                                inputPaddingClass="pl-10"
-                                maxLength={MAX_ITEM_LENGTH}
-                            />
-                            {showSuggestions && suggestions.length > 0 && (
-                                <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 overflow-hidden max-h-60 overflow-y-auto">
-                                    {suggestions.map((suggestion) => {
-                                         const existingCompleted = list?.items.find(i => i.text.toLowerCase() === suggestion.text.toLowerCase() && i.completed);
-                                         
-                                         return (
-                                            <button
-                                                key={suggestion.id}
-                                                type="button"
-                                                onClick={() => handleSuggestionClick(suggestion.text)}
-                                                className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center justify-between group transition-colors"
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <RotateCcw size={14} className="text-gray-400 group-hover:text-blue-500" />
-                                                    <span className="text-gray-700 dark:text-gray-200">{suggestion.text}</span>
-                                                </div>
-                                                {existingCompleted && (
-                                                    <span className="text-xs text-blue-500 font-medium bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-full">
-                                                        {t('lists.restore', 'Restore')}
-                                                    </span>
-                                                )}
-                                            </button>
-                                         );
-                                    })}
-                                </div>
-                            )}
-                        </div>
-                        <button
-                            type="submit"
-                            disabled={!newItemText.trim()}
-                            className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:grayscale self-center"
-                        >
-                            <Plus />
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setSettingsOpen(true)}
-                            className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-300 self-center"
-                        >
-                            <Settings size={20} />
-                        </button>
-                    </form>
-                </div>
-            )}
 
             {list?.archived && (
                 <div className="flex justify-end">
@@ -836,7 +777,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
                         </div>
                         <button
                             onClick={() => updateSettings({ threeStageMode: !threeStageMode })}
-                            className={`w-12 h-6 rounded-full transition-colors relative ${threeStageMode ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'}`}
+                            className={`w-12 h-6 rounded-full transition-colors relative ${threeStageMode ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-800'}`}
                         >
                             <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${threeStageMode ? 'translate-x-6' : ''}`} />
                         </button>
@@ -853,7 +794,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
                         </div>
                         <button
                             onClick={() => updateSettings({ pinned: !list?.settings?.pinned })}
-                            className={`w-12 h-6 rounded-full transition-colors relative ${list?.settings?.pinned ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'}`}
+                            className={`w-12 h-6 rounded-full transition-colors relative ${list?.settings?.pinned ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-800'}`}
                         >
                             <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${list?.settings?.pinned ? 'translate-x-6' : ''}`} />
                         </button>
@@ -878,7 +819,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
                                         }`}
                                 >
                                     <span className="capitalize">{t(`lists.sort.${mode}`)}</span>
-                                    {sortBy === mode && <div className="w-2 h-2 rounded-full bg-blue-500" />}
+                                    {sortBy === mode && <div className="w-2 h-2 rounded-full bg-primary" />}
                                 </button>
                             ))}
                         </div>
@@ -1132,6 +1073,89 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
                     </p>
                 </div>
             </Modal>
+
+            {!list?.archived && document.body && createPortal(
+                <div className="fixed bottom-0 left-0 right-0 md:left-72 bg-gradient-to-t from-[#f4f5f7] via-[#f4f5f7]/95 to-[#f4f5f7]/0 dark:from-[#2D3540] dark:via-[#2D3540]/95 dark:to-[#2D3540]/0 pt-10 pb-8 px-6 z-[100] transition-all duration-300 pointer-events-none">
+                    <div className="max-w-3xl mx-auto pointer-events-auto">
+                        <div className="relative group">
+                            <form onSubmit={(e) => { e.preventDefault(); handleAddItem(e); }} className="flex gap-3 items-center bg-white/80 dark:bg-black/20 backdrop-blur-xl p-2 pl-4 rounded-[32px] border border-white/50 dark:border-white/10 shadow-xl transition-all">
+                                <div className="relative flex-1">
+                                    <Plus className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors pointer-events-none z-10" size={22} />
+                                    <InlineAutocompleteInput
+                                        id="add-item-input"
+                                        value={newItemText}
+                                        onChange={setNewItemText}
+                                        onSubmit={() => handleAddItem()}
+                                        suggestions={suggestions}
+                                        placeholder={t('lists.addItemPlaceholder')}
+                                        className="w-full pl-8 pr-4 py-3 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none font-medium text-lg"
+                                        inputPaddingClass="pl-8"
+                                        maxLength={MAX_ITEM_LENGTH}
+                                    />
+                                    {showSuggestions && suggestions.length > 0 && (
+                                        <div className="absolute bottom-full left-0 right-0 mb-4 bg-white dark:bg-[#1c1c1e] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-2xl z-50 overflow-hidden max-h-60 overflow-y-auto animate-in slide-in-from-bottom-2 duration-200">
+                                            {suggestions.map((suggestion) => {
+                                                const normalize = (s: string) => s.trim().toLowerCase().normalize("NFC");
+                                                const existingItem = list?.items.find(i => normalize(i.text) === normalize(suggestion.text));
+                                                const isCompleted = existingItem?.completed;
+                                                const isActive = existingItem && !isCompleted;
+
+                                                return (
+                                                    <div key={suggestion.id} className="w-full flex items-center group transition-colors">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleSuggestionClick(suggestion.text)}
+                                                            className="flex-1 text-left px-5 py-3 hover:bg-white/5 flex items-center justify-between transition-colors"
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <RotateCcw size={16} className="text-gray-400 group-hover:text-primary transition-colors" />
+                                                                <span className={`font-medium ${isActive ? 'text-gray-400 dark:text-gray-500 decoration-gray-400' : 'text-gray-700 dark:text-gray-200'}`}>
+                                                                    {suggestion.text}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                {isCompleted && (
+                                                                    <span className="text-[10px] text-primary font-bold bg-primary/10 px-2 py-1 rounded-full uppercase tracking-tighter">
+                                                                        {t('lists.restore', 'Restore')}
+                                                                    </span>
+                                                                )}
+                                                                {isActive && (
+                                                                    <span className="text-[10px] text-green-500 font-bold bg-green-500/10 px-2 py-1 rounded-full uppercase tracking-tighter">
+                                                                        {t('lists.added', 'Added')}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                deleteFromHistory(suggestion.id);
+                                                            }}
+                                                            className="px-4 py-3 text-gray-400 hover:text-red-500 transition-colors"
+                                                            title={t('common.remove', 'Remove')}
+                                                        >
+                                                            <X size={16} />
+                                                        </button>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={!newItemText.trim()}
+                                    className="p-3 bg-primary text-[#161618] rounded-xl hover:opacity-90 shadow-lg shadow-primary/25 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale"
+                                >
+                                    <Plus size={22} strokeWidth={2.5} />
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
         </div>
     );
 });

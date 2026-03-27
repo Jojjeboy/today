@@ -6,26 +6,24 @@ import type { Item, List } from '../types';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
-import { Plus, RotateCcw, ChevronDown, CloudUpload } from 'lucide-react';
+import { Plus, RotateCcw, ChevronDown, CloudUpload, X } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { Confetti } from './Confetti';
 import { useTranslation } from 'react-i18next';
 import { InlineAutocompleteInput } from './InlineAutocompleteInput';
-import { getUniqueTags, extractTags, getTagColorClass } from '../utils/tags';
 import { MAX_ITEM_LENGTH } from '../constants';
 
 
 
 export const TodoListView: React.FC = React.memo(function TodoListView() {
     const { t } = useTranslation();
-    const { lists, defaultListId, updateListItems, deleteItem, updateListAccess, loading, itemHistory, addToHistory } = useApp();
+    const { lists, defaultListId, updateListItems, deleteItem, updateListAccess, loading, itemHistory, addToHistory, deleteFromHistory } = useApp();
     const { showToast } = useToast();
     const [newItemText, setNewItemText] = useState('');
     const [showConfetti, setShowConfetti] = useState(false);
     const [suggestions, setSuggestions] = useState<(typeof itemHistory)>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [completedAccordionOpen, setCompletedAccordionOpen] = useState(false);
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
     const list: List | undefined = lists.find((l) => l.id === defaultListId);
 
@@ -53,15 +51,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
 
     const sortedItems = React.useMemo(() => {
         if (!list) return [];
-        let items = [...list.items];
-
-        if (selectedTags.length > 0) {
-            items = items.filter(item => {
-                const itemTags = extractTags(item.text).map(t => t.toLowerCase());
-                // Item must have ALL selected tags (AND filtering)
-                return selectedTags.every(selectedTag => itemTags.includes(selectedTag.toLowerCase()));
-            });
-        }
+        const items = [...list.items];
 
         if (sortBy === 'alphabetical') {
             items.sort((a, b) => a.text.localeCompare(b.text));
@@ -75,7 +65,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
             });
         }
         return items;
-    }, [list, sortBy, selectedTags]);
+    }, [list, sortBy]);
 
     // Autocomplete Logic
     useEffect(() => {
@@ -204,62 +194,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                 </div>
             </div>
 
-            {/* Tag Filter Bar */}
-            {(() => {
-                const tags = getUniqueTags(list?.items || []);
-                if (tags.length === 0 && selectedTags.length === 0) return null;
-                
-                const toggleTag = (tag: string) => {
-                    setSelectedTags(prev => 
-                        prev.includes(tag) 
-                            ? prev.filter(t => t !== tag) 
-                            : [...prev, tag]
-                    );
-                };
-                
-                return (
-                    <div className="flex flex-wrap gap-2 mb-4 animate-in fade-in slide-in-from-top-2">
-                        {tags.map(tag => {
-                            const colorClass = getTagColorClass(tag);
-                            const isSelected = selectedTags.includes(tag);
-                            return (
-                                <button
-                                    key={tag}
-                                    onClick={() => toggleTag(tag)}
-                                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
-                                        isSelected 
-                                            ? `${colorClass} ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900 shadow-md transform scale-105` 
-                                            : `${colorClass} bg-opacity-70 hover:bg-opacity-100 hover:shadow-sm`
-                                    }`}
-                                >
-                                    {tag}
-                                </button>
-                            );
-                        })}
-                        {selectedTags.some(tag => !tags.includes(tag)) && (
-                            // Render selected tags that are no longer in any active items (e.g. they were from completed items or deleted)
-                            selectedTags.filter(tag => !tags.includes(tag)).map(tag => (
-                                <button
-                                    key={tag}
-                                    onClick={() => toggleTag(tag)}
-                                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${getTagColorClass(tag)} ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900 shadow-md flex items-center gap-1`}
-                                >
-                                    {tag} <span className="opacity-75 hover:opacity-100">✕</span>
-                                </button>
-                            ))
-                        )}
-                        {selectedTags.length > 0 && (
-                            <button
-                                onClick={() => setSelectedTags([])}
-                                className="px-3 py-1 rounded-full text-sm font-medium transition-colors bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-                                aria-label="Clear filters"
-                            >
-                                {t('lists.clearFilters', 'Clear filter')}
-                            </button>
-                        )}
-                    </div>
-                );
-            })()}
+
 
             {/* Active Items */}
             {(() => {
@@ -346,14 +281,14 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                 );
             })()}
 
-            {/* Floating Persistent Bottom Bar */}
+            {/* Floating Persistent Bottom Bar ("Add Inbox") */}
             {document.body && createPortal(
-                <div className="fixed bottom-0 left-0 right-0 md:left-72 bg-gradient-to-t from-white via-white/95 to-white/0 dark:from-gray-900 dark:via-gray-900/95 dark:to-gray-900/0 pt-10 pb-6 px-4 z-[100] transition-all duration-300 pointer-events-none">
-                    <div className="max-w-4xl mx-auto pointer-events-auto">
+                <div className="fixed bottom-0 left-0 right-0 md:left-72 bg-gradient-to-t from-[#f4f5f7] via-[#f4f5f7]/95 to-[#f4f5f7]/0 dark:from-[#2D3540] dark:via-[#2D3540]/95 dark:to-[#2D3540]/0 pt-10 pb-8 px-6 z-[100] transition-all duration-300 pointer-events-none">
+                    <div className="max-w-3xl mx-auto pointer-events-auto">
                         <div className="relative group">
-                            <form onSubmit={handleAddItem} className="flex gap-3 items-center bg-white dark:bg-gray-800 p-2 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 dark:border-gray-700 focus-within:ring-2 focus-within:ring-blue-500/50 transition-all">
+                            <form onSubmit={handleAddItem} className="flex gap-3 items-center bg-white/80 dark:bg-black/20 backdrop-blur-xl p-2 pl-4 rounded-[32px] border border-white/50 dark:border-white/10 shadow-xl transition-all">
                                 <div className="relative flex-1">
-                                    <Plus className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors pointer-events-none z-10" size={20} />
+                                    <Plus className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors pointer-events-none z-10" size={22} />
                                     <InlineAutocompleteInput
                                         id="add-item-input"
                                         value={newItemText}
@@ -361,13 +296,12 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                         onSubmit={() => handleAddItem()}
                                         suggestions={suggestions}
                                         placeholder={t('lists.addItemPlaceholder')}
-                                        className="w-full pl-10 pr-4 py-3 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none font-medium"
-                                        inputPaddingClass="pl-10"
-                                        autoFocus={true}
+                                        className="w-full pl-8 pr-4 py-3 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none font-medium text-lg"
+                                        inputPaddingClass="pl-8"
                                         maxLength={MAX_ITEM_LENGTH}
                                     />
                                     {showSuggestions && suggestions.length > 0 && (
-                                        <div className="absolute bottom-full left-0 right-0 mb-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-2xl z-50 overflow-hidden max-h-60 overflow-y-auto animate-in slide-in-from-bottom-2 duration-200">
+                                        <div className="absolute bottom-full left-0 right-0 mb-4 bg-white dark:bg-[#1c1c1e] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-2xl z-50 overflow-hidden max-h-60 overflow-y-auto animate-in slide-in-from-bottom-2 duration-200">
                                             {suggestions.map((suggestion) => {
                                                 const normalize = (s: string) => s.trim().toLowerCase().normalize("NFC");
                                                 const existingItem = list?.items.find(i => normalize(i.text) === normalize(suggestion.text));
@@ -375,29 +309,43 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                                 const isActive = existingItem && !isCompleted;
 
                                                 return (
-                                                    <button
-                                                        key={suggestion.id}
-                                                        type="button"
-                                                        onClick={() => handleSuggestionClick(suggestion.text)}
-                                                        className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center justify-between group transition-colors"
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            <RotateCcw size={14} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
-                                                            <span className={`font-medium ${isActive ? 'text-gray-400 dark:text-gray-500 decoration-gray-400' : 'text-gray-700 dark:text-gray-200'}`}>
-                                                                {suggestion.text}
-                                                            </span>
-                                                        </div>
-                                                        {isCompleted && (
-                                                            <span className="text-[10px] text-blue-500 font-bold bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-full uppercase tracking-tighter">
-                                                                {t('lists.restore', 'Restore')}
-                                                            </span>
-                                                        )}
-                                                        {isActive && (
-                                                            <span className="text-[10px] text-green-600 font-bold bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-full uppercase tracking-tighter">
-                                                                {t('lists.added', 'Added')}
-                                                            </span>
-                                                        )}
-                                                    </button>
+                                                    <div key={suggestion.id} className="w-full flex items-center group transition-colors">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleSuggestionClick(suggestion.text)}
+                                                            className="flex-1 text-left px-5 py-3 hover:bg-gray-100/50 dark:hover:bg-white/5 flex items-center justify-between transition-colors"
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <RotateCcw size={16} className="text-gray-400 group-hover:text-primary transition-colors" />
+                                                                <span className={`font-medium ${isActive ? 'text-gray-400 dark:text-gray-500 decoration-gray-400' : 'text-gray-700 dark:text-gray-200'}`}>
+                                                                    {suggestion.text}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                {isCompleted && (
+                                                                    <span className="text-[10px] text-primary font-bold bg-primary/10 px-2 py-1 rounded-full uppercase tracking-tighter">
+                                                                        {t('lists.restore', 'Restore')}
+                                                                    </span>
+                                                                )}
+                                                                {isActive && (
+                                                                    <span className="text-[10px] text-green-500 font-bold bg-green-500/10 px-2 py-1 rounded-full uppercase tracking-tighter">
+                                                                        {t('lists.added', 'Added')}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                deleteFromHistory(suggestion.id);
+                                                            }}
+                                                            className="px-4 py-3 text-gray-400 hover:text-red-500 transition-colors"
+                                                            title={t('common.remove', 'Remove')}
+                                                        >
+                                                            <X size={16} />
+                                                        </button>
+                                                    </div>
                                                 );
                                             })}
                                         </div>
@@ -406,7 +354,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                 <button
                                     type="submit"
                                     disabled={!newItemText.trim()}
-                                    className="p-3 bg-primary text-white rounded-xl hover:bg-primary/90 shadow-lg shadow-primary/25 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale"
+                                    className="p-3 bg-primary text-[#161618] rounded-xl hover:opacity-90 shadow-lg shadow-primary/25 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale"
                                 >
                                     <Plus size={22} strokeWidth={2.5} />
                                 </button>

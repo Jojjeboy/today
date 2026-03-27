@@ -46,9 +46,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNavClick }) => {
             {/* Logo Area */}
             <div className="p-6">
                 <Link to="/" onClick={onNavClick} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                    <img src="/today/icon-192.png?v=6" alt="Logo" className="w-20 h-20 rounded-2xl shadow-sm" />
                     <h1 className="text-3xl font-bold text-primary">
-                        today
+                        Idag
                     </h1>
                 </Link>
             </div>
@@ -63,7 +62,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNavClick }) => {
                         className={({ isActive }) => `
                             flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group
                             ${isActive
-                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium'
+                                ? 'bg-primary/10 text-primary font-medium'
                                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                             }
                         `}
@@ -106,7 +105,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNavClick }) => {
                                 <Link
                                     to="/activity"
                                     onClick={onNavClick}
-                                    className="transition-colors hover:text-blue-500 dark:hover:text-blue-400 truncate"
+                                    className="transition-colors hover:text-primary truncate"
                                     title={latestCommit.message}
                                 >
                                     {latestCommit.message.length > 20

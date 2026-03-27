@@ -9,9 +9,9 @@ export default {
     extend: {
       colors: {
         primary: {
-          light: '#60a5fa',
-          DEFAULT: '#2563eb',
-          dark: '#1d4ed8',
+          light: '#a7f3d0', // emerald-200 approx
+          DEFAULT: 'rgb(119 248 162)', // User provided mint green
+          dark: '#10b981', // emerald-500 approx
         }
       }
     },

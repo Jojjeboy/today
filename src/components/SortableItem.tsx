@@ -2,7 +2,7 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Item } from '../types';
-import { Trash2, GripVertical, Circle, CheckCircle2, CloudUpload, Plus, ListTree } from 'lucide-react';
+import { Trash2, GripVertical, CloudUpload, Plus, ListTree } from 'lucide-react';
 import {
     SwipeableList,
     SwipeableListItem,
@@ -10,7 +10,6 @@ import {
     TrailingActions,
     Type as ListType,
 } from 'react-swipeable-list';
-import { getTagColorClass, extractTags } from '../utils/tags';
 import { MAX_ITEM_LENGTH } from '../constants';
 import { useTranslation } from 'react-i18next';
 import 'react-swipeable-list/dist/styles.css';
@@ -67,24 +66,26 @@ const SubtaskRow: React.FC<SubtaskRowProps> = ({ item, isPending, onToggle, onDe
     };
 
     return (
-        <div className="flex items-center gap-2 pl-2 pr-1 py-1.5 group/sub rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
+        <div className="flex items-center gap-3 pl-3 pr-2 py-2 group/sub rounded-xl hover:bg-gray-50/50 dark:hover:bg-[#18181b]/40 transition-colors">
             {/* Indent marker */}
             <div className="w-4 flex-shrink-0 flex justify-center">
                 <div className="w-0.5 h-full min-h-[1rem] bg-gray-200 dark:bg-gray-600 rounded-full" />
             </div>
 
-            {/* Toggle button */}
             <button
                 onClick={(e) => { e.stopPropagation(); onToggle?.(item.id); }}
-                className="flex-shrink-0 transition-colors"
+                className="flex-shrink-0 transition-transform active:scale-90"
                 aria-label={item.completed ? 'Mark subtask as incomplete' : 'Mark subtask as complete'}
                 onMouseDown={(e) => e.stopPropagation()}
                 onTouchStart={(e) => e.stopPropagation()}
             >
-                {item.completed
-                    ? <div className="text-blue-400 hover:text-blue-500"><CheckCircle2 size={18} /></div>
-                    : <div className="text-gray-300 hover:text-gray-400"><Circle size={18} /></div>
-                }
+                {item.completed ? (
+                    <div className="w-4 h-4 rounded-md bg-primary flex items-center justify-center text-black shadow-sm shadow-primary/40">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                ) : (
+                    <div className="w-4 h-4 rounded-md border-2 border-gray-300 dark:border-[#4a5568]"></div>
+                )}
             </button>
 
             {/* Text / edit */}
@@ -193,38 +194,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         }
     }, [isEditing]);
 
-    const renderTextWithTags = () => {
-        if (!localText) return null;
-        const tags = extractTags(localText);
-        if (tags.length === 0) return <span>{localText}</span>;
 
-        let remainingText = localText;
-        const parts: React.ReactNode[] = [];
-
-        tags.forEach((tag, i) => {
-            const index = remainingText.indexOf(tag);
-            if (index > -1) {
-                if (index > 0) {
-                    parts.push(<span key={`text-${i}`}>{remainingText.slice(0, index)}</span>);
-                }
-                parts.push(
-                    <span
-                        key={`tag-${i}`}
-                        className={`inline-block px-2.5 py-0.5 mx-1 rounded-full text-xs font-medium ${getTagColorClass(tag)}`}
-                    >
-                        {tag}
-                    </span>
-                );
-                remainingText = remainingText.slice(index + tag.length);
-            }
-        });
-
-        if (remainingText) {
-            parts.push(<span key="text-end">{remainingText}</span>);
-        }
-
-        return <>{parts}</>;
-    };
 
     const {
         attributes,
@@ -246,7 +216,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                 destructive={true}
                 onClick={() => onDelete && onDelete(item.id)}
             >
-                <div className="flex items-center justify-end px-4 bg-red-500 text-white h-full rounded-r-lg">
+                <div className="flex items-center justify-end px-4 bg-red-500 text-white h-full rounded-r-2xl">
                     <Trash2 size={24} />
                 </div>
             </SwipeAction>
@@ -293,21 +263,24 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                 <SwipeableListItem
                     trailingActions={trailingActions()}
                 >
-                    <div className="w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm focus-within:ring-2 focus-within:ring-primary/50 group-focus:ring-2 group-focus:ring-primary/50 outline-none transition-all">
+                    <div className="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#3d4551] rounded-3xl group-focus:ring-2 group-focus:ring-primary/30 outline-none transition-all shadow-sm">
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
                                 if (onToggle) onToggle(item.id);
                             }}
-                            className={`flex-shrink-0 transition-colors ${isInteractionDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`flex-shrink-0 transition-transform active:scale-90 ${isInteractionDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                             aria-label={item.completed ? "Mark as incomplete" : "Mark as complete"}
                             onMouseDown={(e) => e.stopPropagation()}
                             onTouchStart={(e) => e.stopPropagation()}
                         >
-                            {item.completed
-                                ? <div className="text-blue-500 hover:text-blue-600"><CheckCircle2 size={24} /></div>
-                                : <div className="text-gray-300 hover:text-gray-400"><Circle size={24} /></div>
-                            }
+                            {item.completed ? (
+                                <div className="w-6 h-6 rounded-lg bg-primary flex items-center justify-center text-black shadow-md shadow-primary/40">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </div>
+                            ) : (
+                                <div className="w-6 h-6 rounded-lg border-[2.5px] border-gray-300 dark:border-[#4a5568] hover:border-gray-400 dark:hover:border-[#718096] transition-colors"></div>
+                            )}
                         </button>
 
                         <div className="flex-1 min-w-0 flex items-center h-full relative">
@@ -349,7 +322,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                                         return 'text-gray-700 dark:text-gray-200';
                                     })()} ${isReadOnly ? 'cursor-not-allowed' : ''}`}
                                 >
-                                    {renderTextWithTags()}
+                                    {localText}
                                 </div>
                             )}
                         </div>

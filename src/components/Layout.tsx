@@ -15,7 +15,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
-        <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 overflow-x-hidden">
+        <div className="flex min-h-screen bg-gray-50 dark:bg-[#2D3540] text-gray-900 dark:text-gray-100 transition-colors duration-300 overflow-x-hidden">
             {/* Desktop Sidebar */}
             <aside className="hidden md:flex w-72 flex-shrink-0 sticky top-0 h-screen z-20">
                 <Sidebar />
@@ -28,7 +28,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     onClick={() => setIsMenuOpen(false)}
                 >
                     <div
-                        className="absolute right-0 top-0 bottom-0 w-[280px] bg-white dark:bg-gray-900 animate-in slide-in-from-right duration-300 shadow-2xl"
+                        className="absolute right-0 top-0 bottom-0 w-[280px] bg-white dark:bg-[#2D3540] animate-in slide-in-from-right duration-300 shadow-2xl"
                         onClick={e => e.stopPropagation()}
                     >
                         <div className="p-4 flex justify-end">
@@ -53,9 +53,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-6">
                             <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                                <img src="/today/icon-192.png?v=6" alt="Logo" className="w-16 h-16 rounded-xl shadow-sm" />
                                 <h1 className="text-3xl font-bold text-primary">
-                                    today
+                                   Göra idag    
                                 </h1>
                             </Link>
                         </div>
