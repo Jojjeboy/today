@@ -206,7 +206,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const itemOrder = items.map(i => i.id);
  
         items.forEach(item => {
-            const truncatedItem: any = { ...item, text: item.text.substring(0, MAX_ITEM_LENGTH) };
+            const truncatedItem: Item = { ...item, text: item.text.substring(0, MAX_ITEM_LENGTH) };
             if (truncatedItem.parentId === undefined) {
                 delete truncatedItem.parentId;
             }
@@ -226,14 +226,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             const currentIds = new Set(itemOrder);
             const deletedIds = Object.keys(dbMap).filter(id => !currentIds.has(id));
             
-            const updates: any = {
+            const updates: { itemOrder: string[], items: Record<string, Item | ReturnType<typeof deleteField>> } = {
                 itemOrder,
                 items: {}
             };
 
             // Add fields to update
             items.forEach(item => {
-                 const truncatedItem: any = { ...item, text: item.text.substring(0, MAX_ITEM_LENGTH) };
+                 const truncatedItem: Item = { ...item, text: item.text.substring(0, MAX_ITEM_LENGTH) };
                  // Firestore throws an error if we try to save `undefined` directly.
                  // The parentId property is often undefined for root tasks.
                  if (truncatedItem.parentId === undefined) {
