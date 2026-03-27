@@ -13,13 +13,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // 1. Try to load the user's pasted config from i.env
-const configPath = path.resolve(__dirname, 'i.env');
+const configPath = path.resolve(__dirname, 'pasted_secret_config.js');
 let firebaseConfig = null;
 
 try {
   // Read the raw file
   const rawContent = fs.readFileSync(configPath, 'utf8');
-  
+
   // Extract just the object part using an evaluator or regex 
   // since the file might just contain `const firebaseConfig = { ... }` natively pasted.
   const match = rawContent.match(/{[\s\S]*?}/);
@@ -51,12 +51,12 @@ function getEnvPrefix() {
       if (deps['nuxt']) return 'NUXT_PUBLIC_';
       if (deps['gatsby']) return 'GATSBY_';
       if (deps['@vue/cli-service']) return 'VUE_APP_';
-      if (deps['svelte']) return 'VITE_'; 
+      if (deps['svelte']) return 'VITE_';
     }
   } catch (error) {
     // Ignore error
   }
-  return ''; 
+  return '';
 }
 
 function toSnakeCase(str) {
@@ -77,7 +77,7 @@ const generatedVars = [];
 for (const [key, value] of Object.entries(firebaseConfig)) {
   const snakeKey = toSnakeCase(key);
   const envKey = `${prefix}FIREBASE_${snakeKey}`;
-  
+
   // Match the key and everything after it until a line break
   const regex = new RegExp(`^${envKey}=.*`, 'm');
   if (regex.test(envContent)) {

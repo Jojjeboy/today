@@ -217,17 +217,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             // Den här delen migrerar gamla listor (arrays) till det nya Map-formatet.
             await listsSync.updateItem(listId, { items: itemsMap, itemOrder } as unknown as Partial<ListDB>);
         } else {
-            // Granular dot notation updates for existing maps to prevent overwrites.
-            // Här skickar vi bara de ändringar som faktiskt skett. Genom att använda punkt-notation 
-            // (t.ex. "items.id") kan vi uppdatera enstaka todos utan att skriva över hela listan.
+            // Granular updates for existing maps to prevent overwrites.
+            // Här skickar vi bara de ändringar som faktiskt skett. Eftersom vi använder setDoc(..., { merge: true }),
+            // skickar vi ett nästlat objekt så att det mergas med objektet under "items"-nyckeln i databasen.
             const dbMap = (existingList.items as Record<string, Item>) || {};
             
             // Find what was deleted
             const currentIds = new Set(itemOrder);
             const deletedIds = Object.keys(dbMap).filter(id => !currentIds.has(id));
             
-            const updates: Record<string, Item | string[] | ReturnType<typeof deleteField>> = {
-                itemOrder
+            const updates: any = {
+                itemOrder,
+                items: {}
             };
 
             // Add fields to update
@@ -238,16 +239,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                  if (truncatedItem.parentId === undefined) {
                      delete truncatedItem.parentId;
                  }
-                 updates[`items.${item.id}`] = truncatedItem;
+                 updates.items[item.id] = truncatedItem;
             });
 
             // Add fields to delete natively
             deletedIds.forEach(id => {
-                 updates[`items.${id}`] = deleteField();
+                 updates.items[id] = deleteField();
             });
 
             // We explicitly bypass typing here for the field-path updates
-            await listsSync.updateItem(listId, updates as unknown as Partial<ListDB>);
+            await listsSync.updateItem(listId, updates);
         }
     };
 

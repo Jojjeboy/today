@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "check-any": "eslint . --config eslint.strict.config.ts",
     "validate": "node scripts/run-validate.js",
-    "generate-assets": "node scripts/generate-brand-assets.js"
+    "generate-assets": "node scripts/generate-brand-assets.js",
+    "generate-env": "node scripts/generate-env.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

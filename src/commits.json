@@ -1,5 +1,10 @@
 [
   {
+    "hash": "a9f4b460f2b961bc1311648a1633628289268c9a",
+    "date": "2026-03-16 11:39:22 +0100",
+    "message": "More robust firestorage handling"
+  },
+  {
     "hash": "686571326b687beebd94bc342d762373b34ae8e7",
     "date": "2026-03-12 16:20:44 +0100",
     "message": "feat: Introduce core application context, UI components for list management,"
