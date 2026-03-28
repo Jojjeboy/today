@@ -10,7 +10,7 @@ export default {
       colors: {
         primary: {
           light: '#a7f3d0', // emerald-200 approx
-          DEFAULT: 'rgb(119 248 162)', // User provided mint green
+          DEFAULT: 'rgb(51 177 93)', // User provided mint green
           dark: '#10b981', // emerald-500 approx
         }
       }
