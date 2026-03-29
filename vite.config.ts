@@ -15,7 +15,7 @@ export default defineConfig({
         name: 'Today',
         short_name: 'Today',
         description: 'A simple todo app for today',
-        theme_color: '#ef4444',
+        theme_color: '#ffffff',
         background_color: '#f5f5f7',
         display: 'standalone',
         orientation: 'portrait-primary',
