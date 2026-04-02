@@ -11,6 +11,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { Modal } from './Modal';
 import { InlineAutocompleteInput } from './InlineAutocompleteInput';
 import { MAX_ITEM_LENGTH } from '../constants';
+import { Confetti } from './Confetti';
+import { CelebrationOverlay } from './CelebrationOverlay';
+import { useCelebration } from '../hooks/useCelebration';
+import { useToast } from '../context/ToastContext';
 
 import { useTranslation } from 'react-i18next';
 
@@ -43,6 +47,11 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
     const [suggestions, setSuggestions] = useState<(typeof itemHistory)>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [completedAccordionOpen, setCompletedAccordionOpen] = useState(false);
+    const [showConfetti, setShowConfetti] = useState(false);
+    const [celebrationMessage, setCelebrationMessage] = useState('');
+    const wasAllCompleted = React.useRef<boolean>(false);
+    const { getCelebrationMessage } = useCelebration();
+    const { showToast } = useToast();
     const navigate = useNavigate();
 
     const list: List | undefined = lists.find((l) => l.id === listId);
@@ -206,6 +215,30 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
         setSuggestions(historyMatches.slice(0, 5));
         setShowSuggestions(true);
     }, [newItemText, itemHistory, list?.items]);
+    
+    // CELEBRATION TRIGGER: Watch for list completion
+    useEffect(() => {
+        if (!list || list.items.length === 0) {
+            wasAllCompleted.current = false;
+            return;
+        }
+
+        const isAllCompletedNow = list.items.every(item => item.completed);
+        
+        if (isAllCompletedNow && !wasAllCompleted.current) {
+            // Trigger celebration!
+            const msg = getCelebrationMessage();
+            setCelebrationMessage(msg);
+            setShowConfetti(true);
+            setTimeout(() => {
+                setShowConfetti(false);
+                setCelebrationMessage('');
+                setUncheckModalOpen(true);
+            }, 5000);
+        }
+        
+        wasAllCompleted.current = isAllCompletedNow;
+    }, [list?.items, getCelebrationMessage, showToast]);
 
     if (!list) return <div className="text-center py-10">{t('lists.notFound')}</div>;
 
@@ -295,43 +328,44 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
      * In three-stage mode: unresolved -> prepared -> completed -> unresolved
      */
     const handleToggle = async (itemId: string) => {
-        const newItems = list.items.map(item => {
-            if (item.id !== itemId) return item;
+        const itemToToggle = list.items.find(i => i.id === itemId);
+        if (!itemToToggle) return;
 
-            // Logic for state cycling
-            let newState: 'unresolved' | 'ongoing' | 'completed';
-            let newCompleted: boolean;
+        // Determine new state for the toggled item
+        let newState: 'unresolved' | 'ongoing' | 'completed';
+        let newCompleted: boolean;
 
-            if (threeStageMode) {
-                // Cycle: unresolved -> ongoing -> completed -> unresolved
-                if (item.completed) {
-                    // Was completed, go to unresolved
-                    newState = 'unresolved';
-                    newCompleted = false;
-                } else if (item.state === 'ongoing') {
-                    // Was ongoing, go to completed
-                    newState = 'completed';
-                    newCompleted = true;
-                } else {
-                    // Was unresolved, go to ongoing
-                    newState = 'ongoing';
-                    newCompleted = false;
-                }
+        if (threeStageMode) {
+            if (itemToToggle.completed) {
+                newState = 'unresolved';
+                newCompleted = false;
+            } else if (itemToToggle.state === 'ongoing') {
+                newState = 'completed';
+                newCompleted = true;
             } else {
-                // Normal toggle
-                newCompleted = !item.completed;
-                newState = newCompleted ? 'completed' : 'unresolved';
+                newState = 'ongoing';
+                newCompleted = false;
             }
+        } else {
+            newCompleted = !itemToToggle.completed;
+            newState = newCompleted ? 'completed' : 'unresolved';
+        }
 
-            return { ...item, completed: newCompleted, state: newState };
+        // Recursive function to get all descendant IDs
+        const getDescendantIds = (parentId: string): string[] => {
+            const children = list.items.filter(i => i.parentId === parentId);
+            return [...children.map(c => c.id), ...children.flatMap(c => getDescendantIds(c.id))];
+        };
+
+        const descendantIds = getDescendantIds(itemId);
+
+        const newItems = list.items.map(item => {
+            if (item.id === itemId || descendantIds.includes(item.id)) {
+                return { ...item, completed: newCompleted, state: newState };
+            }
+            return item;
         });
         await updateListItems(list.id, newItems);
-
-        // Check if all items are now completed
-        const allCompleted = newItems.every(item => item.completed);
-        if (allCompleted && newItems.length > 0) {
-            setUncheckModalOpen(true);
-        }
     };
 
     const handleDelete = async (itemId: string) => {
@@ -487,6 +521,8 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
 
     return (
         <div className="space-y-6">
+            {showConfetti && <Confetti trigger={true} />}
+            {celebrationMessage && <CelebrationOverlay message={celebrationMessage} />}
             {/* ... (header code) ... */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-2 flex-1 min-w-0">

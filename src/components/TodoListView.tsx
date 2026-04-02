@@ -9,6 +9,8 @@ import { SortableItem } from './SortableItem';
 import { Plus, RotateCcw, ChevronDown, CloudUpload, X } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { Confetti } from './Confetti';
+import { CelebrationOverlay } from './CelebrationOverlay';
+import { useCelebration } from '../hooks/useCelebration';
 import { useTranslation } from 'react-i18next';
 import { InlineAutocompleteInput } from './InlineAutocompleteInput';
 import { MAX_ITEM_LENGTH } from '../constants';
@@ -21,6 +23,9 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     const { showToast } = useToast();
     const [newItemText, setNewItemText] = useState('');
     const [showConfetti, setShowConfetti] = useState(false);
+    const [celebrationMessage, setCelebrationMessage] = useState('');
+    const wasAllCompleted = React.useRef<boolean>(false);
+    const { getCelebrationMessage } = useCelebration();
     const [suggestions, setSuggestions] = useState<(typeof itemHistory)>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [completedAccordionOpen, setCompletedAccordionOpen] = useState(false);
@@ -89,6 +94,29 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
         setShowSuggestions(true);
     }, [newItemText, itemHistory]);
 
+    // CELEBRATION TRIGGER: Watch for list completion
+    useEffect(() => {
+        if (!list || list.items.length === 0) {
+            wasAllCompleted.current = false;
+            return;
+        }
+
+        const isAllCompletedNow = list.items.every(item => item.completed);
+
+        if (isAllCompletedNow && !wasAllCompleted.current) {
+            // Trigger celebration!
+            const msg = getCelebrationMessage();
+            setCelebrationMessage(msg);
+            setShowConfetti(true);
+            setTimeout(() => {
+                setShowConfetti(false);
+                setCelebrationMessage('');
+            }, 6000);
+        }
+
+        wasAllCompleted.current = isAllCompletedNow;
+    }, [list?.items, getCelebrationMessage, showToast]);
+
     if (loading && !list) {
         return <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div></div>;
     }
@@ -148,18 +176,26 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     };
 
     const handleToggle = async (itemId: string) => {
+        const itemToToggle = list.items.find(i => i.id === itemId);
+        if (!itemToToggle) return;
+        
+        const newCompleted = !itemToToggle.completed;
+
+        // Recursive function to get all descendant IDs
+        const getDescendantIds = (parentId: string): string[] => {
+            const children = list.items.filter(i => i.parentId === parentId);
+            return [...children.map(c => c.id), ...children.flatMap(c => getDescendantIds(c.id))];
+        };
+
+        const descendantIds = getDescendantIds(itemId);
+
         const newItems = list.items.map(item => {
-            if (item.id !== itemId) return item;
-            const newCompleted = !item.completed;
-            return { ...item, completed: newCompleted };
+            if (item.id === itemId || descendantIds.includes(item.id)) {
+                return { ...item, completed: newCompleted };
+            }
+            return item;
         });
         await updateListItems(list.id, newItems);
-
-        const allCompleted = newItems.every(item => item.completed);
-        if (allCompleted && newItems.length > 0) {
-            setShowConfetti(true);
-            setTimeout(() => setShowConfetti(false), 5000); // Stop confetti after 5 seconds
-        }
     };
 
     const handleDelete = async (itemId: string) => {
@@ -180,7 +216,8 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
 
     return (
         <div className="flex flex-col min-h-[calc(100vh-8rem)] relative pb-40 md:pb-32">
-            {showConfetti && <Confetti trigger={true} />}
+            {showConfetti && <Confetti trigger={true} duration={6000} />}
+            {celebrationMessage && <CelebrationOverlay message={celebrationMessage} />}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                     <div className="flex items-center gap-2 group min-w-0 flex-1">

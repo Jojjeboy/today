@@ -263,5 +263,24 @@
             "completedItems": "Klara uppgifter",
             "totalTodos": "Detaljerade to-dos"
         }
+    },
+    "celebration": {
+        "compliments": [
+            "Bra jobbat!",
+            "Snyggt kört!",
+            "Mission accomplished!",
+            "Produktivitetsnivå: Expert!",
+            "Du krossar det!",
+            "Helt fantastiskt!",
+            "Väl gjort!",
+            "Kolla på dig!"
+        ],
+        "niceThings": [
+            "Dags för en välförtjänt paus?",
+            "Du fick det att se enkelt ut!",
+            "Njut av känslan av en tom lista.",
+            "Du gör stora framsteg idag.",
+            "Unna dig något fint!"
+        ]
     }
 }

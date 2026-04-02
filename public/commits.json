@@ -1,5 +1,45 @@
 [
   {
+    "hash": "420d5106618c52d29e8d64dfc2b516e44f9b769b",
+    "date": "2026-03-29 01:32:55 +0100",
+    "message": "Update theme color in vite.config.ts"
+  },
+  {
+    "hash": "1e7df370d9c7c3a2b5d694f4bd26cf8acd427424",
+    "date": "2026-03-28 07:24:53 +0100",
+    "message": "chore: update libraries and refine UI accent color"
+  },
+  {
+    "hash": "aaea6c25ce3db6deb0c80e8b8087282608462765",
+    "date": "2026-03-27 16:30:21 +0100",
+    "message": "Alot"
+  },
+  {
+    "hash": "e5ea8ce3ff74f74db79d0528c05bd049feb6336e",
+    "date": "2026-03-27 16:29:20 +0100",
+    "message": "Alot"
+  },
+  {
+    "hash": "b9ec1db0ba952abbf22c62d9da7936d923e57a6b",
+    "date": "2026-03-27 15:30:47 +0100",
+    "message": "mc"
+  },
+  {
+    "hash": "98ded9a9f44d2f0f0075ad10240df22d7be01562",
+    "date": "2026-03-27 15:27:34 +0100",
+    "message": "fix(sync): resolve validation typing for Partial<ListDB>"
+  },
+  {
+    "hash": "f8d6fc035271853af994c0812e7626c24c09401b",
+    "date": "2026-03-27 15:26:41 +0100",
+    "message": "fix(sync): resolve nested field update issue and typing"
+  },
+  {
+    "hash": "f63b242c9a94845c05b3cbfd6bed0c2ecd5dcaf7",
+    "date": "2026-03-27 14:55:58 +0100",
+    "message": "Fix of save"
+  },
+  {
     "hash": "a9f4b460f2b961bc1311648a1633628289268c9a",
     "date": "2026-03-16 11:39:22 +0100",
     "message": "More robust firestorage handling"
@@ -58,40 +98,5 @@
     "hash": "859e1f345fcdb0e5e2ebb08d22df425b016d5da3",
     "date": "2026-03-11 07:40:32 +0100",
     "message": "fix"
-  },
-  {
-    "hash": "42070cea94b1e9026c70fa8a85162499e1a6172a",
-    "date": "2026-03-11 07:39:24 +0100",
-    "message": "fix"
-  },
-  {
-    "hash": "a366d9673917490f5f50d89125c8099b7b3357aa",
-    "date": "2026-03-10 16:59:16 +0100",
-    "message": "PWA fixes"
-  },
-  {
-    "hash": "4c62ed901de83059b2d21bb5d9ddd09977ffa4bb",
-    "date": "2026-03-10 11:42:26 +0100",
-    "message": "feat: Implement core todo list view with PWA manifest updates and new assets."
-  },
-  {
-    "hash": "1afcd676a6386992873ed864692e6758a589f5e8",
-    "date": "2026-03-10 10:53:22 +0100",
-    "message": "feat: Implement core application structure with internationalization support for Swedish and English."
-  },
-  {
-    "hash": "b97e42607aa807d5d9d3f1308939897d87fe67e1",
-    "date": "2026-03-10 10:37:23 +0100",
-    "message": "fixes"
-  },
-  {
-    "hash": "a99772c34ca72a4d44e97cc08af46c1d70d07896",
-    "date": "2026-03-10 10:05:13 +0100",
-    "message": "rename"
-  },
-  {
-    "hash": "b7bd2d65d5467ba12c21a7253cc8045a1566ad03",
-    "date": "2026-03-10 09:28:56 +0100",
-    "message": "first commit"
   }
 ]
