@@ -10,7 +10,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['favicon.png', 'favicon.ico', 'icon-192.png', 'icon-512.png'],
+      includeAssets: ['favicon.png', 'favicon.ico', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'],
       manifest: {
         name: 'Today',
         short_name: 'Today',
