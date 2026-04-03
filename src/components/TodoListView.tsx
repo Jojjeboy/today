@@ -25,6 +25,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     const [showConfetti, setShowConfetti] = useState(false);
     const [celebrationMessage, setCelebrationMessage] = useState('');
     const wasAllCompleted = React.useRef<boolean>(false);
+    const isFirstLoad = React.useRef<boolean>(true);
     const { getCelebrationMessage } = useCelebration();
     const [suggestions, setSuggestions] = useState<(typeof itemHistory)>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -98,12 +99,13 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     useEffect(() => {
         if (!list || list.items.length === 0) {
             wasAllCompleted.current = false;
+            if (list) isFirstLoad.current = false;
             return;
         }
 
         const isAllCompletedNow = list.items.every(item => item.completed);
 
-        if (isAllCompletedNow && !wasAllCompleted.current) {
+        if (isAllCompletedNow && !wasAllCompleted.current && !isFirstLoad.current) {
             // Trigger celebration!
             const msg = getCelebrationMessage();
             setCelebrationMessage(msg);
@@ -115,6 +117,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
         }
 
         wasAllCompleted.current = isAllCompletedNow;
+        isFirstLoad.current = false;
     }, [list?.items, getCelebrationMessage, showToast]);
 
     if (loading && !list) {

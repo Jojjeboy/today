@@ -50,6 +50,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
     const [showConfetti, setShowConfetti] = useState(false);
     const [celebrationMessage, setCelebrationMessage] = useState('');
     const wasAllCompleted = React.useRef<boolean>(false);
+    const isFirstLoad = React.useRef<boolean>(true);
     const { getCelebrationMessage } = useCelebration();
     const { showToast } = useToast();
     const navigate = useNavigate();
@@ -220,12 +221,13 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
     useEffect(() => {
         if (!list || list.items.length === 0) {
             wasAllCompleted.current = false;
+            if (list) isFirstLoad.current = false;
             return;
         }
 
         const isAllCompletedNow = list.items.every(item => item.completed);
         
-        if (isAllCompletedNow && !wasAllCompleted.current) {
+        if (isAllCompletedNow && !wasAllCompleted.current && !isFirstLoad.current) {
             // Trigger celebration!
             const msg = getCelebrationMessage();
             setCelebrationMessage(msg);
@@ -238,6 +240,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
         }
         
         wasAllCompleted.current = isAllCompletedNow;
+        isFirstLoad.current = false;
     }, [list?.items, getCelebrationMessage, showToast]);
 
     if (!list) return <div className="text-center py-10">{t('lists.notFound')}</div>;
