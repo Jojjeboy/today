@@ -67,6 +67,7 @@
         "groceryTitle": "Vad behöver göras idag?",
         "emptyList": "Listan är tom.",
         "emptySection": "Tom sektion",
+        "scheduled": "Schemalagt",
         "completedItems": "Avklarat",
         "restore": "Återställ",
         "resetTitle": "Återställ lista",

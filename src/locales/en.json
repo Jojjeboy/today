@@ -67,6 +67,7 @@
         "groceryTitle": "What needs to be done today?",
         "emptyList": "List is empty.",
         "emptySection": "Empty section",
+        "scheduled": "Scheduled",
         "completedItems": "Completed Items",
         "restore": "Restore",
         "resetTitle": "Reset List",

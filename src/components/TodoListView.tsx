@@ -305,7 +305,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
             <div className="flex flex-wrap gap-2 mb-6 items-center overflow-x-auto pb-2 scrollbar-hide">
                 <span className="text-sm text-gray-500 dark:text-gray-400 mr-1 flex items-center gap-1.5"><ArrowUpDown size={14} /> {t('lists.sort.title')}</span>
                 {[
-                    { id: 'manual', label: t('lists.sort.custom'), icon: null },
+                    { id: 'manual', label: t('lists.sort.manual'), icon: null },
                     { id: 'priority', label: t('lists.sort.priority'), icon: <Flag size={14} /> },
                     { id: 'dueDate', label: t('lists.sort.dueDate'), icon: <Clock size={14} /> },
                     { id: 'alphabetical', label: t('lists.sort.alphabetical'), icon: <Type size={14} /> }
