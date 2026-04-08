@@ -185,22 +185,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         // But let's actually migrate it right now!
         const itemsMap: Record<string, Item> = {};
         const itemOrder = items.map(i => i.id);
- 
-        items.forEach(item => {
-            const truncatedItem: Item = { ...item, text: item.text.substring(0, MAX_ITEM_LENGTH) };
-            if (truncatedItem.parentId === undefined) {
-                delete truncatedItem.parentId;
-            }
-            itemsMap[item.id] = truncatedItem;
-        });
         if (isLegacyArray) {
+            // Fill itemsMap with undefined stripped
+            items.forEach(item => {
+                const truncatedItem: Item = { ...item, text: item.text.substring(0, MAX_ITEM_LENGTH) };
+                (['parentId', 'priority', 'dueDate', 'sectionId', 'state'] as (keyof Item)[]).forEach(key => {
+                    if (truncatedItem[key] === undefined) {
+                        delete truncatedItem[key];
+                    }
+                });
+                itemsMap[item.id] = truncatedItem;
+            });
+
             // Full overwrite to move to map paradigm. 
-            // Den här delen migrerar gamla listor (arrays) till det nya Map-formatet.
             await listsSync.updateItem(listId, { items: itemsMap, itemOrder } as unknown as Partial<ListDB>);
         } else {
             // Granular updates for existing maps to prevent overwrites.
-            // Här skickar vi bara de ändringar som faktiskt skett. Eftersom vi använder setDoc(..., { merge: true }),
-            // skickar vi ett nästlat objekt så att det mergas med objektet under "items"-nyckeln i databasen.
             const dbMap = (existingList.items as Record<string, Item>) || {};
             
             // Find what was deleted
@@ -216,10 +216,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             items.forEach(item => {
                  const truncatedItem: Item = { ...item, text: item.text.substring(0, MAX_ITEM_LENGTH) };
                  // Firestore throws an error if we try to save `undefined` directly.
-                 // The parentId property is often undefined for root tasks.
-                 if (truncatedItem.parentId === undefined) {
-                     delete truncatedItem.parentId;
-                 }
+                 // Also, if we omit a field, `merge: true` ignores it and keeps the old value.
+                 // We must send `deleteField()` out to actually wipe it.
+                 (['parentId', 'priority', 'dueDate', 'sectionId', 'state'] as (keyof Item)[]).forEach(key => {
+                     if (truncatedItem[key] === undefined) {
+                         if (dbMap[item.id] && dbMap[item.id][key] !== undefined) {
+                             // The existing document in DB has this field, so we must delete it explicitly
+                             (truncatedItem as any)[key] = deleteField();
+                         } else {
+                             // It's already missing or we just created this item; safer to just delete the key
+                             delete truncatedItem[key];
+                         }
+                     }
+                 });
                  updates.items[item.id] = truncatedItem;
             });
 

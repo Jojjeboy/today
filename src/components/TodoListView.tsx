@@ -14,7 +14,8 @@ import { useCelebration } from '../hooks/useCelebration';
 import { useTranslation } from 'react-i18next';
 import { InlineAutocompleteInput } from './InlineAutocompleteInput';
 import { MAX_ITEM_LENGTH } from '../constants';
-import * as chrono from 'chrono-node';
+import * as chronoNode from 'chrono-node';
+const chronoParse = (chronoNode as unknown as { parse?: typeof chronoNode.parse }).parse ?? chronoNode.parse;
 
 
 
@@ -159,8 +160,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                     let dueDate: string | undefined = undefined;
 
                     try {
-                        // Support both ESM and CJS import styles for chrono-node
-                        const parseFunc = (chrono as any).parse || (chrono as any).default?.parse;
+                        const parseFunc = chronoParse;
                         const parsedResults = parseFunc ? parseFunc(textToAdd) : [];
                         
                         if (parsedResults && parsedResults.length > 0) {
@@ -186,8 +186,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                         id: uuidv4(), 
                         text: finalTitle, 
                         completed: false,
-                        dueDate: dueDate,
-                        priority: 'low'
+                        dueDate: dueDate
                     };
                     await updateListItems(list.id, [...list.items, newItem]);
                     await addToHistory(textToAdd);
@@ -248,9 +247,19 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     };
 
     const handleUpdate = async (itemId: string, updates: Partial<Item>) => {
-        const newItems = list.items.map(item =>
-            item.id === itemId ? { ...item, ...updates } : item
-        );
+        // AppContext.updateListItems strips undefined fields before writing to Firestore,
+        // so we simply spread the updates (including priority: undefined for unprioritizing).
+        const newItems = list.items.map(item => {
+            if (item.id === itemId) {
+                const updated = { ...item, ...updates };
+                // If priority was set back to undefined, delete the key so it's removed
+                if ('priority' in updates && updates.priority === undefined) {
+                    delete updated.priority;
+                }
+                return updated;
+            }
+            return item;
+        });
         await updateListItems(list.id, newItems);
     };
 

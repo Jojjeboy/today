@@ -184,9 +184,9 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         e.stopPropagation();
         if (!onUpdate) return;
         
-        // Cycle: low -> medium -> high
-        const priorities: Priority[] = ['low', 'medium', 'high'];
-        const currentIndex = priorities.indexOf(item.priority || 'low');
+        // Cycle: undefined -> low -> medium -> high
+        const priorities: (Priority | undefined)[] = [undefined, 'low', 'medium', 'high'];
+        const currentIndex = priorities.indexOf(item.priority);
         const nextIndex = (currentIndex + 1) % priorities.length;
         const nextPriority = priorities[nextIndex];
 
@@ -405,7 +405,8 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                                            opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100
                                            active:scale-90`}
                                 aria-label="Cycle priority"
-                                title={`Priority: ${item.priority || 'Low'}`}
+                                title={`Priority: ${item.priority ?? 'None'}`}
+                                onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
                                 onMouseDown={(e) => e.stopPropagation()}
                                 onTouchStart={(e) => e.stopPropagation()}
                             >
