@@ -155,28 +155,39 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                     setShowSuggestions(false);
                     
                     // NLP Date Parsing
-                    const parsedResults = chrono.parse(textToAdd);
                     let finalTitle = textToAdd;
                     let dueDate: string | undefined = undefined;
 
-                    if (parsedResults.length > 0) {
-                        const firstResult = parsedResults[0];
-                        dueDate = firstResult.start.date().toISOString();
+                    try {
+                        // Support both ESM and CJS import styles for chrono-node
+                        const parseFunc = (chrono as any).parse || (chrono as any).default?.parse;
+                        const parsedResults = parseFunc ? parseFunc(textToAdd) : [];
                         
-                        // Remove the parsed date part from the text for a cleaner title
-                        finalTitle = textToAdd.replace(firstResult.text, '').trim();
-                        // Clean up multiple spaces if any
-                        finalTitle = finalTitle.replace(/\s+/g, ' ');
+                        if (parsedResults && parsedResults.length > 0) {
+                            const firstResult = parsedResults[0];
+                            dueDate = firstResult.start.date().toISOString();
+                            
+                            // Remove the parsed date part from the text for a cleaner title
+                            finalTitle = textToAdd.replace(firstResult.text, '').trim();
+                            // Clean up multiple spaces if any
+                            finalTitle = finalTitle.replace(/\s+/g, ' ');
 
-                        // fallback if title became empty (e.g. user just typed "tomorrow")
-                        if (!finalTitle) finalTitle = textToAdd;
+                            // fallback if title became empty (e.g. user just typed "tomorrow")
+                            if (!finalTitle) finalTitle = textToAdd;
+                        }
+                    } catch (nlpError) {
+                        console.error("NLP Parsing failed, falling back to plain text:", nlpError);
+                        // Fallback: use the original text and no due date
+                        finalTitle = textToAdd;
+                        dueDate = undefined;
                     }
 
                     const newItem: Item = { 
                         id: uuidv4(), 
                         text: finalTitle, 
                         completed: false,
-                        dueDate: dueDate
+                        dueDate: dueDate,
+                        priority: 'low'
                     };
                     await updateListItems(list.id, [...list.items, newItem]);
                     await addToHistory(textToAdd);
