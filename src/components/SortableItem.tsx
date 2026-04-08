@@ -184,8 +184,9 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         e.stopPropagation();
         if (!onUpdate) return;
         
-        const priorities: (Priority | undefined)[] = [undefined, 'low', 'medium', 'high'];
-        const currentIndex = priorities.indexOf(item.priority);
+        // Cycle: low -> medium -> high
+        const priorities: Priority[] = ['low', 'medium', 'high'];
+        const currentIndex = priorities.indexOf(item.priority || 'low');
         const nextIndex = (currentIndex + 1) % priorities.length;
         const nextPriority = priorities[nextIndex];
 
@@ -196,8 +197,17 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         switch (p) {
             case 'high': return 'bg-red-500';
             case 'medium': return 'bg-yellow-500';
-            case 'low': return 'bg-blue-400';
+            case 'low': return 'bg-blue-500';
             default: return 'bg-transparent';
+        }
+    };
+
+    const getPriorityTextColor = (p?: Priority) => {
+        switch (p) {
+            case 'high': return 'text-red-500';
+            case 'medium': return 'text-yellow-500';
+            case 'low': return 'text-blue-500';
+            default: return 'text-gray-300 dark:text-gray-600';
         }
     };
 
@@ -389,16 +399,17 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                         {!isReadOnly && (
                             <button
                                 onClick={handlePriorityToggle}
-                                className={`flex-shrink-0 p-1.5 rounded-md transition-colors
-                                           ${item.priority ? 'text-gray-700 dark:text-gray-200' : 'text-gray-300 dark:text-gray-600'}
+                                className={`flex-shrink-0 p-1.5 rounded-md transition-all duration-200
+                                           ${getPriorityTextColor(item.priority)}
                                            hover:bg-gray-100 dark:hover:bg-gray-700
-                                           opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100`}
+                                           opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100
+                                           active:scale-90`}
                                 aria-label="Cycle priority"
-                                title={`Priority: ${item.priority || 'None'}`}
+                                title={`Priority: ${item.priority || 'Low'}`}
                                 onMouseDown={(e) => e.stopPropagation()}
                                 onTouchStart={(e) => e.stopPropagation()}
                             >
-                                <Flag size={16} fill={item.priority ? 'currentColor' : 'none'} />
+                                <Flag size={16} fill={(item.priority && item.priority !== 'low') ? 'currentColor' : 'none'} strokeWidth={2.5} />
                             </button>
                         )}
 
