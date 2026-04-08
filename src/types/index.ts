@@ -31,7 +31,7 @@ export interface Todo {
 
 export interface ListSettings {
   threeStageMode: boolean;
-  defaultSort: "manual" | "alphabetical" | "completed";
+  defaultSort: "manual" | "alphabetical" | "completed" | "priority" | "dueDate";
   calendarStartTime?: string;
   calendarEndTime?: string;
   pinned?: boolean; // Kept for interface compatibility but logic disabled

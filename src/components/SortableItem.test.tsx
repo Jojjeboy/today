@@ -27,7 +27,7 @@ vi.mock('react-swipeable-list', () => ({
     SwipeableListItem: ({ children, trailingActions }: { children: React.ReactNode; trailingActions?: React.ReactNode }) => <div>{children}</div>,
     TrailingActions: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
     SwipeAction: ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => <div onClick={onClick}>{children}</div>,
-    ListType: { IOS: 'IOS', MS: 'MS' },
+    Type: { IOS: 'IOS', MS: 'MS' },
 }));
 
 vi.mock('lucide-react', () => ({

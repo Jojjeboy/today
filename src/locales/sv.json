@@ -1,7 +1,7 @@
 {
     "nav": {
         "home": "Hem",
-        "todos": "Att göra",
+        "todos": "Förbättringar",
         "settings": "Inställningar"
     },
     "app": {
@@ -52,7 +52,10 @@
         "editTitle": "Redigera titel",
         "notFound": "Listan hittades inte.",
         "sort": {
-            "manual": "Manuell",
+            "title": "Sortering",
+            "manual": "Anpassad",
+            "priority": "Prioritet",
+            "dueDate": "Förfallodatum",
             "alphabetical": "A-Ö",
             "completed": "Omarkerade först"
         },

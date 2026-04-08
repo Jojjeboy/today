@@ -49,6 +49,9 @@ vi.mock('lucide-react', () => ({
     GripVertical: () => <div />,
     Trash2: () => <div />,
     Flag: () => <div />,
+    ArrowUpDown: () => <div />,
+    Clock: () => <div />,
+    Type: () => <div />,
 }));
 
 const mockUpdateListItems = vi.fn().mockResolvedValue(undefined);
@@ -97,7 +100,7 @@ const makeAppMock = () => ({
 describe('TodoListView - Add Item', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.spyOn(AppContext, 'useApp').mockReturnValue(makeAppMock() as any);
+        vi.spyOn(AppContext, 'useApp').mockReturnValue(makeAppMock() as unknown as ReturnType<typeof AppContext.useApp>);
     });
 
     it('adds a new item with no default priority when submitted', async () => {

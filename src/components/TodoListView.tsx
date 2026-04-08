@@ -6,7 +6,7 @@ import type { Item, List } from '../types';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
-import { Plus, RotateCcw, ChevronDown, CloudUpload, X, Calendar } from 'lucide-react';
+import { Plus, RotateCcw, ChevronDown, CloudUpload, X, Calendar, ArrowUpDown, Clock, Flag, Type } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { Confetti } from './Confetti';
 import { CelebrationOverlay } from './CelebrationOverlay';
@@ -49,7 +49,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
         })
     );
 
-    const [sortBy, setSortBy] = useState<'manual' | 'alphabetical' | 'completed'>('manual');
+    const [sortBy, setSortBy] = useState<'manual' | 'alphabetical' | 'completed' | 'priority' | 'dueDate'>('manual');
 
     useEffect(() => {
         if (list?.settings?.defaultSort) {
@@ -70,6 +70,21 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                 const weightB = getWeight(b);
                 if (weightA !== weightB) return weightA - weightB;
                 return a.text.localeCompare(b.text);
+            });
+        } else if (sortBy === 'priority') {
+            const priorityWeight: Record<NonNullable<Item['priority']> | 'none', number> = { high: 3, medium: 2, low: 1, none: 0 };
+            items.sort((a, b) => {
+                const weightA = priorityWeight[a.priority || 'none'] || 0;
+                const weightB = priorityWeight[b.priority || 'none'] || 0;
+                if (weightA !== weightB) return weightB - weightA; // High to Low
+                return 0;
+            });
+        } else if (sortBy === 'dueDate') {
+            items.sort((a, b) => {
+                if (!a.dueDate && !b.dueDate) return 0;
+                if (!a.dueDate) return 1; // Items without due date go to the bottom
+                if (!b.dueDate) return -1;
+                return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
             });
         }
         return items;
@@ -202,6 +217,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     };
 
     const handleDragEnd = async (event: DragEndEvent) => {
+        if (sortBy !== 'manual') return; // Do not allow manual reorder when auto-sorted
         const { active, over } = event;
         if (!over || active.id === over.id) return;
 
@@ -285,7 +301,29 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                 </div>
             </div>
 
-
+            {/* Sorting Pills */}
+            <div className="flex flex-wrap gap-2 mb-6 items-center overflow-x-auto pb-2 scrollbar-hide">
+                <span className="text-sm text-gray-500 dark:text-gray-400 mr-1 flex items-center gap-1.5"><ArrowUpDown size={14} /> {t('lists.sort.title')}</span>
+                {[
+                    { id: 'manual', label: t('lists.sort.custom'), icon: null },
+                    { id: 'priority', label: t('lists.sort.priority'), icon: <Flag size={14} /> },
+                    { id: 'dueDate', label: t('lists.sort.dueDate'), icon: <Clock size={14} /> },
+                    { id: 'alphabetical', label: t('lists.sort.alphabetical'), icon: <Type size={14} /> }
+                ].map(sortOption => (
+                    <button
+                        key={sortOption.id}
+                        onClick={() => setSortBy(sortOption.id as 'manual' | 'alphabetical' | 'completed' | 'priority' | 'dueDate')}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors
+                            ${sortBy === sortOption.id
+                                ? 'bg-primary text-black shadow-sm'
+                                : 'bg-gray-100 dark:bg-[#3d4551] text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#4b5563]'
+                            }`}
+                    >
+                        {sortOption.icon}
+                        {sortOption.label}
+                    </button>
+                ))}
+            </div>
 
             {/* Active Items */}
             {(() => {
@@ -315,6 +353,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                                     .filter(i => i.parentId === item.id)
                                                     .map(i => ({ ...i, isPending: i.isPending || list.isPending }))}
                                                 onAddSubtask={handleAddSubtask}
+                                                disabled={sortBy !== 'manual'}
                                             />
                                         ))}
                                     </div>
@@ -339,6 +378,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                                             .filter(i => i.parentId === item.id)
                                                             .map(i => ({ ...i, isPending: i.isPending || list.isPending }))}
                                                         onAddSubtask={handleAddSubtask}
+                                                        disabled={sortBy !== 'manual'}
                                                     />
                                                 ))}
                                             </div>

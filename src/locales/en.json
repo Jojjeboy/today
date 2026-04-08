@@ -53,7 +53,10 @@
         "actions": "Actions",
         "notFound": "List not found.",
         "sort": {
-            "manual": "Manual",
+            "title": "Sort",
+            "manual": "Custom",
+            "priority": "Priority",
+            "dueDate": "Due Date",
             "alphabetical": "A-Z",
             "completed": "Unresolved First"
         },

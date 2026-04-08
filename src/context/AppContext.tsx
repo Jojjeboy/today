@@ -222,7 +222,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                      if (truncatedItem[key] === undefined) {
                          if (dbMap[item.id] && dbMap[item.id][key] !== undefined) {
                              // The existing document in DB has this field, so we must delete it explicitly
-                             (truncatedItem as any)[key] = deleteField();
+                             (truncatedItem as unknown as Record<string, unknown>)[key] = deleteField();
                          } else {
                              // It's already missing or we just created this item; safer to just delete the key
                              delete truncatedItem[key];

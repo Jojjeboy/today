@@ -92,7 +92,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
         })
     );
 
-    const [sortBy, setSortBy] = useState<'manual' | 'alphabetical' | 'completed'>('manual');
+    const [sortBy, setSortBy] = useState<'manual' | 'alphabetical' | 'completed' | 'priority' | 'dueDate'>('manual');
     const threeStageMode = list?.settings?.threeStageMode ?? false;
 
     // Helper to format date for datetime-local input (YYYY-MM-DDTHH:mm) in LOCAL time
@@ -182,6 +182,21 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
                 if (weightA !== weightB) return weightA - weightB;
                 // Secondary sort: Alphabetical
                 return a.text.localeCompare(b.text);
+            });
+        } else if (sortBy === 'priority') {
+            const priorityWeight: Record<NonNullable<Item['priority']> | 'none', number> = { high: 3, medium: 2, low: 1, none: 0 };
+            items.sort((a, b) => {
+                const weightA = priorityWeight[a.priority || 'none'] || 0;
+                const weightB = priorityWeight[b.priority || 'none'] || 0;
+                if (weightA !== weightB) return weightB - weightA; // High to Low
+                return 0;
+            });
+        } else if (sortBy === 'dueDate') {
+            items.sort((a, b) => {
+                if (!a.dueDate && !b.dueDate) return 0;
+                if (!a.dueDate) return 1; // Items without due date go to the bottom
+                if (!b.dueDate) return -1;
+                return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
             });
         }
         return items;
@@ -282,6 +297,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
      * Supports moving items within a section and between sections.
      */
     const handleDragEnd = async (event: DragEndEvent) => {
+        if (sortBy !== 'manual') return; // Do not allow manual reorder when auto-sorted
         const { active, over } = event;
         if (!over || active.id === over.id) return;
 
