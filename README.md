@@ -12,6 +12,9 @@ En snabb, offline-first "progressive web application" (PWA) för uppgiftshanteri
 - **Dark/Light Mode**: Ett visuellt tilltalande gränssnitt byggt med Tailwind CSS som automatiskt respekterar ditt systems färginställningar.
 - **Flerspråkigt (i18n)**: Stöd för flera språk direkt samt enkelt att skala upp med fler språk.
 - **Import/Export av Data**: Säkerhetskopiera eller återställ dina uppgifter utan problem via JSON-filer.
+- **Prioritetsnivåer**: Sätt Låg, Medium eller Hög prioritet på uppgifter med tydlig färgkodning.
+- **Smart Datumigenkänning (NLP)**: Skriv naturligt (t.ex. "Köp mjölk imorgon") så känner appen automatiskt av datumet och schemalägger uppgiften.
+
 
 ## Kom Igång
 
@@ -74,6 +77,7 @@ Detta projekt använder moderna webbstandarder och verktyg:
 - **Firebase** för backend, synkning och användarautentisering
 - **Zustand / Context** för lätthanterlig och effektiv state management
 - **Vite-Plugin-PWA** för auto-generering av Service Workers och PWA-manifest
+- **Chrono-node** för naturlig datumtolkning
 - **Vitest** för testning
 
 ## Bidra

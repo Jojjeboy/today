@@ -1,3 +1,5 @@
+export type Priority = "low" | "medium" | "high";
+
 export interface Item {
   id: string;
   text: string;
@@ -7,6 +9,8 @@ export interface Item {
   isPending?: boolean;
   /** Optional: if set, this item is a subtask of the item with this id. */
   parentId?: string;
+  priority?: Priority;
+  dueDate?: string;
 }
 
 export interface Section {
@@ -20,7 +24,7 @@ export interface Todo {
   title: string;
   content: string;
   createdAt: string;
-  priority: "low" | "medium" | "high";
+  priority: Priority;
   completed: boolean;
   isPending?: boolean;
 }

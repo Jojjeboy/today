@@ -6,7 +6,7 @@ import type { Item, List } from '../types';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
-import { Plus, RotateCcw, ChevronDown, CloudUpload, X } from 'lucide-react';
+import { Plus, RotateCcw, ChevronDown, CloudUpload, X, Calendar } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { Confetti } from './Confetti';
 import { CelebrationOverlay } from './CelebrationOverlay';
@@ -14,6 +14,7 @@ import { useCelebration } from '../hooks/useCelebration';
 import { useTranslation } from 'react-i18next';
 import { InlineAutocompleteInput } from './InlineAutocompleteInput';
 import { MAX_ITEM_LENGTH } from '../constants';
+import * as chrono from 'chrono-node';
 
 
 
@@ -152,8 +153,31 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                     setNewItemText('');
                     setSuggestions([]);
                     setShowSuggestions(false);
+                    
+                    // NLP Date Parsing
+                    const parsedResults = chrono.parse(textToAdd);
+                    let finalTitle = textToAdd;
+                    let dueDate: string | undefined = undefined;
 
-                    const newItem: Item = { id: uuidv4(), text: textToAdd, completed: false };
+                    if (parsedResults.length > 0) {
+                        const firstResult = parsedResults[0];
+                        dueDate = firstResult.start.date().toISOString();
+                        
+                        // Remove the parsed date part from the text for a cleaner title
+                        finalTitle = textToAdd.replace(firstResult.text, '').trim();
+                        // Clean up multiple spaces if any
+                        finalTitle = finalTitle.replace(/\s+/g, ' ');
+
+                        // fallback if title became empty (e.g. user just typed "tomorrow")
+                        if (!finalTitle) finalTitle = textToAdd;
+                    }
+
+                    const newItem: Item = { 
+                        id: uuidv4(), 
+                        text: finalTitle, 
+                        completed: false,
+                        dueDate: dueDate
+                    };
                     await updateListItems(list.id, [...list.items, newItem]);
                     await addToHistory(textToAdd);
                 }
@@ -212,6 +236,13 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
         await updateListItems(list.id, newItems);
     };
 
+    const handleUpdate = async (itemId: string, updates: Partial<Item>) => {
+        const newItems = list.items.map(item =>
+            item.id === itemId ? { ...item, ...updates } : item
+        );
+        await updateListItems(list.id, newItems);
+    };
+
     const handleAddSubtask = async (parentId: string) => {
         const newSubtask: Item = { id: uuidv4(), text: '', completed: false, parentId };
         await updateListItems(list.id, [...list.items, newSubtask]);
@@ -241,25 +272,58 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                 // Only top-level items in the main sorted/draggable list
             const activeItems = sortedItems.filter(i => !i.completed && !i.parentId);
                 const completedItems = sortedItems.filter(i => i.completed && !i.parentId);
+                
+                const itemsWithoutDate = activeItems.filter(i => !i.dueDate);
+                const itemsWithDate = activeItems.filter(i => i.dueDate);
 
                 return (
                     <>
                         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                             <SortableContext items={activeItems.map(i => i.id)} strategy={verticalListSortingStrategy}>
-                                <div className="space-y-2">
-                                    {activeItems.map((item) => (
-                                        <SortableItem
-                                            key={item.id}
-                                            item={{ ...item, isPending: item.isPending || list.isPending }}
-                                            onToggle={handleToggle}
-                                            onDelete={handleDelete}
-                                            onEdit={handleEdit}
-                                            subtasks={list.items
-                                                .filter(i => i.parentId === item.id)
-                                                .map(i => ({ ...i, isPending: i.isPending || list.isPending }))}
-                                            onAddSubtask={handleAddSubtask}
-                                        />
-                                    ))}
+                                <div className="space-y-6">
+                                    {/* Normal Items */}
+                                    <div className="space-y-2">
+                                        {itemsWithoutDate.map((item) => (
+                                            <SortableItem
+                                                key={item.id}
+                                                item={{ ...item, isPending: item.isPending || list.isPending }}
+                                                onToggle={handleToggle}
+                                                onDelete={handleDelete}
+                                                onEdit={handleEdit}
+                                                onUpdate={handleUpdate}
+                                                subtasks={list.items
+                                                    .filter(i => i.parentId === item.id)
+                                                    .map(i => ({ ...i, isPending: i.isPending || list.isPending }))}
+                                                onAddSubtask={handleAddSubtask}
+                                            />
+                                        ))}
+                                    </div>
+
+                                    {/* Scheduled Section */}
+                                    {itemsWithDate.length > 0 && (
+                                        <div className="space-y-4">
+                                            <div className="flex items-center gap-2 px-1 text-primary/60">
+                                                <Calendar size={16} strokeWidth={2.5} />
+                                                <h3 className="text-xs font-bold uppercase tracking-widest">{t('lists.scheduled', 'Scheduled')}</h3>
+                                            </div>
+                                            <div className="space-y-2">
+                                                {itemsWithDate.map((item) => (
+                                                    <SortableItem
+                                                        key={item.id}
+                                                        item={{ ...item, isPending: item.isPending || list.isPending }}
+                                                        onToggle={handleToggle}
+                                                        onDelete={handleDelete}
+                                                        onEdit={handleEdit}
+                                                        onUpdate={handleUpdate}
+                                                        subtasks={list.items
+                                                            .filter(i => i.parentId === item.id)
+                                                            .map(i => ({ ...i, isPending: i.isPending || list.isPending }))}
+                                                        onAddSubtask={handleAddSubtask}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </SortableContext>
                         </DndContext>
@@ -306,6 +370,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                                     onToggle={handleToggle}
                                                     onDelete={handleDelete}
                                                     onEdit={handleEdit}
+                                                    onUpdate={handleUpdate}
                                                     subtasks={list.items
                                                         .filter(i => i.parentId === item.id)
                                                         .map(i => ({ ...i, isPending: i.isPending || list.isPending }))}

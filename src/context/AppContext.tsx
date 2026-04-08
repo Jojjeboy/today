@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { List, ListDB, Item, Todo, ListSettings, Section, Category, HistoryItem } from '../types';
+import { List, ListDB, Item, Todo, ListSettings, Section, Category, HistoryItem, Priority } from '../types';
 import { MAX_ITEM_LENGTH } from '../constants';
 
-type Priority = 'low' | 'medium' | 'high';
+
 import { useToast } from './ToastContext';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';

@@ -1,5 +1,25 @@
 [
   {
+    "hash": "ae15cbe9ed5fa5312f975ba78a0ef24a9b9bb378",
+    "date": "2026-04-03 13:46:38 +0200",
+    "message": "fix: prevent unintended celebration triggers on initial list load"
+  },
+  {
+    "hash": "eac0ea0f090da100ffb716ff318f470229f2067b",
+    "date": "2026-04-03 13:38:34 +0200",
+    "message": "fix: update lodash to address security vulnerability"
+  },
+  {
+    "hash": "ff4b76dd74f5c95eae32d2cdf108304a45398f46",
+    "date": "2026-04-03 13:34:54 +0200",
+    "message": "feat: update brand assets and fix favicon paths"
+  },
+  {
+    "hash": "fcf2b77f1656f682ea4dd6af54ec60420fa5926e",
+    "date": "2026-04-03 13:24:17 +0200",
+    "message": "feat: implement celebration overlay and update brand asset generation script"
+  },
+  {
     "hash": "c01ab8b68219379c5502bf02c76cb55b1884bb3f",
     "date": "2026-04-02 16:41:37 +0200",
     "message": "Confetti"
@@ -78,25 +98,5 @@
     "hash": "65c7ddb85eab0e58dbf38bd0e1c0241aa2a52216",
     "date": "2026-03-12 06:28:52 +0100",
     "message": "feat: Introduce `AppContext` and shared types, and update markdown documentation."
-  },
-  {
-    "hash": "9a54161aa0a1430f2de787961535173e3efc7a3c",
-    "date": "2026-03-11 14:09:18 +0100",
-    "message": "feat: Introduce Todo list view, tag utilities, and commit data files."
-  },
-  {
-    "hash": "e112e252f5b808312c7da317a8d2f40df3e8d1ad",
-    "date": "2026-03-11 13:22:49 +0100",
-    "message": "mc"
-  },
-  {
-    "hash": "1f2a76bca18744205f7291980478bb9a8e6bd469",
-    "date": "2026-03-11 09:26:54 +0100",
-    "message": "feat: Add internationalization support with Swedish locale, new Todo and Settings views, and initial project setup."
-  },
-  {
-    "hash": "667f59b6f1f11cb9ca9506d7c17910a5103b4f9e",
-    "date": "2026-03-11 07:53:23 +0100",
-    "message": "New fix"
   }
 ]

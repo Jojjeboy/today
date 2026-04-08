@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import type { Item } from '../types';
-import { Trash2, GripVertical, CloudUpload, Plus, ListTree } from 'lucide-react';
+import type { Item, Priority } from '../types';
+import { Trash2, GripVertical, CloudUpload, Plus, ListTree, Flag, Calendar } from 'lucide-react';
 import {
     SwipeableList,
     SwipeableListItem,
@@ -19,6 +19,7 @@ interface SortableItemProps {
     onToggle?: (id: string) => void;
     onDelete?: (id: string) => void;
     onEdit?: (id: string, text: string) => void;
+    onUpdate?: (id: string, updates: Partial<Item>) => void;
     disabled?: boolean;
     /** Subtask items that belong to this parent */
     subtasks?: Item[];
@@ -150,6 +151,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
     onToggle,
     onDelete,
     onEdit,
+    onUpdate,
     disabled,
     subtasks = [],
     onAddSubtask,
@@ -175,6 +177,27 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         setIsEditing(false);
         if (onEdit && localText !== item.text) {
             onEdit(item.id, localText);
+        }
+    };
+
+    const handlePriorityToggle = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!onUpdate) return;
+        
+        const priorities: (Priority | undefined)[] = [undefined, 'low', 'medium', 'high'];
+        const currentIndex = priorities.indexOf(item.priority);
+        const nextIndex = (currentIndex + 1) % priorities.length;
+        const nextPriority = priorities[nextIndex];
+
+        onUpdate(item.id, { priority: nextPriority });
+    };
+
+    const getPriorityColor = (p?: Priority) => {
+        switch (p) {
+            case 'high': return 'bg-red-500';
+            case 'medium': return 'bg-yellow-500';
+            case 'low': return 'bg-blue-400';
+            default: return 'bg-transparent';
         }
     };
 
@@ -263,7 +286,12 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                 <SwipeableListItem
                     trailingActions={trailingActions()}
                 >
-                    <div className="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#3d4551] rounded-3xl group-focus:ring-2 group-focus:ring-primary/30 outline-none transition-all shadow-sm">
+                    <div className="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#3d4551] rounded-3xl group-focus:ring-2 group-focus:ring-primary/30 outline-none transition-all shadow-sm overflow-hidden relative">
+                        {/* Priority Indicator Bar */}
+                        {item.priority && (
+                            <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${getPriorityColor(item.priority)}`} />
+                        )}
+                        
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -325,6 +353,14 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                                     {localText}
                                 </div>
                             )}
+                            
+                            {/* Due Date Badge */}
+                            {item.dueDate && (
+                                <div className="ml-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-[10px] font-bold text-blue-500 border border-blue-100 dark:border-blue-800 animate-in fade-in zoom-in duration-300 whitespace-nowrap">
+                                    <Calendar size={10} />
+                                    {new Date(item.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                </div>
+                            )}
                         </div>
 
                         {item.isPending && (
@@ -346,6 +382,23 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                                 onTouchStart={(e) => e.stopPropagation()}
                             >
                                 <ListTree size={16} />
+                            </button>
+                        )}
+
+                        {/* Priority Toggle Button */}
+                        {!isReadOnly && (
+                            <button
+                                onClick={handlePriorityToggle}
+                                className={`flex-shrink-0 p-1.5 rounded-md transition-colors
+                                           ${item.priority ? 'text-gray-700 dark:text-gray-200' : 'text-gray-300 dark:text-gray-600'}
+                                           hover:bg-gray-100 dark:hover:bg-gray-700
+                                           opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100`}
+                                aria-label="Cycle priority"
+                                title={`Priority: ${item.priority || 'None'}`}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                onTouchStart={(e) => e.stopPropagation()}
+                            >
+                                <Flag size={16} fill={item.priority ? 'currentColor' : 'none'} />
                             </button>
                         )}
 
