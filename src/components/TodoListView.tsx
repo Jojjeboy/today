@@ -32,6 +32,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     const [suggestions, setSuggestions] = useState<(typeof itemHistory)>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [completedAccordionOpen, setCompletedAccordionOpen] = useState(false);
+    const [showSortPills, setShowSortPills] = useState(false);
 
     const list: List | undefined = lists.find((l) => l.id === defaultListId);
 
@@ -290,21 +291,33 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
             {celebrationMessage && <CelebrationOverlay message={celebrationMessage} />}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <div className="flex items-center gap-2 group min-w-0 flex-1">
-                        <h2 className="text-xl font-semibold truncate">{t('lists.groceryTitle')}</h2>
-                        {list.isPending && (
-                            <div className="text-blue-500 animate-in fade-in duration-300" title="Syncing list...">
-                                <CloudUpload size={20} />
-                            </div>
-                        )}
+                    <div className="flex items-center justify-between group min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-2xl pt-1 font-bold truncate text-gray-900 dark:text-gray-100 tracking-tight">{t('lists.groceryTitle')}</h2>
+                            {list.isPending && (
+                                <div className="text-blue-500 animate-in fade-in duration-300" title="Syncing list...">
+                                    <CloudUpload size={20} />
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setShowSortPills(!showSortPills)}
+                                className={`p-2 rounded-xl transition-all ${showSortPills ? 'bg-primary/10 text-primary' : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                                title={t('lists.sort.title')}
+                            >
+                                <ArrowUpDown size={18} strokeWidth={2.5} />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Sorting Pills */}
-            <div className="flex flex-wrap gap-2 mb-6 items-center overflow-x-auto pb-2 scrollbar-hide">
-                <span className="text-sm text-gray-500 dark:text-gray-400 mr-1 flex items-center gap-1.5"><ArrowUpDown size={14} /> {t('lists.sort.title')}</span>
-                {[
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${showSortPills ? 'max-h-20 opacity-100 mb-6' : 'max-h-0 opacity-0 mb-0'}`}>
+                <div className="flex flex-wrap gap-2 items-center overflow-x-auto pb-2 scrollbar-hide">
+                    <span className="text-sm text-gray-500 dark:text-gray-400 mr-1 flex items-center gap-1.5"><ArrowUpDown size={14} /> {t('lists.sort.title')}</span>
+                    {[
                     { id: 'manual', label: t('lists.sort.manual'), icon: null },
                     { id: 'priority', label: t('lists.sort.priority'), icon: <Flag size={14} /> },
                     { id: 'dueDate', label: t('lists.sort.dueDate'), icon: <Clock size={14} /> },
@@ -313,16 +326,17 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                     <button
                         key={sortOption.id}
                         onClick={() => setSortBy(sortOption.id as 'manual' | 'alphabetical' | 'completed' | 'priority' | 'dueDate')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors
+                        className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-200
                             ${sortBy === sortOption.id
-                                ? 'bg-primary text-black shadow-sm'
-                                : 'bg-gray-100 dark:bg-[#3d4551] text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#4b5563]'
+                                ? 'bg-primary text-black shadow-md shadow-primary/20 ring-1 ring-primary/50'
+                                : 'bg-white dark:bg-[#323943] text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#3d4551] border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow active:scale-95'
                             }`}
                     >
                         {sortOption.icon}
                         {sortOption.label}
                     </button>
                 ))}
+                </div>
             </div>
 
             {/* Active Items */}
@@ -398,15 +412,15 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                         setTimeout(() => input.focus(), 300);
                                     }
                                 }}
-                                className="flex flex-col items-center justify-center py-20 opacity-50 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors rounded-3xl mt-4"
+                                className="flex flex-col items-center justify-center py-20 opacity-60 cursor-pointer hover:opacity-100 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-all duration-300 rounded-[2rem] mt-4 border-2 border-dashed border-gray-200 dark:border-gray-800"
                                 role="button"
                                 tabIndex={0}
                                 aria-label={t('lists.addItemPlaceholder')}
                             >
-                                <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4 transition-transform hover:scale-110">
-                                    <Plus className="text-gray-400" size={32} />
+                                <div className="w-16 h-16 rounded-full bg-gray-100/80 dark:bg-gray-800/80 flex items-center justify-center mb-6 transition-transform hover:scale-105 shadow-sm">
+                                    <Plus className="text-gray-400" size={32} strokeWidth={2} />
                                 </div>
-                                <p className="text-gray-500 font-medium">{t('lists.emptyList')}</p>
+                                <p className="text-gray-500 font-medium tracking-wide">{t('lists.emptyList')}</p>
                             </div>
                         )}
 
@@ -415,10 +429,11 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                             <div className="mt-8 pt-4 border-t border-gray-100 dark:border-gray-800">
                                 <button
                                     onClick={() => setCompletedAccordionOpen(!completedAccordionOpen)}
-                                    className="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors mb-4"
+                                    className="flex items-center gap-2 py-2 px-3 -ml-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors mb-4"
                                 >
-                                    <ChevronDown size={16} className={`transition-transform ${completedAccordionOpen ? 'rotate-180' : ''}`} />
-                                    {t('lists.completedItems', 'Completed Items')} ({completedItems.length})
+                                    <ChevronDown size={16} className={`transition-transform duration-200 ${completedAccordionOpen ? 'rotate-180' : ''}`} />
+                                    {t('lists.completedItems', 'Completed Items')}
+                                    <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full text-xs ml-1">{completedItems.length}</span>
                                 </button>
 
                                 {completedAccordionOpen && (

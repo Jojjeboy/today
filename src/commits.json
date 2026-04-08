@@ -1,5 +1,40 @@
 [
   {
+    "hash": "2c320bee020e3ec7178d56da4b74338df8a2ce02",
+    "date": "2026-04-08 12:06:15 +0200",
+    "message": "mc"
+  },
+  {
+    "hash": "f8ec1d803f5142d0268928aa4fe1cec72151e761",
+    "date": "2026-04-08 12:04:13 +0200",
+    "message": "fix: resolve translation map for manually translated components"
+  },
+  {
+    "hash": "98011305b65f5a26ff859a2d75635240f1037dc1",
+    "date": "2026-04-08 12:01:28 +0200",
+    "message": "feat: hide sorting drag handle, fix translations for sorting pills"
+  },
+  {
+    "hash": "5aafef9447dc5334da406d23257ccc6d83dabefd",
+    "date": "2026-04-08 11:49:38 +0200",
+    "message": "mc"
+  },
+  {
+    "hash": "099899d19c9d934b53fe4e38332001fb7292fb7a",
+    "date": "2026-04-08 11:05:00 +0200",
+    "message": "mc"
+  },
+  {
+    "hash": "c6a529463a93ddf597716f3a15af1c66d560b087",
+    "date": "2026-04-08 11:04:18 +0200",
+    "message": "fix: restore 'add item' functionality with robust NLP fallback"
+  },
+  {
+    "hash": "85cf8d35a09cd9e9c023dae36c8361a7a510270d",
+    "date": "2026-04-08 10:41:08 +0200",
+    "message": "feat: implement priority levels and natural language date parsing"
+  },
+  {
     "hash": "ae15cbe9ed5fa5312f975ba78a0ef24a9b9bb378",
     "date": "2026-04-03 13:46:38 +0200",
     "message": "fix: prevent unintended celebration triggers on initial list load"
@@ -63,40 +98,5 @@
     "hash": "f63b242c9a94845c05b3cbfd6bed0c2ecd5dcaf7",
     "date": "2026-03-27 14:55:58 +0100",
     "message": "Fix of save"
-  },
-  {
-    "hash": "a9f4b460f2b961bc1311648a1633628289268c9a",
-    "date": "2026-03-16 11:39:22 +0100",
-    "message": "More robust firestorage handling"
-  },
-  {
-    "hash": "686571326b687beebd94bc342d762373b34ae8e7",
-    "date": "2026-03-12 16:20:44 +0100",
-    "message": "feat: Introduce core application context, UI components for list management,"
-  },
-  {
-    "hash": "2189cb7788d1dbb0333f2b0f9cc6bfbe6219c275",
-    "date": "2026-03-12 06:59:28 +0100",
-    "message": "typo"
-  },
-  {
-    "hash": "c650a5cc6ec2d376e2de8f3d0ebd60c11f2aaa25",
-    "date": "2026-03-12 06:55:08 +0100",
-    "message": "More documentation"
-  },
-  {
-    "hash": "fb2322b0c4da21bb633cbfae016929196fe1a573",
-    "date": "2026-03-12 06:50:13 +0100",
-    "message": "Comments and architecture description"
-  },
-  {
-    "hash": "2697b7f24b69b73ad3a09b0651fe418735b4edb4",
-    "date": "2026-03-12 06:39:07 +0100",
-    "message": "feat: Implement core application context and UI components for list management, including a todo list view, and update PWA registration type."
-  },
-  {
-    "hash": "65c7ddb85eab0e58dbf38bd0e1c0241aa2a52216",
-    "date": "2026-03-12 06:28:52 +0100",
-    "message": "feat: Introduce `AppContext` and shared types, and update markdown documentation."
   }
 ]

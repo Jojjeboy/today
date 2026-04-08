@@ -296,7 +296,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                 <SwipeableListItem
                     trailingActions={trailingActions()}
                 >
-                    <div className="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#3d4551] rounded-3xl group-focus:ring-2 group-focus:ring-primary/30 outline-none transition-all shadow-sm overflow-hidden relative">
+                    <div className="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#323943] rounded-2xl group-focus:ring-2 group-focus:ring-primary/30 outline-none transition-all duration-300 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-gray-100/50 dark:border-gray-700/30 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md overflow-hidden relative">
                         {/* Priority Indicator Bar */}
                         {item.priority && (
                             <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${getPriorityColor(item.priority)}`} />
@@ -366,8 +366,8 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                             
                             {/* Due Date Badge */}
                             {item.dueDate && (
-                                <div className="ml-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-[10px] font-bold text-blue-500 border border-blue-100 dark:border-blue-800 animate-in fade-in zoom-in duration-300 whitespace-nowrap">
-                                    <Calendar size={10} />
+                                <div className="ml-2 flex flex-shrink-0 items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-[10px] sm:text-xs font-bold text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800 animate-in fade-in zoom-in duration-300 whitespace-nowrap">
+                                    <Calendar size={12} strokeWidth={2.5} />
                                     {new Date(item.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                                 </div>
                             )}

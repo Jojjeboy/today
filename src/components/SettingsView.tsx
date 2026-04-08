@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, SortAsc, Calendar, ChevronDown, Settings, Eye, EyeOff, CloudUpload, FileJson, Copy, Check } from 'lucide-react';
+import { LogOut, SortAsc, Calendar, ChevronDown, Settings, Eye, EyeOff, CloudUpload, FileJson, Copy, Check, Moon, Sun } from 'lucide-react';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
@@ -11,7 +11,7 @@ import type { Item } from '../types';
 export const SettingsView: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { user, logout } = useAuth();
-    const { lists, defaultListId, updateListSettings, updateListItems } = useApp();
+    const { lists, defaultListId, updateListSettings, updateListItems, theme, toggleTheme } = useApp();
     const { showToast } = useToast();
     const [importAccordionOpen, setImportAccordionOpen] = React.useState(false);
     const [jsonText, setJsonText] = React.useState('');
@@ -162,8 +162,32 @@ export const SettingsView: React.FC = () => {
 
                     <div className="space-y-4">
                         <h3 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest px-1">{t('settings.display', 'Skärm')}</h3>
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
-                            <div className="p-4 flex items-center justify-between">
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+                            {/* Theme Toggle */}
+                            <div className="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                <div className="flex items-center gap-4">
+                                    <div className={`p-2.5 rounded-xl transition-colors ${theme === 'dark' ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-500' : 'bg-orange-100 text-orange-500'}`}>
+                                        {theme === 'dark' ? <Moon size={22} /> : <Sun size={22} />}
+                                    </div>
+                                    <div>
+                                        <div className="font-bold text-gray-900 dark:text-white">{theme === 'dark' ? t('settings.darkMode', 'Dark Mode') : t('settings.lightMode', 'Light Mode')}</div>
+                                        <div className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('settings.themeDesc', 'Toggle between light and dark themes')}</div>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={toggleTheme}
+                                    className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${theme === 'dark' ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
+                                        }`}
+                                >
+                                    <span
+                                        className={`${theme === 'dark' ? 'translate-x-6' : 'translate-x-1'
+                                            } inline-block h-5 w-5 transform rounded-full bg-white transition-transform`}
+                                    />
+                                </button>
+                            </div>
+
+                            {/* Wake Lock */}
+                            <div className="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                 <div className="flex items-center gap-4">
                                     <div className={`p-2.5 rounded-xl transition-colors ${isLocked ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-400'}`}>
                                         {isLocked ? <Eye size={22} /> : <EyeOff size={22} />}
