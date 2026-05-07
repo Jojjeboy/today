@@ -11,6 +11,8 @@ export interface Item {
   parentId?: string;
   priority?: Priority;
   dueDate?: string;
+  /** Optional: ISO string — item is hidden from active list until this time passes */
+  snoozedUntil?: string;
 }
 
 export interface Section {

@@ -47,6 +47,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
     const [suggestions, setSuggestions] = useState<(typeof itemHistory)>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [completedAccordionOpen, setCompletedAccordionOpen] = useState(false);
+    const [snoozedAccordionOpen, setSnoozedAccordionOpen] = useState(false);
     const [showConfetti, setShowConfetti] = useState(false);
     const [celebrationMessage, setCelebrationMessage] = useState('');
     const wasAllCompleted = React.useRef<boolean>(false);
@@ -92,7 +93,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
         })
     );
 
-    const [sortBy, setSortBy] = useState<'manual' | 'alphabetical' | 'completed' | 'priority' | 'dueDate'>('manual');
+    const [sortBy, setSortBy] = useState<'manual' | 'alphabetical' | 'completed' | 'priority' | 'dueDate'>('priority');
     const threeStageMode = list?.settings?.threeStageMode ?? false;
 
     // Helper to format date for datetime-local input (YYYY-MM-DDTHH:mm) in LOCAL time
@@ -391,6 +392,36 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
         await deleteItem(list.id, itemId);
     };
 
+    const handleSnooze = async (itemId: string) => {
+        // Snooze until tomorrow at 06:00 local time
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(6, 0, 0, 0);
+        const newItems = list.items.map(item =>
+            item.id === itemId ? { ...item, snoozedUntil: tomorrow.toISOString() } : item
+        );
+        await updateListItems(list.id, newItems);
+        showToast('Uppgift uppskjuten till imorgon 🌙', 'info', {
+            label: t('common.undo'),
+            onClick: async () => {
+                const currentList = lists.find(l => l.id === list.id);
+                if (currentList) {
+                    const restored = currentList.items.map(item =>
+                        item.id === itemId ? { ...item, snoozedUntil: undefined } : item
+                    );
+                    await updateListItems(list.id, restored);
+                }
+            }
+        });
+    };
+
+    const handleUnsnooze = async (itemId: string) => {
+        const newItems = list.items.map(item =>
+            item.id === itemId ? { ...item, snoozedUntil: undefined } : item
+        );
+        await updateListItems(list.id, newItems);
+    };
+
     const handleEdit = async (itemId: string, text: string) => {
         const newItems = list.items.map(item =>
             item.id === itemId ? { ...item, text } : item
@@ -633,9 +664,12 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
                                     const sections = list?.sections || [];
                                     const hasAnySections = sections.length > 0;
                                     
-                                    // Helper to split active/completed
-                                    const filterActive = (items: Item[]) => items.filter(i => !i.completed);
+                                    // Helper to split active/completed/snoozed
+                                    const now = new Date();
+                                    const isSnoozed = (item: Item) => !!(item.snoozedUntil && new Date(item.snoozedUntil) > now);
+                                    const filterActive = (items: Item[]) => items.filter(i => !i.completed && !isSnoozed(i));
                                     const completedItems = sortedItems.filter(i => i.completed);
+                                    const snoozedItems = sortedItems.filter(i => !i.completed && isSnoozed(i));
 
                                     return (
                                         <>
@@ -647,7 +681,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
                                                             {t('lists.sections.unsectioned')}
                                                         </h3>
                                                     )}
-                                                    <div className="space-y-2">
+                                                    <div className="space-y-3">
                                                         {filterActive(groupedItems.get(undefined)!).map((item) => (
                                                             <SortableItem
                                                                 key={item.id}
@@ -655,6 +689,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
                                                                 onToggle={list?.archived ? undefined : handleToggle}
                                                                 onDelete={list?.archived ? undefined : handleDelete}
                                                                 onEdit={list?.archived ? undefined : handleEdit}
+                                                                onSnooze={list?.archived ? undefined : handleSnooze}
                                                             />
                                                         ))}
                                                     </div>
@@ -673,7 +708,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
                                                             </h3>
                                                             <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
                                                         </div>
-                                                        <div className="space-y-2 min-h-[2rem]"> {/* Add min-height for empty target */}
+                                                        <div className="space-y-3 min-h-[2rem]"> {/* Add min-height for empty target */}
                                                             {sectionItems.map((item) => (
                                                                 <SortableItem
                                                                     key={item.id}
@@ -681,6 +716,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
                                                                     onToggle={list?.archived ? undefined : handleToggle}
                                                                     onDelete={list?.archived ? undefined : handleDelete}
                                                                     onEdit={list?.archived ? undefined : handleEdit}
+                                                                    onSnooze={list?.archived ? undefined : handleSnooze}
                                                                 />
                                                             ))}
                                                             {sectionItems.length === 0 && (
@@ -695,6 +731,45 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
 
                                             {sortedItems.filter(i => !i.completed).length === 0 && sections.length === 0 && (
                                                 <p className="text-center text-gray-500 mt-8">{t('lists.emptyList')}</p>
+                                            )}
+
+                                            {/* Snoozed Items Accordion */}
+                                            {snoozedItems.length > 0 && (
+                                                <div className="mt-4 pt-4 border-t border-indigo-100 dark:border-indigo-900/30">
+                                                    <button
+                                                        onClick={() => setSnoozedAccordionOpen(!snoozedAccordionOpen)}
+                                                        className="flex items-center gap-2 text-sm font-medium text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-200 transition-colors mb-3"
+                                                    >
+                                                        <ChevronDown size={16} className={`transition-transform ${snoozedAccordionOpen ? 'rotate-180' : ''}`} />
+                                                        🌙 Uppskjutna ({snoozedItems.length})
+                                                    </button>
+                                                    {snoozedAccordionOpen && (
+                                                        <div className="space-y-2 animate-in slide-in-from-top-2 duration-200">
+                                                            {snoozedItems.map(item => {
+                                                                const wakeTime = item.snoozedUntil ? new Date(item.snoozedUntil) : null;
+                                                                const wakeLabel = wakeTime ? wakeTime.toLocaleString(undefined, { weekday: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+                                                                return (
+                                                                    <div key={item.id} className="relative opacity-70 hover:opacity-100 transition-opacity">
+                                                                        <SortableItem
+                                                                            item={item}
+                                                                            onToggle={undefined}
+                                                                            onDelete={list?.archived ? undefined : handleDelete}
+                                                                            onEdit={undefined}
+                                                                            disabled={true}
+                                                                        />
+                                                                        <button
+                                                                            onClick={() => handleUnsnooze(item.id)}
+                                                                            className="absolute right-12 top-1/2 -translate-y-1/2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-colors whitespace-nowrap z-10"
+                                                                            title="Väck nu"
+                                                                        >
+                                                                            {wakeLabel}
+                                                                        </button>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             )}
 
                                             {/* Completed Items Accordion */}

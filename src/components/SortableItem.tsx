@@ -2,12 +2,13 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Item, Priority } from '../types';
-import { Trash2, GripVertical, CloudUpload, Plus, ListTree, Flag, Calendar } from 'lucide-react';
+import { Trash2, GripVertical, CloudUpload, Plus, ListTree, Flag, Calendar, Moon } from 'lucide-react';
 import {
     SwipeableList,
     SwipeableListItem,
     SwipeAction,
     TrailingActions,
+    LeadingActions,
     Type as ListType,
 } from 'react-swipeable-list';
 import { MAX_ITEM_LENGTH } from '../constants';
@@ -20,6 +21,7 @@ interface SortableItemProps {
     onDelete?: (id: string) => void;
     onEdit?: (id: string, text: string) => void;
     onUpdate?: (id: string, updates: Partial<Item>) => void;
+    onSnooze?: (id: string) => void;
     disabled?: boolean;
     /** Subtask items that belong to this parent */
     subtasks?: Item[];
@@ -152,6 +154,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
     onDelete,
     onEdit,
     onUpdate,
+    onSnooze,
     disabled,
     subtasks = [],
     onAddSubtask,
@@ -243,6 +246,20 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         transition,
     };
 
+    const leadingActions = () => (
+        <LeadingActions>
+            <SwipeAction
+                destructive={false}
+                onClick={() => onSnooze && onSnooze(item.id)}
+            >
+                <div className="flex items-center justify-start px-4 gap-2 bg-indigo-500 text-white h-full rounded-l-2xl">
+                    <Moon size={20} />
+                    <span className="text-sm font-semibold">Imorgon</span>
+                </div>
+            </SwipeAction>
+        </LeadingActions>
+    );
+
     const trailingActions = () => (
         <TrailingActions>
             <SwipeAction
@@ -295,6 +312,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
             <SwipeableList threshold={0.25} type={ListType.IOS}>
                 <SwipeableListItem
                     trailingActions={trailingActions()}
+                    leadingActions={onSnooze ? leadingActions() : undefined}
                 >
                     <div className="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#323943] rounded-2xl group-focus:ring-2 group-focus:ring-primary/30 outline-none transition-all duration-300 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-gray-100/50 dark:border-gray-700/30 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md overflow-hidden relative">
                         {/* Priority Indicator Bar */}
@@ -355,7 +373,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                                             setIsEditing(true);
                                         }
                                     }}
-                                    className={`w-full p-1 min-h-[1.5rem] truncate cursor-text ${(() => {
+                                    className={`w-full p-1 min-h-[1.5rem] break-words whitespace-normal cursor-text leading-snug ${(() => {
                                         if (item.completed) return 'line-through text-gray-400';
                                         return 'text-gray-700 dark:text-gray-200';
                                     })()} ${isReadOnly ? 'cursor-not-allowed' : ''}`}

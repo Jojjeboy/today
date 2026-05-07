@@ -1,5 +1,10 @@
 [
   {
+    "hash": "6c7e37a23723c5145e9cf191b4859ab54aeeb276",
+    "date": "2026-04-08 16:26:57 +0200",
+    "message": "Light/darkmode toggle"
+  },
+  {
     "hash": "2c320bee020e3ec7178d56da4b74338df8a2ce02",
     "date": "2026-04-08 12:06:15 +0200",
     "message": "mc"
@@ -93,10 +98,5 @@
     "hash": "f8d6fc035271853af994c0812e7626c24c09401b",
     "date": "2026-03-27 15:26:41 +0100",
     "message": "fix(sync): resolve nested field update issue and typing"
-  },
-  {
-    "hash": "f63b242c9a94845c05b3cbfd6bed0c2ecd5dcaf7",
-    "date": "2026-03-27 14:55:58 +0100",
-    "message": "Fix of save"
   }
 ]

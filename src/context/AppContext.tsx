@@ -81,7 +81,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const categoriesSync = useFirestoreSync<Category>('users/{uid}/categories', user?.uid);
     const historySync = useFirestoreSync<HistoryItem>('users/{uid}/history', user?.uid);
 
-    const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+    const [theme, setTheme] = useState<'light' | 'dark'>('light');
     const { showToast } = useToast();
     const { t } = useTranslation();
     const [isCreatingDefault, setIsCreatingDefault] = React.useState(false);
@@ -148,9 +148,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (savedTheme) {
             setTheme(savedTheme);
         } else {
-            // Default to dark mode for new users
-            setTheme('dark');
-            document.documentElement.classList.add('dark');
+            // Default to light mode for new users
+            setTheme('light');
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
         }
     }, []);
 
@@ -189,7 +190,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             // Fill itemsMap with undefined stripped
             items.forEach(item => {
                 const truncatedItem: Item = { ...item, text: item.text.substring(0, MAX_ITEM_LENGTH) };
-                (['parentId', 'priority', 'dueDate', 'sectionId', 'state'] as (keyof Item)[]).forEach(key => {
+                 (['parentId', 'priority', 'dueDate', 'sectionId', 'state', 'snoozedUntil'] as (keyof Item)[]).forEach(key => {
                     if (truncatedItem[key] === undefined) {
                         delete truncatedItem[key];
                     }
@@ -218,7 +219,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                  // Firestore throws an error if we try to save `undefined` directly.
                  // Also, if we omit a field, `merge: true` ignores it and keeps the old value.
                  // We must send `deleteField()` out to actually wipe it.
-                 (['parentId', 'priority', 'dueDate', 'sectionId', 'state'] as (keyof Item)[]).forEach(key => {
+                  (['parentId', 'priority', 'dueDate', 'sectionId', 'state', 'snoozedUntil'] as (keyof Item)[]).forEach(key => {
                      if (truncatedItem[key] === undefined) {
                          if (dbMap[item.id] && dbMap[item.id][key] !== undefined) {
                              // The existing document in DB has this field, so we must delete it explicitly
