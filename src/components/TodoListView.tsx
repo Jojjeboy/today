@@ -170,7 +170,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                     setNewItemText('');
                     setSuggestions([]);
                     setShowSuggestions(false);
-                    
+
                     // NLP Date Parsing
                     let finalTitle = textToAdd;
                     let dueDate: string | undefined = undefined;
@@ -178,11 +178,11 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                     try {
                         const parseFunc = chronoParse;
                         const parsedResults = parseFunc ? parseFunc(textToAdd) : [];
-                        
+
                         if (parsedResults && parsedResults.length > 0) {
                             const firstResult = parsedResults[0];
                             dueDate = firstResult.start.date().toISOString();
-                            
+
                             // Remove the parsed date part from the text for a cleaner title
                             finalTitle = textToAdd.replace(firstResult.text, '').trim();
                             // Clean up multiple spaces if any
@@ -232,11 +232,11 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     const handleToggle = async (itemId: string) => {
         const itemToToggle = list.items.find(i => i.id === itemId);
         if (!itemToToggle) return;
-        
+
         // Cycle: unresolved -> ongoing -> completed -> unresolved
         const currentState = itemToToggle.state || (itemToToggle.completed ? 'completed' : 'unresolved');
         let nextState: "unresolved" | "ongoing" | "completed";
-        
+
         if (currentState === 'unresolved') nextState = 'ongoing';
         else if (currentState === 'ongoing') nextState = 'completed';
         else nextState = 'unresolved';
@@ -251,13 +251,43 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
 
         const descendantIds = getDescendantIds(itemId);
 
-        const newItems = list.items.map(item => {
-            if (item.id === itemId || descendantIds.includes(item.id)) {
-                return { ...item, state: nextState, completed: isCompleted };
-            }
-            return item;
-        });
-        await updateListItems(list.id, newItems);
+         let newItems = list.items.map(item => {
+             if (item.id === itemId || descendantIds.includes(item.id)) {
+                 return { ...item, state: nextState, completed: isCompleted };
+             }
+             return item;
+         });
+
+         if (isCompleted) {
+             const currentIndex = newItems.findIndex(i => i.id === itemId);
+
+             if (currentIndex !== -1) {
+                 const [itemToMove] = newItems.splice(currentIndex, 1);
+
+
+                 // Actually, simpler: just find the first completed item in the updated list
+                 // and insert the toggled item right before it.
+
+                 // To put it at the TOP of completed items, we insert it at the first completed index.
+                 // If no others are completed, it goes to the end or top? 
+                 // User said "top of the done items".
+
+                 // Let's just use a simpler approach:
+                 // 1. Filter out the item
+                 // 2. Find first completed item index
+                 // 3. Insert item there.
+
+                 // Re-calculating based on the map result:
+                 const filtered = newItems.filter(i => i.id !== itemId);
+                 const firstDoneIdx = filtered.findIndex(i => i.completed && !i.parentId);
+                 const insertIdx = firstDoneIdx === -1 ? filtered.length : firstDoneIdx;
+
+                 filtered.splice(insertIdx, 0, itemToMove);
+                 newItems = filtered;
+             }
+         }
+
+         await updateListItems(list.id, newItems);
     };
 
     const handleDelete = async (itemId: string) => {

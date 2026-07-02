@@ -84,7 +84,7 @@ const SubtaskRow: React.FC<SubtaskRowProps> = ({ item, isPending, onToggle, onDe
                 onMouseDown={(e) => e.stopPropagation()}
                 onTouchStart={(e) => e.stopPropagation()}
             >
-                {item.state === 'completed' ? (
+                {(item.state === 'completed' || item.completed) ? (
                     <div className="w-4 h-4 rounded-md bg-primary flex items-center justify-center text-black shadow-sm shadow-primary/40">
                         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
@@ -119,7 +119,7 @@ const SubtaskRow: React.FC<SubtaskRowProps> = ({ item, isPending, onToggle, onDe
                     <span
                         onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
                         className={`block w-full text-sm cursor-text truncate ${
-                            item.state === 'completed'
+                            (item.state === 'completed' || item.completed)
                                  ? 'line-through text-gray-400 dark:text-gray-500'
                                  : item.state === 'ongoing'
                                  ? 'text-gray-700 dark:text-gray-300 font-bold'
@@ -354,7 +354,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                             onMouseDown={(e) => e.stopPropagation()}
                             onTouchStart={(e) => e.stopPropagation()}
                         >
-                            {item.state === 'completed' ? (
+                            {(item.state === 'completed' || item.completed) ? (
                                 <div className="w-6 h-6 rounded-lg bg-primary flex items-center justify-center text-black shadow-md shadow-primary/40">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                 </div>
@@ -402,7 +402,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                                         }
                                     }}
                                     className={`w-full p-1 min-h-[1.5rem] break-words whitespace-normal cursor-text leading-snug ${(() => {
-                                        if (item.state === 'completed') return 'line-through text-gray-400';
+                                        if (item.state === 'completed' || item.completed) return 'line-through text-gray-400';
                                         if (item.state === 'ongoing') return 'text-gray-700 dark:text-gray-200 font-bold';
                                         return 'text-gray-700 dark:text-gray-200';
                                     })()} ${isReadOnly ? 'cursor-not-allowed' : ''}`}
