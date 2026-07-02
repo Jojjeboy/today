@@ -426,78 +426,80 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                             </div>
                         )}
 
-                        {/* More Actions Menu */}
-                        {!isReadOnly && (
-                            <div className="relative more-menu-container">
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        const rect = e.currentTarget.getBoundingClientRect();
-                                        setMenuPosition({
-                                            top: rect.bottom + window.scrollY,
-                                            left: rect.right - 192 + window.scrollX // 192px is w-48
-                                        });
-                                        setIsMenuOpen(!isMenuOpen);
-                                    }}
-                                    className="flex-shrink-0 p-1.5 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                    aria-label="More actions"
-                                >
-                                    <MoreVertical size={18} />
-                                </button>
+                         <div className="flex items-center gap-1">
+                             {/* More Actions Menu */}
+                             {!isReadOnly && (
+                                 <div className="relative more-menu-container">
+                                     <button
+                                         onClick={(e) => {
+                                             e.stopPropagation();
+                                             const rect = e.currentTarget.getBoundingClientRect();
+                                             setMenuPosition({
+                                                 top: rect.bottom + window.scrollY,
+                                                 left: rect.right - 192 + window.scrollX // 192px is w-48
+                                             });
+                                             setIsMenuOpen(!isMenuOpen);
+                                         }}
+                                         className="flex-shrink-0 p-1.5 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                         aria-label="More actions"
+                                     >
+                                         <MoreVertical size={18} />
+                                     </button>
 
-                                {isMenuOpen && createPortal(
-                                    <div 
-                                        style={{ top: `${menuPosition.top + 4}px`, left: `${menuPosition.left}px` }}
-                                        className="fixed z-[100] more-menu-content w-48 bg-white dark:bg-[#2a2f3a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl py-1 animate-in fade-in zoom-in-95 duration-100"
-                                    >
-                                        {onAddSubtask && (
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    onAddSubtask(item.id);
-                                                    setIsMenuOpen(false);
-                                                }}
-                                                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                            >
-                                                <ListTree size={16} className="text-gray-400" />
-                                                {t('lists.addSubtask', 'Add subtask')}
-                                            </button>
-                                        )}
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handlePriorityToggle(e);
-                                                setIsMenuOpen(false);
-                                            }}
-                                            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                        >
-                                            <Flag size={16} className={` ${getPriorityTextColor(item.priority)}`} fill={(item.priority && item.priority !== 'low') ? 'currentColor' : 'none'} />
-                                            <span>Priority: {item.priority ? item.priority.charAt(0).toUpperCase() + item.priority.slice(1) : 'None'}</span>
-                                        </button>
-                                        {onDelete && (
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setIsDeleteConfirmOpen(true);
-                                                    setIsMenuOpen(false);
-                                                }}
-                                                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border-t border-gray-100 dark:border-gray-700"
-                                            >
-                                                <Trash2 size={16} />
-                                                <span>Delete item</span>
-                                            </button>
-                                        )}
-                                    </div>,
-                                    document.body
-                                )}
-                            </div>
-                        )}
+                                     {isMenuOpen && createPortal(
+                                         <div 
+                                             style={{ top: `${menuPosition.top + 4}px`, left: `${menuPosition.left}px` }}
+                                             className="fixed z-[100] more-menu-content w-48 bg-white dark:bg-[#2a2f3a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl py-1 animate-in fade-in zoom-in-95 duration-100"
+                                         >
+                                             {onAddSubtask && (
+                                                 <button
+                                                     onClick={(e) => {
+                                                         e.stopPropagation();
+                                                     onAddSubtask(item.id);
+                                                     setIsMenuOpen(false);
+                                                 }}
+                                                 className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                             >
+                                                 <ListTree size={16} className="text-gray-400" />
+                                                 {t('lists.addSubtask', 'Add subtask')}
+                                             </button>
+                                         )}
+                                         <button
+                                             onClick={(e) => {
+                                                 e.stopPropagation();
+                                                 handlePriorityToggle(e);
+                                                 setIsMenuOpen(false);
+                                             }}
+                                             className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                         >
+                                             <Flag size={16} className={` ${getPriorityTextColor(item.priority)}`} fill={(item.priority && item.priority !== 'low') ? 'currentColor' : 'none'} />
+                                             <span>Priority: {item.priority ? item.priority.charAt(0).toUpperCase() + item.priority.slice(1) : 'None'}</span>
+                                         </button>
+                                         {onDelete && (
+                                             <button
+                                                 onClick={(e) => {
+                                                     e.stopPropagation();
+                                                     setIsDeleteConfirmOpen(true);
+                                                     setIsMenuOpen(false);
+                                                 }}
+                                                 className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border-t border-gray-100 dark:border-gray-700"
+                                             >
+                                                 <Trash2 size={16} />
+                                                 <span>Delete item</span>
+                                             </button>
+                                         )}
+                                     </div>,
+                                     document.body
+                                 )}
+                             </div>
+                         )}
 
-                        {!disabled && (
-                            <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 touch-none" aria-label="Drag to reorder item">
-                                <GripVertical size={24} strokeWidth={2.5} />
-                            </div>
-                        )}
+                         {!disabled && (
+                             <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 touch-none" aria-label="Drag to reorder item">
+                                 <GripVertical size={24} strokeWidth={2.5} />
+                             </div>
+                         )}
+                         </div>
 
                     </div>
                 </SwipeableListItem>
