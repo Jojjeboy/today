@@ -30,14 +30,13 @@ vi.mock('react-swipeable-list', () => ({
     Type: { IOS: 'IOS', MS: 'MS' },
 }));
 
-vi.mock('lucide-react', () => ({
-    Trash2: () => <div />,
-    GripVertical: () => <div />,
-    CloudUpload: () => <div />,
-    Calendar: () => <div />,
-    ListTree: () => <div />,
-    Flag: () => <button data-testid="flag-icon" />,
-}));
+vi.mock('lucide-react', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('lucide-react')>();
+    return {
+        ...actual,
+        Flag: () => <button data-testid="flag-icon" />,
+    };
+});
 
 const baseItem = {
     id: 'item1',
@@ -62,10 +61,19 @@ describe('SortableItem - Priority Cycling', () => {
             />
         );
 
-        const flagBtn = screen.getByLabelText('Cycle priority');
+        const openMenu = () => {
+            const moreBtn = screen.getByLabelText('More actions');
+            fireEvent.click(moreBtn);
+        };
+
+        const clickPriority = () => {
+            const priorityBtn = screen.getByText(/Priority:/i);
+            fireEvent.click(priorityBtn);
+        };
 
         // Click 1: undefined -> low
-        fireEvent.click(flagBtn);
+        openMenu();
+        clickPriority();
         expect(mockOnUpdate).toHaveBeenNthCalledWith(1, 'item1', { priority: 'low' });
 
         // Rerender with updated priority
@@ -78,7 +86,8 @@ describe('SortableItem - Priority Cycling', () => {
         );
 
         // Click 2: low -> medium
-        fireEvent.click(flagBtn);
+        openMenu();
+        clickPriority();
         expect(mockOnUpdate).toHaveBeenNthCalledWith(2, 'item1', { priority: 'medium' });
 
         rerender(
@@ -90,7 +99,8 @@ describe('SortableItem - Priority Cycling', () => {
         );
 
         // Click 3: medium -> high
-        fireEvent.click(flagBtn);
+        openMenu();
+        clickPriority();
         expect(mockOnUpdate).toHaveBeenNthCalledWith(3, 'item1', { priority: 'high' });
 
         rerender(
@@ -102,7 +112,8 @@ describe('SortableItem - Priority Cycling', () => {
         );
 
         // Click 4: high -> undefined (back to no priority)
-        fireEvent.click(flagBtn);
+        openMenu();
+        clickPriority();
         expect(mockOnUpdate).toHaveBeenNthCalledWith(4, 'item1', { priority: undefined });
     });
 });

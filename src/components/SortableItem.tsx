@@ -1,8 +1,10 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
+import { Modal } from './Modal';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Item, Priority } from '../types';
-import { Trash2, GripVertical, CloudUpload, Plus, ListTree, Flag, Calendar, Moon } from 'lucide-react';
+import { Trash2, GripVertical, CloudUpload, Plus, ListTree, Flag, Calendar, Moon, MoreVertical } from 'lucide-react';
 import {
     SwipeableList,
     SwipeableListItem,
@@ -241,6 +243,22 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         isDragging,
     } = useSortable({ id: item.id, disabled });
 
+    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = React.useState(false);
+    const [menuPosition, setMenuPosition] = React.useState({ top: 0, left: 0 });
+
+    React.useEffect(() => {
+        if (!isMenuOpen) return;
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (!target.closest('.more-menu-container') && !target.closest('.more-menu-content')) {
+                setIsMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isMenuOpen]);
+
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
@@ -314,7 +332,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                     trailingActions={trailingActions()}
                     leadingActions={onSnooze ? leadingActions() : undefined}
                 >
-                    <div className="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#323943] rounded-2xl group-focus:ring-2 group-focus:ring-primary/30 outline-none transition-all duration-300 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-gray-100/50 dark:border-gray-700/30 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md overflow-hidden relative">
+                    <div className="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#323943] rounded-2xl group-focus:ring-2 group-focus:ring-primary/30 outline-none transition-all duration-300 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-gray-100/50 dark:border-gray-700/30 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md relative">
                         {/* Priority Indicator Bar */}
                         {item.priority && (
                             <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${getPriorityColor(item.priority)}`} />
@@ -397,39 +415,71 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                             </div>
                         )}
 
-                        {/* Add-subtask button — touch-friendly, always visible on mobile */}
-                        {onAddSubtask && !isReadOnly && (
-                            <button
-                                onClick={(e) => { e.stopPropagation(); onAddSubtask(item.id); }}
-                                className="flex-shrink-0 p-1.5 rounded-md text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20
-                                           transition-colors
-                                           opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100"
-                                aria-label={t('lists.addSubtask', 'Add subtask')}
-                                title={t('lists.addSubtask', 'Add subtask')}
-                                onMouseDown={(e) => e.stopPropagation()}
-                                onTouchStart={(e) => e.stopPropagation()}
-                            >
-                                <ListTree size={16} />
-                            </button>
-                        )}
-
-                        {/* Priority Toggle Button */}
+                        {/* More Actions Menu */}
                         {!isReadOnly && (
-                            <button
-                                onClick={handlePriorityToggle}
-                                className={`flex-shrink-0 p-1.5 rounded-md transition-all duration-200
-                                           ${getPriorityTextColor(item.priority)}
-                                           hover:bg-gray-100 dark:hover:bg-gray-700
-                                           opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100
-                                           active:scale-90`}
-                                aria-label="Cycle priority"
-                                title={`Priority: ${item.priority ?? 'None'}`}
-                                onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                                onMouseDown={(e) => e.stopPropagation()}
-                                onTouchStart={(e) => e.stopPropagation()}
-                            >
-                                <Flag size={16} fill={(item.priority && item.priority !== 'low') ? 'currentColor' : 'none'} strokeWidth={2.5} />
-                            </button>
+                            <div className="relative more-menu-container">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        const rect = e.currentTarget.getBoundingClientRect();
+                                        setMenuPosition({
+                                            top: rect.bottom + window.scrollY,
+                                            left: rect.right - 192 + window.scrollX // 192px is w-48
+                                        });
+                                        setIsMenuOpen(!isMenuOpen);
+                                    }}
+                                    className="flex-shrink-0 p-1.5 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                    aria-label="More actions"
+                                >
+                                    <MoreVertical size={18} />
+                                </button>
+
+                                {isMenuOpen && createPortal(
+                                    <div 
+                                        style={{ top: `${menuPosition.top + 4}px`, left: `${menuPosition.left}px` }}
+                                        className="fixed z-[100] more-menu-content w-48 bg-white dark:bg-[#2a2f3a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl py-1 animate-in fade-in zoom-in-95 duration-100"
+                                    >
+                                        {onAddSubtask && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onAddSubtask(item.id);
+                                                    setIsMenuOpen(false);
+                                                }}
+                                                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                            >
+                                                <ListTree size={16} className="text-gray-400" />
+                                                {t('lists.addSubtask', 'Add subtask')}
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handlePriorityToggle(e);
+                                                setIsMenuOpen(false);
+                                            }}
+                                            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                        >
+                                            <Flag size={16} className={` ${getPriorityTextColor(item.priority)}`} fill={(item.priority && item.priority !== 'low') ? 'currentColor' : 'none'} />
+                                            <span>Priority: {item.priority ? item.priority.charAt(0).toUpperCase() + item.priority.slice(1) : 'None'}</span>
+                                        </button>
+                                        {onDelete && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setIsDeleteConfirmOpen(true);
+                                                    setIsMenuOpen(false);
+                                                }}
+                                                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border-t border-gray-100 dark:border-gray-700"
+                                            >
+                                                <Trash2 size={16} />
+                                                <span>Delete item</span>
+                                            </button>
+                                        )}
+                                    </div>,
+                                    document.body
+                                )}
+                            </div>
                         )}
 
                         {!disabled && (
@@ -438,17 +488,6 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                             </div>
                         )}
 
-                        {onDelete && (
-                            <button
-                                onClick={() => onDelete(item.id)}
-                                className="p-2 text-gray-400 hover:text-red-500 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100"
-                                aria-label="Delete item"
-                                onMouseDown={(e) => e.stopPropagation()}
-                                onTouchStart={(e) => e.stopPropagation()}
-                            >
-                                <Trash2 size={18} />
-                            </button>
-                        )}
                     </div>
                 </SwipeableListItem>
             </SwipeableList>
@@ -483,6 +522,19 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                     {t('lists.addSubtask', 'Add subtask')}
                 </button>
             )}
+
+            <Modal 
+                isOpen={isDeleteConfirmOpen} 
+                onClose={() => setIsDeleteConfirmOpen(false)}
+                onConfirm={() => {
+                    onDelete?.(item.id);
+                    setIsDeleteConfirmOpen(false);
+                }}
+                title={t('common.delete_confirm_title', 'Delete item')}
+                message={t('common.delete_confirm_message', 'Are you sure you want to delete this item? This action cannot be undone.')}
+                isDestructive={true}
+                confirmText={t('common.delete', 'Delete')}
+            />
         </div>
     );
 };

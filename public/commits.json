@@ -1,5 +1,15 @@
 [
   {
+    "hash": "22e71448f2430acb9b7aafa3a49b9e942acfaf3a",
+    "date": "2026-05-07 13:30:36 +0200",
+    "message": "Fixed 6 packages"
+  },
+  {
+    "hash": "5c50aa8b36eb91be9c289e50c8b10ff291338d7c",
+    "date": "2026-05-07 13:27:25 +0200",
+    "message": "Added stuff"
+  },
+  {
     "hash": "6c7e37a23723c5145e9cf191b4859ab54aeeb276",
     "date": "2026-04-08 16:26:57 +0200",
     "message": "Light/darkmode toggle"
@@ -88,15 +98,5 @@
     "hash": "b9ec1db0ba952abbf22c62d9da7936d923e57a6b",
     "date": "2026-03-27 15:30:47 +0100",
     "message": "mc"
-  },
-  {
-    "hash": "98ded9a9f44d2f0f0075ad10240df22d7be01562",
-    "date": "2026-03-27 15:27:34 +0100",
-    "message": "fix(sync): resolve validation typing for Partial<ListDB>"
-  },
-  {
-    "hash": "f8d6fc035271853af994c0812e7626c24c09401b",
-    "date": "2026-03-27 15:26:41 +0100",
-    "message": "fix(sync): resolve nested field update issue and typing"
   }
 ]
