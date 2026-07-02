@@ -233,7 +233,15 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
         const itemToToggle = list.items.find(i => i.id === itemId);
         if (!itemToToggle) return;
         
-        const newCompleted = !itemToToggle.completed;
+        // Cycle: unresolved -> ongoing -> completed -> unresolved
+        const currentState = itemToToggle.state || (itemToToggle.completed ? 'completed' : 'unresolved');
+        let nextState: "unresolved" | "ongoing" | "completed";
+        
+        if (currentState === 'unresolved') nextState = 'ongoing';
+        else if (currentState === 'ongoing') nextState = 'completed';
+        else nextState = 'unresolved';
+
+        const isCompleted = nextState === 'completed';
 
         // Recursive function to get all descendant IDs
         const getDescendantIds = (parentId: string): string[] => {
@@ -245,7 +253,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
 
         const newItems = list.items.map(item => {
             if (item.id === itemId || descendantIds.includes(item.id)) {
-                return { ...item, completed: newCompleted };
+                return { ...item, state: nextState, completed: isCompleted };
             }
             return item;
         });

@@ -4,7 +4,7 @@ import { Modal } from './Modal';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Item, Priority } from '../types';
-import { Trash2, GripVertical, CloudUpload, Plus, ListTree, Flag, Calendar, Moon, MoreVertical } from 'lucide-react';
+import { Trash2, GripVertical, CloudUpload, Plus, ListTree, Flag, Calendar, Moon, MoreVertical, Play } from 'lucide-react';
 import {
     SwipeableList,
     SwipeableListItem,
@@ -84,9 +84,13 @@ const SubtaskRow: React.FC<SubtaskRowProps> = ({ item, isPending, onToggle, onDe
                 onMouseDown={(e) => e.stopPropagation()}
                 onTouchStart={(e) => e.stopPropagation()}
             >
-                {item.completed ? (
+                {item.state === 'completed' ? (
                     <div className="w-4 h-4 rounded-md bg-primary flex items-center justify-center text-black shadow-sm shadow-primary/40">
                         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                ) : item.state === 'ongoing' ? (
+                    <div className="w-4 h-4 rounded-md bg-orange-500 flex items-center justify-center text-white shadow-sm shadow-orange-500/40">
+                        <Play size={8} fill="currentColor" className="animate-pulse" />
                     </div>
                 ) : (
                     <div className="w-4 h-4 rounded-md border-2 border-gray-300 dark:border-[#4a5568]"></div>
@@ -115,9 +119,11 @@ const SubtaskRow: React.FC<SubtaskRowProps> = ({ item, isPending, onToggle, onDe
                     <span
                         onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
                         className={`block w-full text-sm cursor-text truncate ${
-                            item.completed
-                                ? 'line-through text-gray-400 dark:text-gray-500'
-                                : 'text-gray-700 dark:text-gray-300'
+                            item.state === 'completed'
+                                 ? 'line-through text-gray-400 dark:text-gray-500'
+                                 : item.state === 'ongoing'
+                                 ? 'text-gray-700 dark:text-gray-300 font-bold'
+                                 : 'text-gray-700 dark:text-gray-300'
                         }`}
                     >
                         {localText || <span className="opacity-40 italic">Subtask…</span>}
@@ -344,13 +350,17 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                                 if (onToggle) onToggle(item.id);
                             }}
                             className={`flex-shrink-0 transition-transform active:scale-90 ${isInteractionDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            aria-label={item.completed ? "Mark as incomplete" : "Mark as complete"}
+                            aria-label={item.state === 'completed' ? "Mark as incomplete" : "Change status"}
                             onMouseDown={(e) => e.stopPropagation()}
                             onTouchStart={(e) => e.stopPropagation()}
                         >
-                            {item.completed ? (
+                            {item.state === 'completed' ? (
                                 <div className="w-6 h-6 rounded-lg bg-primary flex items-center justify-center text-black shadow-md shadow-primary/40">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </div>
+                            ) : item.state === 'ongoing' ? (
+                                <div className="w-6 h-6 rounded-lg bg-orange-500 flex items-center justify-center text-white shadow-md shadow-orange-500/40">
+                                    <Play size={12} fill="currentColor" className="animate-pulse" />
                                 </div>
                             ) : (
                                 <div className="w-6 h-6 rounded-lg border-[2.5px] border-gray-300 dark:border-[#4a5568] hover:border-gray-400 dark:hover:border-[#718096] transition-colors"></div>
@@ -392,7 +402,8 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                                         }
                                     }}
                                     className={`w-full p-1 min-h-[1.5rem] break-words whitespace-normal cursor-text leading-snug ${(() => {
-                                        if (item.completed) return 'line-through text-gray-400';
+                                        if (item.state === 'completed') return 'line-through text-gray-400';
+                                        if (item.state === 'ongoing') return 'text-gray-700 dark:text-gray-200 font-bold';
                                         return 'text-gray-700 dark:text-gray-200';
                                     })()} ${isReadOnly ? 'cursor-not-allowed' : ''}`}
                                 >
