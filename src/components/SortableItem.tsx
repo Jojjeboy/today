@@ -338,7 +338,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                     trailingActions={trailingActions()}
                     leadingActions={onSnooze ? leadingActions() : undefined}
                 >
-                    <div className="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#323943] rounded-2xl group-focus:ring-2 group-focus:ring-primary/30 outline-none transition-all duration-300 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-gray-100/50 dark:border-gray-700/30 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md relative">
+                    <div className="w-full flex items-center gap-3 p-3 bg-white dark:bg-[#323943] rounded-2xl group-focus:ring-2 group-focus:ring-primary/30 outline-none transition-all duration-300 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-gray-100/50 dark:border-gray-700/30 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md relative">
                         {/* Priority Indicator Bar */}
                         {item.priority && (
                             <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${getPriorityColor(item.priority)}`} />

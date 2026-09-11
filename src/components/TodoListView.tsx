@@ -6,7 +6,7 @@ import type { Item, List } from '../types';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
-import { Plus, RotateCcw, ChevronDown, CloudUpload, X, Calendar, ArrowUpDown, Clock, Flag, Type, Target } from 'lucide-react';
+import { Plus, RotateCcw, ChevronDown, CloudUpload, X, ArrowUpDown, Clock, Flag, Type, Target } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { Confetti } from './Confetti';
 import { CelebrationOverlay } from './CelebrationOverlay';
@@ -328,7 +328,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
         <div className="flex flex-col min-h-[calc(100vh-8rem)] relative pb-40 md:pb-32">
             {showConfetti && <Confetti trigger={true} duration={6000} />}
             {celebrationMessage && <CelebrationOverlay message={celebrationMessage} />}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                     <div className="flex items-center justify-between group min-w-0 flex-1">
                         <div className="flex items-center gap-2">
@@ -411,7 +411,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                     <>
                         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                             <SortableContext items={activeItems.map(i => i.id)} strategy={verticalListSortingStrategy}>
-                                <div className="space-y-6">
+                                <div className="space-y-3">
                                     {/* Normal Items */}
                                     <div className="space-y-2">
                                         {itemsWithoutDate.map((item) => (
@@ -433,10 +433,9 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
 
                                     {/* Scheduled Section */}
                                     {itemsWithDate.length > 0 && (
-                                        <div className="space-y-4">
-                                            <div className="flex items-center gap-2 px-1 text-primary/60">
-                                                <Calendar size={16} strokeWidth={2.5} />
-                                                <h3 className="text-xs font-bold uppercase tracking-widest">{t('lists.scheduled', 'Scheduled')}</h3>
+                                        <div className="space-y-3">
+                                            <div className="flex items-center gap-1.5 px-1 text-gray-400 dark:text-gray-500">
+                                                <h3 className="text-[10px] font-bold uppercase tracking-widest">{t('lists.scheduled', 'Scheduled')}</h3>
                                             </div>
                                             <div className="space-y-2">
                                                 {itemsWithDate.map((item) => (
@@ -496,14 +495,14 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
 
                         {/* Completed Items Accordion */}
                         {zenModeCompletedItems.length > 0 && (
-                            <div className="mt-8 pt-4 border-t border-gray-100 dark:border-gray-800">
+                            <div className="mt-6 pt-3 border-t border-gray-100 dark:border-gray-800">
                                 <button
                                     onClick={() => setCompletedAccordionOpen(!completedAccordionOpen)}
-                                    className="flex items-center gap-2 py-2 px-3 -ml-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors mb-4"
+                                    className="flex items-center gap-1.5 py-1.5 px-2 -ml-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors mb-3"
                                 >
-                                    <ChevronDown size={16} className={`transition-transform duration-200 ${completedAccordionOpen ? 'rotate-180' : ''}`} />
+                                    <ChevronDown size={14} className={`transition-transform duration-200 ${completedAccordionOpen ? 'rotate-180' : ''}`} />
                                     {t('lists.completedItems', 'Completed Items')}
-                                    <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full text-xs ml-1">{zenModeCompletedItems.length}</span>
+                                    <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-1.5 py-0.5 rounded-full text-[10px] ml-1">{zenModeCompletedItems.length}</span>
                                 </button>
 
                                 {completedAccordionOpen && (
@@ -533,12 +532,12 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
 
             {/* Floating Persistent Bottom Bar ("Add Inbox") */}
             {document.body && createPortal(
-                <div className="fixed bottom-0 left-0 right-0 md:left-72 bg-gradient-to-t from-[#f4f5f7] via-[#f4f5f7]/95 to-[#f4f5f7]/0 dark:from-[#2D3540] dark:via-[#2D3540]/95 dark:to-[#2D3540]/0 pt-10 pb-8 px-6 z-[100] transition-all duration-300 pointer-events-none">
+                <div className="fixed bottom-0 left-0 right-0 md:left-72 bg-gradient-to-t from-[#f4f5f7] via-[#f4f5f7]/95 to-[#f4f5f7]/0 dark:from-[#2D3540] dark:via-[#2D3540]/95 dark:to-[#2D3540]/0 pt-6 pb-4 px-6 z-[100] transition-all duration-300 pointer-events-none">
                     <div className="max-w-3xl mx-auto pointer-events-auto">
                         <div className="relative group">
-                            <form onSubmit={handleAddItem} className="flex gap-3 items-center bg-white/80 dark:bg-black/20 backdrop-blur-xl p-2 pl-4 rounded-[32px] border border-white/50 dark:border-white/10 shadow-xl transition-all">
+                            <form onSubmit={handleAddItem} className="flex gap-2 items-center bg-white/80 dark:bg-black/20 p-2 pl-4 rounded-[32px] border border-white/50 dark:border-white/10 shadow-lg transition-all">
                                 <div className="relative flex-1">
-                                    <Plus className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors pointer-events-none z-10" size={22} />
+                                    <Plus className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors pointer-events-none z-10" size={20} />
                                     <InlineAutocompleteInput
                                         id="add-item-input"
                                         value={newItemText}
@@ -546,7 +545,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                         onSubmit={() => handleAddItem()}
                                         suggestions={suggestions}
                                         placeholder={t('lists.addItemPlaceholder')}
-                                        className="w-full pl-8 pr-4 py-3 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none font-medium text-lg"
+                                        className="w-full pl-8 pr-4 py-2 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none font-medium text-base"
                                         inputPaddingClass="pl-8"
                                         maxLength={MAX_ITEM_LENGTH}
                                     />
