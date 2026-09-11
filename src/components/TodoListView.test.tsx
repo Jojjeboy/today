@@ -52,6 +52,7 @@ vi.mock('lucide-react', () => ({
     ArrowUpDown: () => <div />,
     Clock: () => <div />,
     Type: () => <div />,
+    Target: () => <div />,
 }));
 
 const mockUpdateListItems = vi.fn().mockResolvedValue(undefined);

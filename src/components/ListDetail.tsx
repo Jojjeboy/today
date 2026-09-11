@@ -220,9 +220,10 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
 
         const searchText = newItemText.toLowerCase();
         
-        // Filter history
+        // Filter history (only show suggestions with usageCount > 1)
         const historyMatches = itemHistory.filter(h => 
             h.text.toLowerCase().includes(searchText) &&
+            h.usageCount > 1 &&
             !list?.items.some(i => i.text.toLowerCase() === h.text.toLowerCase() && !i.completed) // Don't suggest if already active
         );
 

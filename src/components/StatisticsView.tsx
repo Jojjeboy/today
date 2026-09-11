@@ -44,9 +44,10 @@ export const StatisticsView: React.FC = () => {
         ].filter(d => d.value > 0);
     }, [todos, t, PRIORITY_COLORS]);
 
-    // Data for Most Used Items
+    // Data for Most Used Items (only include items with usageCount > 1)
     const topItemsData = useMemo(() => {
         return [...itemHistory]
+            .filter(item => item.usageCount > 1)
             .sort((a, b) => b.usageCount - a.usageCount)
             .slice(0, 10)
             .map(item => ({

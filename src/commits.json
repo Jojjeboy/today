@@ -1,5 +1,30 @@
 [
   {
+    "hash": "60f5a7b139edcda74e599dd3b985521684e837bc",
+    "date": "2026-07-02 17:36:42 +0200",
+    "message": "Sorting"
+  },
+  {
+    "hash": "6b02fc89215380915a7936cba27901740200eace",
+    "date": "2026-07-02 17:16:58 +0200",
+    "message": "distance"
+  },
+  {
+    "hash": "f512c6f6cf064d7622991b6c7ad7a35c1117d388",
+    "date": "2026-07-02 16:57:35 +0200",
+    "message": "Ongoing"
+  },
+  {
+    "hash": "3b812501e34c52c9ee60e60f9b8e36cfd1b01407",
+    "date": "2026-07-02 16:11:43 +0200",
+    "message": "npm audit fix"
+  },
+  {
+    "hash": "9322da28f918b1729d6bef6165ab1a31fb2561e0",
+    "date": "2026-07-02 16:01:04 +0200",
+    "message": "feat: implement more actions menu and delete confirmation modal in SortableItem component"
+  },
+  {
     "hash": "22e71448f2430acb9b7aafa3a49b9e942acfaf3a",
     "date": "2026-05-07 13:30:36 +0200",
     "message": "Fixed 6 packages"
@@ -73,30 +98,5 @@
     "hash": "c01ab8b68219379c5502bf02c76cb55b1884bb3f",
     "date": "2026-04-02 16:41:37 +0200",
     "message": "Confetti"
-  },
-  {
-    "hash": "420d5106618c52d29e8d64dfc2b516e44f9b769b",
-    "date": "2026-03-29 01:32:55 +0100",
-    "message": "Update theme color in vite.config.ts"
-  },
-  {
-    "hash": "1e7df370d9c7c3a2b5d694f4bd26cf8acd427424",
-    "date": "2026-03-28 07:24:53 +0100",
-    "message": "chore: update libraries and refine UI accent color"
-  },
-  {
-    "hash": "aaea6c25ce3db6deb0c80e8b8087282608462765",
-    "date": "2026-03-27 16:30:21 +0100",
-    "message": "Alot"
-  },
-  {
-    "hash": "e5ea8ce3ff74f74db79d0528c05bd049feb6336e",
-    "date": "2026-03-27 16:29:20 +0100",
-    "message": "Alot"
-  },
-  {
-    "hash": "b9ec1db0ba952abbf22c62d9da7936d923e57a6b",
-    "date": "2026-03-27 15:30:47 +0100",
-    "message": "mc"
   }
 ]

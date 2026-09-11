@@ -6,7 +6,7 @@ import type { Item, List } from '../types';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
-import { Plus, RotateCcw, ChevronDown, CloudUpload, X, Calendar, ArrowUpDown, Clock, Flag, Type } from 'lucide-react';
+import { Plus, RotateCcw, ChevronDown, CloudUpload, X, Calendar, ArrowUpDown, Clock, Flag, Type, Target } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { Confetti } from './Confetti';
 import { CelebrationOverlay } from './CelebrationOverlay';
@@ -33,6 +33,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [completedAccordionOpen, setCompletedAccordionOpen] = useState(false);
     const [showSortPills, setShowSortPills] = useState(false);
+    const [zenMode, setZenMode] = useState(false);
 
     const list: List | undefined = lists.find((l) => l.id === defaultListId);
 
@@ -101,9 +102,9 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
 
         const searchText = newItemText.toLowerCase();
 
-        // Filter history
+        // Filter history (only show suggestions with usageCount > 1)
         const historyMatches = itemHistory.filter(h =>
-            h.text.toLowerCase().includes(searchText)
+            h.text.toLowerCase().includes(searchText) && h.usageCount > 1
         );
 
         // Sort by usage count
@@ -346,6 +347,13 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                             >
                                 <ArrowUpDown size={18} strokeWidth={2.5} />
                             </button>
+                            <button
+                                onClick={() => setZenMode(!zenMode)}
+                                className={`p-2 rounded-xl transition-all ${zenMode ? 'bg-primary/10 text-primary' : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                                title={zenMode ? t('lists.exitZenMode', 'Exit Zen Mode') : t('lists.zenMode', 'Zen Mode')}
+                            >
+                                <Target size={18} strokeWidth={2.5} />
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -380,11 +388,24 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
             {/* Active Items */}
             {(() => {
                 // Only top-level items in the main sorted/draggable list
-            const activeItems = sortedItems.filter(i => !i.completed && !i.parentId);
+                const activeItems = sortedItems.filter(i => !i.completed && !i.parentId);
                 const completedItems = sortedItems.filter(i => i.completed && !i.parentId);
-                
-                const itemsWithoutDate = activeItems.filter(i => !i.dueDate);
-                const itemsWithDate = activeItems.filter(i => i.dueDate);
+
+                // Zen Mode: Show only the highest-priority unchecked task
+                const zenModeActiveItems = zenMode
+                  ? activeItems.length > 0
+                    ? [activeItems.reduce((highest, current) => {
+                        const priorityOrder = { high: 3, medium: 2, low: 1 };
+                        const currentPriority = priorityOrder[current.priority || 'low'] || 1;
+                        const highestPriority = priorityOrder[highest.priority || 'low'] || 1;
+                        return currentPriority > highestPriority ? current : highest;
+                      })]
+                    : []
+                  : activeItems;
+                const zenModeCompletedItems = zenMode ? [] : completedItems;
+
+                const itemsWithoutDate = zenModeActiveItems.filter(i => !i.dueDate);
+                const itemsWithDate = zenModeActiveItems.filter(i => i.dueDate);
 
                 return (
                     <>
@@ -440,7 +461,18 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                             </SortableContext>
                         </DndContext>
 
-                        {activeItems.length === 0 && (
+                        {zenMode && zenModeActiveItems.length > 0 && (
+                            <div className="mt-6 text-center">
+                                <button
+                                    onClick={() => setZenMode(false)}
+                                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-primary transition-colors"
+                                >
+                                    {t('lists.showAllTasks', 'Show All Tasks')}
+                                </button>
+                            </div>
+                        )}
+
+                        {zenModeActiveItems.length === 0 && (
                             <div
                                 onClick={() => {
                                     const input = document.getElementById('add-item-input');
@@ -463,7 +495,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                         )}
 
                         {/* Completed Items Accordion */}
-                        {completedItems.length > 0 && (
+                        {zenModeCompletedItems.length > 0 && (
                             <div className="mt-8 pt-4 border-t border-gray-100 dark:border-gray-800">
                                 <button
                                     onClick={() => setCompletedAccordionOpen(!completedAccordionOpen)}
@@ -471,12 +503,12 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                 >
                                     <ChevronDown size={16} className={`transition-transform duration-200 ${completedAccordionOpen ? 'rotate-180' : ''}`} />
                                     {t('lists.completedItems', 'Completed Items')}
-                                    <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full text-xs ml-1">{completedItems.length}</span>
+                                    <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full text-xs ml-1">{zenModeCompletedItems.length}</span>
                                 </button>
 
                                 {completedAccordionOpen && (
                                     <div className="space-y-2 animate-in slide-in-from-top-2 duration-200">
-                                        {completedItems.map(item => (
+                                        {zenModeCompletedItems.map(item => (
                                             <div key={item.id} className="opacity-60 hover:opacity-100 transition-opacity">
                                                 <SortableItem
                                                     item={{ ...item, isPending: item.isPending || list.isPending }}

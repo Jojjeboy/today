@@ -397,14 +397,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (existingItem) {
             await historySync.updateItem(existingItem.id, {
                 lastUsed: new Date().toISOString(),
-                usageCount: (existingItem.usageCount || 1) + 1
+                usageCount: (existingItem.usageCount || 0) + 1
             });
         } else {
             await historySync.addItem({
                 id: uuidv4(),
                 text: normalizedText,
                 lastUsed: new Date().toISOString(),
-                usageCount: 1
+                usageCount: 0
             });
         }
     };
