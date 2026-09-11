@@ -4,7 +4,7 @@ import { Modal } from './Modal';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Item, Priority } from '../types';
-import { Trash2, GripVertical, CloudUpload, Plus, ListTree, Flag, Calendar, Moon, MoreVertical, Play } from 'lucide-react';
+import { Trash2, GripVertical, CloudUpload, Plus, ListTree, Flag, Calendar, Moon, MoreVertical } from 'lucide-react';
 import {
     SwipeableList,
     SwipeableListItem,
@@ -89,8 +89,8 @@ const SubtaskRow: React.FC<SubtaskRowProps> = ({ item, isPending, onToggle, onDe
                         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
                 ) : item.state === 'ongoing' ? (
-                    <div className="w-4 h-4 rounded-md bg-orange-500 flex items-center justify-center text-white shadow-sm shadow-orange-500/40">
-                        <Play size={8} fill="currentColor" className="animate-pulse" />
+                    <div className="w-4 h-4 rounded-md border-2 border-amber-500 flex items-center justify-center">
+                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                     </div>
                 ) : (
                     <div className="w-4 h-4 rounded-md border-2 border-gray-300 dark:border-[#4a5568]"></div>
