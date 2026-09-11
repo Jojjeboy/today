@@ -6,7 +6,7 @@ import type { Item, List } from '../types';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
-import { Plus, RotateCcw, ChevronDown, CloudUpload, X, ArrowUpDown, Clock, Flag, Type, Target } from 'lucide-react';
+import { Plus, RotateCcw, ChevronDown, CloudUpload, X, ArrowUpDown, Clock, Flag, Type } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { Confetti } from './Confetti';
 import { CelebrationOverlay } from './CelebrationOverlay';
@@ -33,7 +33,6 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [completedAccordionOpen, setCompletedAccordionOpen] = useState(false);
     const [showSortPills, setShowSortPills] = useState(false);
-    const [zenMode, setZenMode] = useState(false);
 
     const list: List | undefined = lists.find((l) => l.id === defaultListId);
 
@@ -347,13 +346,6 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                             >
                                 <ArrowUpDown size={18} strokeWidth={2.5} />
                             </button>
-                            <button
-                                onClick={() => setZenMode(!zenMode)}
-                                className={`p-2 rounded-xl transition-all ${zenMode ? 'bg-primary/10 text-primary' : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
-                                title={zenMode ? t('lists.exitZenMode', 'Exit Zen Mode') : t('lists.zenMode', 'Zen Mode')}
-                            >
-                                <Target size={18} strokeWidth={2.5} />
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -391,21 +383,8 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                 const activeItems = sortedItems.filter(i => !i.completed && !i.parentId);
                 const completedItems = sortedItems.filter(i => i.completed && !i.parentId);
 
-                // Zen Mode: Show only the highest-priority unchecked task
-                const zenModeActiveItems = zenMode
-                  ? activeItems.length > 0
-                    ? [activeItems.reduce((highest, current) => {
-                        const priorityOrder = { high: 3, medium: 2, low: 1 };
-                        const currentPriority = priorityOrder[current.priority || 'low'] || 1;
-                        const highestPriority = priorityOrder[highest.priority || 'low'] || 1;
-                        return currentPriority > highestPriority ? current : highest;
-                      })]
-                    : []
-                  : activeItems;
-                const zenModeCompletedItems = zenMode ? [] : completedItems;
-
-                const itemsWithoutDate = zenModeActiveItems.filter(i => !i.dueDate);
-                const itemsWithDate = zenModeActiveItems.filter(i => i.dueDate);
+                const itemsWithoutDate = activeItems.filter(i => !i.dueDate);
+                const itemsWithDate = activeItems.filter(i => i.dueDate);
 
                 return (
                     <>
@@ -460,18 +439,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                             </SortableContext>
                         </DndContext>
 
-                        {zenMode && zenModeActiveItems.length > 0 && (
-                            <div className="mt-6 text-center">
-                                <button
-                                    onClick={() => setZenMode(false)}
-                                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-primary transition-colors"
-                                >
-                                    {t('lists.showAllTasks', 'Show All Tasks')}
-                                </button>
-                            </div>
-                        )}
-
-                        {zenModeActiveItems.length === 0 && (
+                        {activeItems.length === 0 && (
                             <div
                                 onClick={() => {
                                     const input = document.getElementById('add-item-input');
@@ -494,7 +462,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                         )}
 
                         {/* Completed Items Accordion */}
-                        {zenModeCompletedItems.length > 0 && (
+                        {completedItems.length > 0 && (
                             <div className="mt-6 pt-3 border-t border-gray-100 dark:border-gray-800">
                                 <button
                                     onClick={() => setCompletedAccordionOpen(!completedAccordionOpen)}
@@ -502,12 +470,12 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                 >
                                     <ChevronDown size={14} className={`transition-transform duration-200 ${completedAccordionOpen ? 'rotate-180' : ''}`} />
                                     {t('lists.completedItems', 'Completed Items')}
-                                    <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-1.5 py-0.5 rounded-full text-[10px] ml-1">{zenModeCompletedItems.length}</span>
+                                    <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-1.5 py-0.5 rounded-full text-[10px] ml-1">{completedItems.length}</span>
                                 </button>
 
                                 {completedAccordionOpen && (
                                     <div className="space-y-2 animate-in slide-in-from-top-2 duration-200">
-                                        {zenModeCompletedItems.map(item => (
+                                        {completedItems.map(item => (
                                             <div key={item.id} className="opacity-60 hover:opacity-100 transition-opacity">
                                                 <SortableItem
                                                     item={{ ...item, isPending: item.isPending || list.isPending }}

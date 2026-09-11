@@ -4,7 +4,7 @@ import { Modal } from './Modal';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Item, Priority } from '../types';
-import { Trash2, GripVertical, CloudUpload, Plus, ListTree, Flag, Calendar, Moon, MoreVertical } from 'lucide-react';
+import { Trash2, GripVertical, CloudUpload, Plus, ListTree, Flag, Moon, MoreVertical, ChevronDown, Calendar } from 'lucide-react';
 import {
     SwipeableList,
     SwipeableListItem,
@@ -170,6 +170,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
     const { t } = useTranslation();
     const [localText, setLocalText] = React.useState(item.text);
     const [isEditing, setIsEditing] = React.useState(false);
+    const [isExpanded, setIsExpanded] = React.useState(true);
     const inputRef = React.useRef<HTMLTextAreaElement>(null);
 
     // Auto-resize logic for editing
@@ -367,6 +368,24 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                             )}
                         </button>
 
+                        {subtasks.length > 0 && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsExpanded(!isExpanded);
+                                }}
+                                className="flex-shrink-0 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                                aria-label={isExpanded ? 'Veckla in underpunkter' : 'Veckla ut underpunkter'}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                onTouchStart={(e) => e.stopPropagation()}
+                            >
+                                <ChevronDown
+                                    size={16}
+                                    className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                />
+                            </button>
+                        )}
+
                         <div className="flex-1 min-w-0 flex items-center h-full relative">
                             {isEditing && !isReadOnly ? (
                                 <div className="w-full relative">
@@ -506,7 +525,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
             </SwipeableList>
 
             {/* ── Subtasks ────────────────────────────────────────────── */}
-            {subtasks.length > 0 && (
+            {isExpanded && subtasks.length > 0 && (
                 <div className="ml-4 mt-0.5 mb-1 border-l-2 border-gray-100 dark:border-gray-700 rounded-bl-lg pl-1 space-y-0.5 animate-in slide-in-from-top-1 duration-150">
                     {subtasks.map((sub) => (
                         <SubtaskRow
