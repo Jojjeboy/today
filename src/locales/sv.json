@@ -54,13 +54,17 @@
         "sort": {
             "title": "Sortering",
             "manual": "Anpassad",
-            "priority": "Prioritet",
+            "priority": "Prio",
             "dueDate": "Förfallodatum",
             "alphabetical": "A-Ö",
             "completed": "Omarkerade först"
         },
         "reset": "Återställ",
         "addItemPlaceholder": "Vad behöver göras?",
+        "priority": "Prio",
+        "noPriority": "Ingen",
+        "increasePriority": "Höj prio",
+        "decreasePriority": "Sänk prio",
         "itemExists": "Uppgiften finns redan i listan",
         "added": "Tillagd",
         "groceryList": "Att göra",

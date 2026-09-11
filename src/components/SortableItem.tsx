@@ -4,7 +4,7 @@ import { Modal } from './Modal';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Item, Priority } from '../types';
-import { Trash2, GripVertical, CloudUpload, Plus, ListTree, Flag, Moon, MoreVertical, ChevronDown, Calendar } from 'lucide-react';
+import { Trash2, GripVertical, CloudUpload, Plus, ListTree, Flag, Moon, MoreVertical, ChevronDown, Calendar, ArrowUp, ArrowDown } from 'lucide-react';
 import {
     SwipeableList,
     SwipeableListItem,
@@ -173,6 +173,9 @@ export const SortableItem: React.FC<SortableItemProps> = ({
     const [localText, setLocalText] = React.useState(item.text);
     const [isEditing, setIsEditing] = React.useState(false);
     const [isExpanded, setIsExpanded] = React.useState(true);
+    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = React.useState(false);
+    const [menuPosition, setMenuPosition] = React.useState({ top: 0, left: 0 });
     const inputRef = React.useRef<HTMLTextAreaElement>(null);
 
     // Auto-resize logic for editing
@@ -194,17 +197,20 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         }
     };
 
-    const handlePriorityToggle = (e: React.MouseEvent) => {
+    const changePriority = (e: React.MouseEvent, direction: 'up' | 'down') => {
         e.stopPropagation();
         if (!onUpdate) return;
-        
-        // Cycle: undefined -> low -> medium -> high
+
         const priorities: (Priority | undefined)[] = [undefined, 'low', 'medium', 'high'];
         const currentIndex = priorities.indexOf(item.priority);
-        const nextIndex = (currentIndex + 1) % priorities.length;
-        const nextPriority = priorities[nextIndex];
+        const nextIndex = direction === 'up'
+            ? Math.min(currentIndex + 1, priorities.length - 1)
+            : Math.max(currentIndex - 1, 0);
 
-        onUpdate(item.id, { priority: nextPriority });
+        if (nextIndex !== currentIndex) {
+            onUpdate(item.id, { priority: priorities[nextIndex] });
+            setIsMenuOpen(false);
+        }
     };
 
     const getPriorityColor = (p?: Priority) => {
@@ -251,10 +257,6 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         transition,
         isDragging,
     } = useSortable({ id: item.id, disabled });
-
-    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = React.useState(false);
-    const [menuPosition, setMenuPosition] = React.useState({ top: 0, left: 0 });
 
     React.useEffect(() => {
         if (!isMenuOpen) return;
@@ -486,17 +488,30 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                                                  {t('lists.addSubtask', 'Add subtask')}
                                              </button>
                                          )}
-                                         <button
-                                             onClick={(e) => {
-                                                 e.stopPropagation();
-                                                 handlePriorityToggle(e);
-                                                 setIsMenuOpen(false);
-                                             }}
-                                             className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                         >
-                                             <Flag size={16} className={` ${getPriorityTextColor(item.priority)}`} fill={(item.priority && item.priority !== 'low') ? 'currentColor' : 'none'} />
-                                             <span>Priority: {item.priority ? item.priority.charAt(0).toUpperCase() + item.priority.slice(1) : 'None'}</span>
-                                         </button>
+                                         <div className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200">
+                                             <Flag size={16} className={`flex-shrink-0 ${getPriorityTextColor(item.priority)}`} fill={(item.priority && item.priority !== 'low') ? 'currentColor' : 'none'} />
+                                             <span className="flex-1">{t('lists.priority', 'Priority')}: {item.priority ? item.priority.charAt(0).toUpperCase() + item.priority.slice(1) : t('lists.noPriority', 'None')}</span>
+                                             <button
+                                                 type="button"
+                                                 onClick={(e) => changePriority(e, 'up')}
+                                                 disabled={item.priority === 'high'}
+                                                 aria-label={t('lists.increasePriority', 'Increase priority')}
+                                                 title={t('lists.increasePriority', 'Increase priority')}
+                                                 className="p-1 text-gray-400 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                             >
+                                                 <ArrowUp size={16} />
+                                             </button>
+                                             <button
+                                                 type="button"
+                                                 onClick={(e) => changePriority(e, 'down')}
+                                                 disabled={!item.priority}
+                                                 aria-label={t('lists.decreasePriority', 'Decrease priority')}
+                                                 title={t('lists.decreasePriority', 'Decrease priority')}
+                                                 className="p-1 text-gray-400 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                             >
+                                                 <ArrowDown size={16} />
+                                             </button>
+                                         </div>
                                          {onDelete && (
                                              <button
                                                  onClick={(e) => {

@@ -44,7 +44,7 @@ const baseItem = {
     completed: false,
 };
 
-describe('SortableItem - Priority Cycling', () => {
+describe('SortableItem - Priority Controls', () => {
     const mockOnToggle = vi.fn();
     const mockOnUpdate = vi.fn();
 
@@ -52,7 +52,7 @@ describe('SortableItem - Priority Cycling', () => {
         vi.clearAllMocks();
     });
 
-    it('cycles priority: undefined -> low -> medium -> high -> undefined', () => {
+    it('raises and lowers priority with separate arrow controls', () => {
         const { rerender } = render(
             <SortableItem
                 item={{ ...baseItem, priority: undefined }}
@@ -66,14 +66,13 @@ describe('SortableItem - Priority Cycling', () => {
             fireEvent.click(moreBtn);
         };
 
-        const clickPriority = () => {
-            const priorityBtn = screen.getByText(/Priority:/i);
-            fireEvent.click(priorityBtn);
-        };
+        const clickIncrease = () => fireEvent.click(screen.getByRole('button', { name: 'lists.increasePriority' }));
+        const clickDecrease = () => fireEvent.click(screen.getByRole('button', { name: 'lists.decreasePriority' }));
 
-        // Click 1: undefined -> low
+        // Increase: undefined -> low
         openMenu();
-        clickPriority();
+        expect(screen.getByRole('button', { name: 'lists.decreasePriority' })).toBeDisabled();
+        clickIncrease();
         expect(mockOnUpdate).toHaveBeenNthCalledWith(1, 'item1', { priority: 'low' });
 
         // Rerender with updated priority
@@ -85,9 +84,9 @@ describe('SortableItem - Priority Cycling', () => {
             />
         );
 
-        // Click 2: low -> medium
+        // Increase: low -> medium
         openMenu();
-        clickPriority();
+        clickIncrease();
         expect(mockOnUpdate).toHaveBeenNthCalledWith(2, 'item1', { priority: 'medium' });
 
         rerender(
@@ -98,9 +97,9 @@ describe('SortableItem - Priority Cycling', () => {
             />
         );
 
-        // Click 3: medium -> high
+        // Increase: medium -> high
         openMenu();
-        clickPriority();
+        clickIncrease();
         expect(mockOnUpdate).toHaveBeenNthCalledWith(3, 'item1', { priority: 'high' });
 
         rerender(
@@ -111,9 +110,22 @@ describe('SortableItem - Priority Cycling', () => {
             />
         );
 
-        // Click 4: high -> undefined (back to no priority)
+        // High cannot be increased further; decrease high -> medium.
         openMenu();
-        clickPriority();
-        expect(mockOnUpdate).toHaveBeenNthCalledWith(4, 'item1', { priority: undefined });
+        expect(screen.getByRole('button', { name: 'lists.increasePriority' })).toBeDisabled();
+        clickDecrease();
+        expect(mockOnUpdate).toHaveBeenNthCalledWith(4, 'item1', { priority: 'medium' });
+
+        rerender(
+            <SortableItem
+                item={{ ...baseItem, priority: 'low' }}
+                onToggle={mockOnToggle}
+                onUpdate={mockOnUpdate}
+            />
+        );
+
+        openMenu();
+        clickDecrease();
+        expect(mockOnUpdate).toHaveBeenNthCalledWith(5, 'item1', { priority: undefined });
     });
 });
