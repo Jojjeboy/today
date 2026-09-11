@@ -13,8 +13,10 @@ import { CelebrationOverlay } from './CelebrationOverlay';
 import { useCelebration } from '../hooks/useCelebration';
 import { useTranslation } from 'react-i18next';
 import { InlineAutocompleteInput } from './InlineAutocompleteInput';
+import { SearchResults } from './SearchResults';
 import { MAX_ITEM_LENGTH } from '../constants';
 import * as chronoNode from 'chrono-node';
+import { useSearchParams } from 'react-router-dom';
 const chronoParse = (chronoNode as unknown as { parse?: typeof chronoNode.parse }).parse ?? chronoNode.parse;
 
 
@@ -34,12 +36,47 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     const [completedAccordionOpen, setCompletedAccordionOpen] = useState(false);
     const [showSortPills, setShowSortPills] = useState(false);
     const [mobileFooterSlot, setMobileFooterSlot] = useState<HTMLElement | null>(null);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const isSearchMode = searchParams.get('search') === '1';
+    const searchQuery = searchParams.get('q') || '';
+    const highlightedItemId = searchParams.get('highlight');
+    const list: List | undefined = lists.find((l) => l.id === defaultListId);
 
     useEffect(() => {
         setMobileFooterSlot(document.getElementById('mobile-footer-form-slot'));
     }, []);
 
-    const list: List | undefined = lists.find((l) => l.id === defaultListId);
+    useEffect(() => {
+        setNewItemText(isSearchMode ? searchQuery : '');
+        setSuggestions([]);
+        setShowSuggestions(false);
+    }, [isSearchMode, searchQuery]);
+
+    useEffect(() => {
+        if (!highlightedItemId || !list) return;
+
+        const highlightedItem = list.items.find(item => item.id === highlightedItemId);
+        if (!highlightedItem) return;
+
+        if (highlightedItem.completed) setCompletedAccordionOpen(true);
+
+        const frame = requestAnimationFrame(() => {
+            const element = document.getElementById(`todo-item-${highlightedItemId}`);
+            element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+        const timeout = window.setTimeout(() => {
+            setSearchParams((params) => {
+                const nextParams = new URLSearchParams(params);
+                nextParams.delete('highlight');
+                return nextParams;
+            }, { replace: true });
+        }, 3000);
+
+        return () => {
+            cancelAnimationFrame(frame);
+            window.clearTimeout(timeout);
+        };
+    }, [highlightedItemId, list, setSearchParams]);
 
     React.useEffect(() => {
         if (list) {
@@ -98,6 +135,12 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
 
     // Autocomplete Logic
     useEffect(() => {
+        if (isSearchMode) {
+            setSuggestions([]);
+            setShowSuggestions(false);
+            return;
+        }
+
         if (!newItemText.trim()) {
             setSuggestions([]);
             setShowSuggestions(false);
@@ -116,7 +159,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
 
         setSuggestions(historyMatches.slice(0, 5));
         setShowSuggestions(true);
-    }, [newItemText, itemHistory]);
+    }, [isSearchMode, newItemText, itemHistory]);
 
     // CELEBRATION TRIGGER: Watch for list completion
     useEffect(() => {
@@ -151,6 +194,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
 
     const handleAddItem = async (e?: React.FormEvent, textOverride?: string) => {
         if (e) e.preventDefault();
+        if (isSearchMode) return;
         const textToAdd = (textOverride || newItemText).trim();
 
         if (list && textToAdd) {
@@ -216,6 +260,30 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                 console.error("Failed to add item:", error);
             }
         }
+    };
+
+    const handleSearchChange = (value: string) => {
+        setNewItemText(value);
+        setSearchParams((params) => {
+            const nextParams = new URLSearchParams(params);
+            nextParams.set('search', '1');
+            if (value.trim()) {
+                nextParams.set('q', value);
+            } else {
+                nextParams.delete('q');
+            }
+            return nextParams;
+        });
+    };
+
+    const closeSearch = () => {
+        setNewItemText('');
+        setSearchParams((params) => {
+            const nextParams = new URLSearchParams(params);
+            nextParams.delete('search');
+            nextParams.delete('q');
+            return nextParams;
+        });
     };
 
     const handleSuggestionClick = (text: string) => {
@@ -336,7 +404,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                     <div className="flex items-center justify-between group min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                            <h2 className="text-2xl pt-1 font-bold truncate text-gray-900 dark:text-gray-100 tracking-tight">{t('lists.groceryTitle')}</h2>
+                            <h2 className="text-2xl pt-1 font-bold truncate text-gray-900 dark:text-gray-100 tracking-tight">{isSearchMode ? t('common.search') : t('lists.groceryTitle')}</h2>
                             {list.isPending && (
                                 <div className="text-blue-500 animate-in fade-in duration-300" title="Syncing list...">
                                     <CloudUpload size={20} />
@@ -357,7 +425,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
             </div>
 
             {/* Sorting Pills */}
-            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${showSortPills ? 'max-h-20 opacity-100 mb-6' : 'max-h-0 opacity-0 mb-0'}`}>
+            {!isSearchMode && <div className={`overflow-hidden transition-all duration-300 ease-in-out ${showSortPills ? 'max-h-20 opacity-100 mb-6' : 'max-h-0 opacity-0 mb-0'}`}>
                 <div className="flex flex-wrap gap-2 items-center overflow-x-auto pb-2 scrollbar-hide">
                     <span className="text-sm text-gray-500 dark:text-gray-400 mr-1 flex items-center gap-1.5"><ArrowUpDown size={14} /> {t('lists.sort.title')}</span>
                     {[
@@ -380,8 +448,15 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                     </button>
                 ))}
                 </div>
-            </div>
+            </div>}
 
+            {isSearchMode ? (
+                searchQuery.trim() ? <SearchResults /> : (
+                    <div className="py-20 text-center text-gray-500 dark:text-gray-400">
+                        {t('common.searchPrompt')}
+                    </div>
+                )
+            ) : (<>
             {/* Active Items */}
             {(() => {
                 // Only top-level items in the main sorted/draggable list
@@ -410,6 +485,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                                     .filter(i => i.parentId === item.id)
                                                     .map(i => ({ ...i, isPending: i.isPending || list.isPending }))}
                                                 onAddSubtask={handleAddSubtask}
+                                                highlighted={highlightedItemId === item.id}
                                                 disabled={sortBy !== 'manual'}
                                             />
                                         ))}
@@ -434,6 +510,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                                             .filter(i => i.parentId === item.id)
                                                             .map(i => ({ ...i, isPending: i.isPending || list.isPending }))}
                                                         onAddSubtask={handleAddSubtask}
+                                                        highlighted={highlightedItemId === item.id}
                                                         disabled={sortBy !== 'manual'}
                                                     />
                                                 ))}
@@ -491,6 +568,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                                     subtasks={list.items
                                                         .filter(i => i.parentId === item.id)
                                                         .map(i => ({ ...i, isPending: i.isPending || list.isPending }))}
+                                                    highlighted={highlightedItemId === item.id}
                                                     disabled={true} // Disable drag for completed items
                                                 />
                                             </div>
@@ -502,22 +580,23 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                     </>
                 );
             })()}
+            </>)}
 
-            {/* Floating Persistent Bottom Bar ("Add Inbox") */}
+            {/* Mobile input is rendered inside the footer, directly above its navigation tabs. */}
             {document.body && createPortal(
-                <div className="w-full bg-gradient-to-t from-[#f4f5f7] via-[#f4f5f7]/95 to-[#f4f5f7]/0 dark:from-[#2D3540] dark:via-[#2D3540]/95 dark:to-[#2D3540]/0 pt-6 pb-4 px-6 transition-all duration-300 pointer-events-none">
+                <div className="w-full px-4 pt-2 pointer-events-none">
                     <div className="max-w-3xl mx-auto pointer-events-auto">
                         <div className="relative group">
-                            <form onSubmit={handleAddItem} className="flex gap-2 items-center bg-white/80 dark:bg-black/20 p-2 pl-4 rounded-[32px] border border-white/50 dark:border-white/10 shadow-lg transition-all">
+                            <form onSubmit={handleAddItem} className="flex gap-2 items-center bg-white dark:bg-[#2D3540] p-2 pl-4 shadow-none transition-all">
                                 <div className="relative flex-1">
                                     <Plus className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors pointer-events-none z-10" size={20} />
                                     <InlineAutocompleteInput
                                         id="add-item-input"
                                         value={newItemText}
-                                        onChange={setNewItemText}
+                                        onChange={isSearchMode ? handleSearchChange : setNewItemText}
                                         onSubmit={() => handleAddItem()}
-                                        suggestions={suggestions}
-                                        placeholder={t('lists.addItemPlaceholder')}
+                                        suggestions={isSearchMode ? [] : suggestions}
+                                        placeholder={isSearchMode ? t('common.searchPlaceholder') : t('lists.addItemPlaceholder')}
                                         className="w-full pl-8 pr-4 py-2 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none font-medium text-base"
                                         inputPaddingClass="pl-8"
                                         maxLength={MAX_ITEM_LENGTH}
@@ -574,11 +653,12 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                     )}
                                 </div>
                                 <button
-                                    type="submit"
-                                    disabled={!newItemText.trim()}
-                                    className="p-3 bg-primary text-[#161618] rounded-xl hover:opacity-90 shadow-lg shadow-primary/25 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale"
+                                    type={isSearchMode ? 'button' : 'submit'}
+                                    onClick={isSearchMode ? closeSearch : undefined}
+                                    disabled={!isSearchMode && !newItemText.trim()}
+                                    className="p-3 bg-primary text-[#161618] rounded-full hover:opacity-90 shadow-none transition-all active:scale-95 disabled:opacity-50 disabled:grayscale"
                                 >
-                                    <Plus size={22} strokeWidth={2.5} />
+                                    {isSearchMode ? <X size={22} strokeWidth={2.5} /> : <Plus size={22} strokeWidth={2.5} />}
                                 </button>
                             </form>
                         </div>

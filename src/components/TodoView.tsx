@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
 import { Plus, Trash2, Edit2, Save, X, Check, CloudUpload } from 'lucide-react';
 import { Modal } from './Modal';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
 import { Todo } from '../types';
@@ -40,6 +41,29 @@ export const TodoView: React.FC = () => {
 
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [todoToDelete, setTodoToDelete] = useState<string | null>(null);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const highlightedTodoId = searchParams.get('highlight');
+
+    React.useEffect(() => {
+        if (!highlightedTodoId) return;
+
+        const frame = requestAnimationFrame(() => {
+            const element = document.getElementById(`todo-${highlightedTodoId}`);
+            element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+        const timeout = window.setTimeout(() => {
+            setSearchParams((params) => {
+                const nextParams = new URLSearchParams(params);
+                nextParams.delete('highlight');
+                return nextParams;
+            }, { replace: true });
+        }, 3000);
+
+        return () => {
+            cancelAnimationFrame(frame);
+            window.clearTimeout(timeout);
+        };
+    }, [highlightedTodoId, setSearchParams]);
     const [mobileFooterSlot, setMobileFooterSlot] = useState<HTMLElement | null>(null);
 
     useEffect(() => {
@@ -190,8 +214,10 @@ export const TodoView: React.FC = () => {
                 {sortedTodos.map((todo) => (
                     <div
                         key={todo.id}
+                        id={`todo-${todo.id}`}
                         className={clsx(
                             "group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-300",
+                            highlightedTodoId === todo.id && "search-result-highlight",
                             todo.completed && "bg-gray-50/50 dark:bg-gray-900/30 border-transparent shadow-none"
                         )}
                     >

@@ -53,25 +53,25 @@ describe('SearchResults', () => {
 
     it('filters tasks by text', () => {
         setup('Milk');
-        expect(screen.getByText('Tasks')).toBeDefined();
+        expect(screen.getByText('common.tasks')).toBeDefined();
         expect(screen.getByText('Milk')).toBeDefined();
-        expect(screen.getByText(/In Inköpslista/)).toBeDefined();
+        expect(screen.getByText('common.inList')).toBeDefined();
     });
 
     it('filters todos by title', () => {
         setup('Call');
-        expect(screen.getByText('Todos')).toBeDefined();
+        expect(screen.getByText('common.todos')).toBeDefined();
         expect(screen.getByText('Call Mom')).toBeDefined();
     });
 
     it('filters todos by content', () => {
         setup('dinner');
-        expect(screen.getByText('Todos')).toBeDefined();
+        expect(screen.getByText('common.todos')).toBeDefined();
         expect(screen.getByText('Call Mom')).toBeDefined();
     });
 
     it('shows no results found state', () => {
         setup('Astronaut');
-        expect(screen.getByText('No items found')).toBeDefined();
+        expect(screen.getByText('common.noItemsFound')).toBeDefined();
     });
 });

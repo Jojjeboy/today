@@ -2,9 +2,11 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ListTodo, CheckSquare, CloudUpload, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export const SearchResults: React.FC = () => {
     const { lists, todos } = useApp();
+    const { t } = useTranslation();
     const [searchParams] = useSearchParams();
     const query = (searchParams.get('q') || '').toLowerCase();
 
@@ -29,8 +31,8 @@ export const SearchResults: React.FC = () => {
                 <div className="w-16 h-16 bg-gray-50 dark:bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-4">
                     <ListTodo size={20} />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No items found</h3>
-                <p className="text-gray-500 dark:text-gray-400">Try searching for something else like &quot;milk&quot; or &quot;call&quot;</p>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{t('common.noItemsFound')}</h3>
+                <p className="text-gray-500 dark:text-gray-400">{t('common.searchTryAgain')}</p>
             </div>
         );
     }
@@ -39,23 +41,23 @@ export const SearchResults: React.FC = () => {
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-800">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Results for &quot;<span className="text-blue-600 dark:text-blue-400">{query}</span>&quot;
+                    {t('common.searchResultsFor', { query })}
                 </h2>
                 <span className="text-sm font-medium px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded-full">
-                    {totalResults} items
+                    {t('common.itemsCount', { count: totalResults })}
                 </span>
             </div>
 
             {matchedGroceries.length > 0 && (
                 <div className="space-y-4">
-                    <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                        <ListTodo size={16} /> Tasks
+                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                        <ListTodo size={16} /> {t('common.tasks')}
                     </h3>
                     <div className="grid gap-3">
                         {matchedGroceries.map((item) => (
                             <Link
                                 key={`${item.listId}-${item.id}`}
-                                to={`/list/${item.listId}`}
+                                to={`/?highlight=${encodeURIComponent(item.id)}`}
                                 className="group flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-500/10 transition-all"
                             >
                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${item.completed ? 'bg-green-50 dark:bg-green-900/20 text-green-500' : 'bg-blue-50 dark:bg-blue-900/20 text-blue-500'}`}>
@@ -66,7 +68,7 @@ export const SearchResults: React.FC = () => {
                                         {item.text}
                                     </h4>
                                     <div className="flex items-center gap-2 mt-0.5">
-                                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">In {item.listName}</span>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">{t('common.inList', { name: item.listName })}</span>
                                         {(item.isPending || item.listIsPending) && (
                                             <CloudUpload size={12} className="text-blue-400 animate-in fade-in duration-300" />
                                         )}
@@ -81,14 +83,14 @@ export const SearchResults: React.FC = () => {
 
             {matchedTodos.length > 0 && (
                 <div className="space-y-4">
-                    <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                        <CheckSquare size={16} /> Todos
+                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                        <CheckSquare size={16} /> {t('common.todos')}
                     </h3>
                     <div className="grid gap-3">
                         {matchedTodos.map((todo) => (
                             <Link
                                 key={todo.id}
-                                to="/todos"
+                                to={`/todos?highlight=${encodeURIComponent(todo.id)}`}
                                 className="group flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:border-purple-500/50 hover:shadow-xl hover:shadow-purple-500/10 transition-all"
                             >
                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${todo.completed ? 'bg-green-50 dark:bg-green-900/20 text-green-500' : 'bg-purple-50 dark:bg-purple-900/20 text-purple-500'}`}>

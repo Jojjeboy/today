@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     Home, Search, PlusCircle, Settings, MoreHorizontal,
@@ -13,19 +13,28 @@ export const MobileFooter: React.FC = () => {
     const { theme, toggleTheme } = useApp();
     const { logout } = useAuth();
     const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+    const [, setSearchParams] = useSearchParams();
 
     return (
-        <footer className="mobile-footer md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#2D3540] border-t border-gray-200 dark:border-gray-800 shadow-lg z-[9999]">
-            <div id="mobile-footer-form-slot" className="absolute bottom-full left-0 right-0" />
-                <div className="flex justify-around items-center h-14 px-2">
+        <footer className="mobile-footer md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#2D3540] border-t border-gray-200 dark:border-gray-800 z-[9999]">
+            <div id="mobile-footer-form-slot" />
+            <div className="flex justify-around items-center h-14 px-2">
                     <Link to="/" className="flex flex-col items-center gap-1 p-2 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors">
                         <Home size={22} />
                         <span className="text-[10px] font-medium">{t('nav.home', 'Hem')}</span>
                     </Link>
-                    <button disabled className="flex flex-col items-center gap-1 p-2 text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-60">
-                        <Search size={22} />
-                        <span className="text-[10px] font-medium">{t('common.search', 'Sök')}</span>
-                    </button>
+                    <div className="relative">
+                        <button
+                            type="button"
+                            onClick={() => setSearchParams({ search: '1' })}
+                            title={t('common.search')}
+                            aria-label={t('common.search')}
+                            className="flex flex-col items-center gap-1 p-2 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
+                        >
+                            <Search size={22} />
+                            <span className="text-[10px] font-medium">{t('common.search', 'Sök')}</span>
+                        </button>
+                    </div>
                     <button className="flex flex-col items-center gap-1 p-2 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors">
                         <PlusCircle size={22} />
                         <span className="text-[10px] font-medium">{t('common.add', 'Lägg till')}</span>

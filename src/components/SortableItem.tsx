@@ -29,6 +29,7 @@ interface SortableItemProps {
     subtasks?: Item[];
     /** Called when the user clicks "add subtask" */
     onAddSubtask?: (parentId: string) => void;
+    highlighted?: boolean;
 }
 
 // ── Subtask Row ──────────────────────────────────────────────────────────────
@@ -166,6 +167,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
     disabled,
     subtasks = [],
     onAddSubtask,
+    highlighted = false,
 }) => {
     const { t } = useTranslation();
     const [localText, setLocalText] = React.useState(item.text);
@@ -303,9 +305,10 @@ export const SortableItem: React.FC<SortableItemProps> = ({
 
     return (
         <div
+            id={`todo-item-${item.id}`}
             ref={setNodeRef}
             style={style}
-            className={`relative group todo-item-row ${isDragging ? 'z-50' : ''}`}
+            className={`relative group todo-item-row ${isDragging ? 'z-50' : ''} ${highlighted ? 'search-result-highlight rounded-2xl' : ''}`}
             tabIndex={disabled ? -1 : 0}
             aria-label={`Todo item: ${item.text}`}
             onKeyDown={(e) => {
