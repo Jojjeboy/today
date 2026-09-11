@@ -23,6 +23,14 @@
   .glass {
     @apply bg-white/70 dark:bg-black/20 backdrop-blur-xl border border-white/40 dark:border-white/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)];
   }
+
+  .mobile-footer {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .mobile-input-above-footer {
+    bottom: calc(3.5rem + env(safe-area-inset-bottom));
+  }
 }
 
 @keyframes marquee {

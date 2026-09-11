@@ -33,6 +33,11 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [completedAccordionOpen, setCompletedAccordionOpen] = useState(false);
     const [showSortPills, setShowSortPills] = useState(false);
+    const [mobileFooterSlot, setMobileFooterSlot] = useState<HTMLElement | null>(null);
+
+    useEffect(() => {
+        setMobileFooterSlot(document.getElementById('mobile-footer-form-slot'));
+    }, []);
 
     const list: List | undefined = lists.find((l) => l.id === defaultListId);
 
@@ -500,7 +505,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
 
             {/* Floating Persistent Bottom Bar ("Add Inbox") */}
             {document.body && createPortal(
-                <div className="fixed bottom-0 left-0 right-0 md:left-72 bg-gradient-to-t from-[#f4f5f7] via-[#f4f5f7]/95 to-[#f4f5f7]/0 dark:from-[#2D3540] dark:via-[#2D3540]/95 dark:to-[#2D3540]/0 pt-6 pb-4 px-6 z-[100] transition-all duration-300 pointer-events-none">
+                <div className="w-full bg-gradient-to-t from-[#f4f5f7] via-[#f4f5f7]/95 to-[#f4f5f7]/0 dark:from-[#2D3540] dark:via-[#2D3540]/95 dark:to-[#2D3540]/0 pt-6 pb-4 px-6 transition-all duration-300 pointer-events-none">
                     <div className="max-w-3xl mx-auto pointer-events-auto">
                         <div className="relative group">
                             <form onSubmit={handleAddItem} className="flex gap-2 items-center bg-white/80 dark:bg-black/20 p-2 pl-4 rounded-[32px] border border-white/50 dark:border-white/10 shadow-lg transition-all">
@@ -579,7 +584,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                         </div>
                     </div>
                 </div>,
-                document.body
+                mobileFooterSlot ?? document.body
             )}
         </div>
     );

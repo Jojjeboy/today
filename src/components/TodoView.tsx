@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
 import { Plus, Trash2, Edit2, Save, X, Check, CloudUpload } from 'lucide-react';
 import { Modal } from './Modal';
@@ -39,6 +40,11 @@ export const TodoView: React.FC = () => {
 
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [todoToDelete, setTodoToDelete] = useState<string | null>(null);
+    const [mobileFooterSlot, setMobileFooterSlot] = useState<HTMLElement | null>(null);
+
+    useEffect(() => {
+        setMobileFooterSlot(document.getElementById('mobile-footer-form-slot'));
+    }, [isAdding]);
 
     // Sorting: Incomplete first, then by priority (High -> Low), then newest
     const sortedTodos = [...todos].sort((a, b) => {
@@ -114,7 +120,7 @@ export const TodoView: React.FC = () => {
     };
 
     return (
-        <div className="max-w-3xl mx-auto space-y-8">
+        <div className="max-w-3xl mx-auto space-y-8 pb-40">
             <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">{t('todos.title')}</h2>
                 <button
@@ -126,8 +132,7 @@ export const TodoView: React.FC = () => {
                 </button>
             </div>
 
-            {isAdding && (
-                <form onSubmit={handleAdd} className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 space-y-4 animate-in fade-in slide-in-from-top-4">
+            {isAdding && mobileFooterSlot && createPortal(<form onSubmit={handleAdd} className="md:hidden w-full p-4 bg-white dark:bg-[#2D3540] border-t border-gray-200 dark:border-gray-800 shadow-lg animate-in fade-in slide-in-from-bottom-4">
                     <input
                         type="text"
                         value={newTitle}
@@ -169,8 +174,8 @@ export const TodoView: React.FC = () => {
                             {t('todos.save')}
                         </button>
                     </div>
-                </form>
-            )}
+                </form>, mobileFooterSlot)
+            }
 
             <div className="space-y-3">
                 {todos.length === 0 && !isAdding && (
