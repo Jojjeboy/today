@@ -359,8 +359,8 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                 </div>
                             ) : item.state === 'ongoing' ? (
-                                <div className="w-6 h-6 rounded-lg bg-amber-500 flex items-center justify-center text-white shadow-sm">
-                                    <Play size={12} fill="currentColor" />
+                                <div className="w-6 h-6 rounded-lg border-2 border-amber-500 flex items-center justify-center">
+                                    <div className="w-2 h-2 rounded-full bg-amber-500" />
                                 </div>
                             ) : (
                                 <div className="w-6 h-6 rounded-lg border-[2.5px] border-gray-300 dark:border-[#4a5568] hover:border-gray-400 dark:hover:border-[#718096] transition-colors"></div>
