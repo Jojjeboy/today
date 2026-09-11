@@ -136,7 +136,11 @@
         "prev": "Föregående",
         "next": "Nästa",
         "copy": "Kopiera",
-        "copied": "Kopierades till urklipp"
+        "copied": "Kopierades till urklipp",
+        "search": "Sök",
+        "add": "Lägg till",
+        "more": "Mer",
+        "logout": "Logga ut"
     },
     "settings": {
         "title": "Inställningar",

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { Link } from 'react-router-dom';
-import { Moon, Sun, Menu, X, Eye, EyeOff } from 'lucide-react';
+import { Moon, Sun, X, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Sidebar } from './Sidebar';
 import { OfflineIndicator } from './OfflineIndicator';
+import { MobileFooter } from './MobileFooter';
 import { useWakeLock } from '../hooks/useWakeLock';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -78,21 +79,17 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                             >
                                 {theme === 'light' ? <Moon size={22} /> : <Sun size={22} />}
                             </button>
-                            <button
-                                onClick={() => setIsMenuOpen(true)}
-                                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-300 ml-1"
-                                aria-label="Menu"
-                            >
-                                <Menu size={26} />
-                            </button>
                         </div>
                     </div>
                 </header>
 
                 {/* Main Scrollable Content */}
-                <main className="flex-1 p-4 w-full mx-auto md:p-8 md:max-w-7xl pb-8 min-w-0">
+                <main className="flex-1 p-4 w-full mx-auto md:p-8 md:max-w-7xl pb-20 md:pb-8 min-w-0">
                     {children}
                 </main>
+
+                {/* Mobile Footer */}
+                <MobileFooter />
             </div>
         </div>
     );

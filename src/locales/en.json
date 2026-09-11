@@ -137,7 +137,11 @@
         "prev": "Prev",
         "next": "Next",
         "copy": "Copy",
-        "copied": "Copied to clipboard"
+        "copied": "Copied to clipboard",
+        "search": "Search",
+        "add": "Add",
+        "more": "More",
+        "logout": "Log out"
     },
     "settings": {
         "title": "Settings",
