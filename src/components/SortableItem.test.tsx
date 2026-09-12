@@ -184,4 +184,24 @@ describe('SortableItem - Priority Controls', () => {
         fireEvent.click(moreButtons[1]);
         expect(document.querySelectorAll('.more-menu-content')).toHaveLength(1);
     });
+
+    it('collapses subtasks by default and expands them on toggle', () => {
+        render(
+            <SortableItem
+                item={baseItem}
+                subtasks={[{ id: 'subtask1', text: 'Subtask', completed: false }]}
+                onToggle={mockOnToggle}
+                onDelete={vi.fn()}
+                onEdit={vi.fn()}
+            />
+        );
+
+        expect(screen.queryByText('Subtask')).not.toBeInTheDocument();
+
+        const expandButton = screen.getByRole('button', { name: 'Veckla ut underpunkter' });
+        fireEvent.click(expandButton);
+
+        expect(screen.getByText('Subtask')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Veckla in underpunkter' })).toBeInTheDocument();
+    });
 });

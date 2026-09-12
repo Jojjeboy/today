@@ -13,6 +13,16 @@ export interface Item {
   dueDate?: string;
   /** Optional: ISO string — item is hidden from active list until this time passes */
   snoozedUntil?: string;
+  /** Optional: Array of tag IDs associated with this item */
+  tags?: string[];
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+  color?: string;
+  usageCount?: number;
+  lastUsed?: string;
 }
 
 export interface Section {

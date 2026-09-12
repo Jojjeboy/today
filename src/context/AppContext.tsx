@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { List, ListDB, Item, Todo, ListSettings, Section, Category, HistoryItem, Priority } from '../types';
+import { List, ListDB, Item, Todo, ListSettings, Section, Category, HistoryItem, Priority, Tag } from '../types';
 import { MAX_ITEM_LENGTH } from '../constants';
 
 
@@ -11,6 +11,8 @@ import { useAuth } from './AuthContext';
 import { useFirestoreSync } from '../hooks/useFirestoreSync';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { deleteField } from 'firebase/firestore';
+import { useTags } from '../hooks/useTags';
+import { extractTagNamesFromText, removeTagsFromText } from '../utils/tags';
 
 interface AppContextType {
     lists: List[]; // Keep lists array for now but we only use one
@@ -64,6 +66,13 @@ interface AppContextType {
     addToHistory: (text: string) => Promise<void>;
     deleteFromHistory: (id: string) => Promise<void>;
     clearAllHistory: () => Promise<void>;
+    
+    // Tags
+    allTags: Tag[];
+    getItemsByTag: (tagId: string) => Item[];
+    addTagToItem: (listId: string, itemId: string, tagName: string) => Promise<void>;
+    removeTagFromItem: (listId: string, itemId: string, tagId: string) => Promise<void>;
+    updateTagColor: (tagId: string, color: string) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -80,6 +89,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const todosSync = useFirestoreSync<Todo>('users/{uid}/notes', user?.uid);
     const categoriesSync = useFirestoreSync<Category>('users/{uid}/categories', user?.uid);
     const historySync = useFirestoreSync<HistoryItem>('users/{uid}/history', user?.uid);
+    const tagsSync = useFirestoreSync<Tag>('users/{uid}/tags', user?.uid);
 
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
     const { showToast } = useToast();
