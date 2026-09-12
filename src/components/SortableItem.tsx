@@ -270,6 +270,18 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isMenuOpen]);
 
+    React.useEffect(() => {
+        const handleOtherMenuOpen = (event: Event) => {
+            const { itemId } = (event as CustomEvent<{ itemId: string }>).detail;
+            if (itemId !== item.id) {
+                setIsMenuOpen(false);
+            }
+        };
+
+        window.addEventListener('sortable-item-menu-open', handleOtherMenuOpen);
+        return () => window.removeEventListener('sortable-item-menu-open', handleOtherMenuOpen);
+    }, [item.id]);
+
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
@@ -459,10 +471,16 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                                              e.stopPropagation();
                                              const rect = e.currentTarget.getBoundingClientRect();
                                              setMenuPosition({
-                                                 top: rect.bottom + window.scrollY,
-                                                 left: rect.right - 192 + window.scrollX // 192px is w-48
+                                                 top: rect.bottom,
+                                                 left: rect.right - 192 // 192px is w-48
                                              });
-                                             setIsMenuOpen(!isMenuOpen);
+                                             const nextIsMenuOpen = !isMenuOpen;
+                                             if (nextIsMenuOpen) {
+                                                 window.dispatchEvent(new CustomEvent('sortable-item-menu-open', {
+                                                     detail: { itemId: item.id },
+                                                 }));
+                                             }
+                                             setIsMenuOpen(nextIsMenuOpen);
                                          }}
                                          className="flex-shrink-0 p-1.5 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                          aria-label="More actions"

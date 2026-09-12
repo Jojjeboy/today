@@ -128,4 +128,60 @@ describe('SortableItem - Priority Controls', () => {
         clickDecrease();
         expect(mockOnUpdate).toHaveBeenNthCalledWith(5, 'item1', { priority: undefined });
     });
+
+    it('positions the fixed menu from viewport coordinates when the page is scrolled', () => {
+        render(
+            <SortableItem
+                item={baseItem}
+                onToggle={mockOnToggle}
+                onUpdate={mockOnUpdate}
+            />
+        );
+
+        const moreBtn = screen.getByLabelText('More actions');
+        vi.spyOn(moreBtn, 'getBoundingClientRect').mockReturnValue({
+            top: 60,
+            right: 400,
+            bottom: 100,
+            left: 360,
+            width: 40,
+            height: 40,
+            x: 360,
+            y: 60,
+            toJSON: () => ({}),
+        });
+
+        Object.defineProperty(window, 'scrollY', { configurable: true, value: 800 });
+        Object.defineProperty(window, 'scrollX', { configurable: true, value: 25 });
+
+        fireEvent.click(moreBtn);
+
+        const menu = document.querySelector('.more-menu-content');
+        expect(menu).toHaveStyle({ top: '104px', left: '208px' });
+    });
+
+    it('keeps only one item menu open at a time', () => {
+        render(
+            <>
+                <SortableItem
+                    item={baseItem}
+                    onToggle={mockOnToggle}
+                    onUpdate={mockOnUpdate}
+                />
+                <SortableItem
+                    item={{ ...baseItem, id: 'item2', text: 'Another task' }}
+                    onToggle={mockOnToggle}
+                    onUpdate={mockOnUpdate}
+                />
+            </>
+        );
+
+        const moreButtons = screen.getAllByLabelText('More actions');
+
+        fireEvent.click(moreButtons[0]);
+        expect(document.querySelectorAll('.more-menu-content')).toHaveLength(1);
+
+        fireEvent.click(moreButtons[1]);
+        expect(document.querySelectorAll('.more-menu-content')).toHaveLength(1);
+    });
 });
