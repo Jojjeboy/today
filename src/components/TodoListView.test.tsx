@@ -131,7 +131,7 @@ describe('TodoListView - Add Item', () => {
 
         const [listId, items] = mockUpdateListItems.mock.calls[0];
         expect(listId).toBe('list1');
-        const added = items[items.length - 1];
+        const added = items[0];
         expect(added.text).toBe('Buy groceries');
         expect(added.completed).toBe(false);
         expect(added.priority).toBeUndefined();
@@ -154,7 +154,7 @@ describe('TodoListView - Add Item', () => {
         });
 
         const [, items] = mockUpdateListItems.mock.calls[0];
-        const added = items[items.length - 1];
+        const added = items[0];
         expect(added.text).toBe('Call boss');
         expect(added.dueDate).toBeDefined();
         expect(typeof added.dueDate).toBe('string');

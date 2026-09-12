@@ -13,6 +13,7 @@ En snabb, offline-first "progressive web application" (PWA) för uppgiftshanteri
 - **Flerspråkigt (i18n)**: Stöd för flera språk direkt samt enkelt att skala upp med fler språk.
 - **Import/Export av Data**: Säkerhetskopiera eller återställ dina uppgifter utan problem via JSON-filer.
 - **Prioritetsnivåer**: Sätt Låg, Medium eller Hög prioritet på uppgifter med tydlig färgkodning.
+- **Taggar**: Lägg till taggar med `#namn`, filtrera listan och ändra taggens namn eller färg från taggsidan.
 - **Smart Datumigenkänning (NLP)**: Skriv naturligt (t.ex. "Köp mjölk imorgon") så känner appen automatiskt av datumet och schemalägger uppgiften.
 
 
@@ -66,7 +67,7 @@ Skriptet (som använder bildbehandlingsbiblioteket `sharp`) kommer automatiskt a
 
 ## Arkitektur & Dokumentation
 
-För en djupare genomgång av hur appen är uppbyggd tekniskt, se vår **[Arkitekturöversikt (Svenska)](file:///c:/kod/today/architecture.md)**. Denna guide är särskilt framtagen för att hjälpa nya utvecklare att snabbt förstå systemets hjärna och dataflöden.
+För en djupare genomgång av hur appen är uppbyggd tekniskt, se vår **[Arkitekturöversikt (Svenska)](architecture.md)**. Appen använder en aktiv lista, offline-first-synkronisering och granulära item-uppdateringar.
 
 ## Teknisk Stack
 
@@ -75,7 +76,7 @@ Detta projekt använder moderna webbstandarder och verktyg:
 - **Vite** för blixtsnabb bundling och utvecklingsmiljö
 - **Tailwind CSS** för lättskriven och flexibel responsiv design
 - **Firebase** för backend, synkning och användarautentisering
-- **Zustand / Context** för lätthanterlig och effektiv state management
+- **React Context** för lätthanterlig och effektiv state management
 - **Vite-Plugin-PWA** för auto-generering av Service Workers och PWA-manifest
 - **Chrono-node** för naturlig datumtolkning
 - **Vitest** för testning

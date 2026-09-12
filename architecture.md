@@ -24,7 +24,7 @@ Välkommen till den kompletta tekniska guiden för "Today". Detta dokument är f
 All data definieras i [src/types/index.ts](/src/types/index.ts).
 
 - **Item**: Representerar en enskild uppgift (id, text, completed status). Kan ha ett valfritt `parentId`-fält som pekar på en annan items `id` – i så fall är det en *deluppgift* (subtask). Hierarkin är alltid maxtvå nivåer djup (förälder → barn).
-- **List**: En samling av Items, inklusive metadata som kategori och inställningar.
+- **List**: Appens enda aktiva lista, med items, sektioner och inställningar.
 - **ListDB**: Den interna representationen som lagras i Firestore. Märk väl att `items` här lagras som en `Record<string, Item>` (en Map) istället för en array.
 
 ---
@@ -34,9 +34,10 @@ Vi använder React Context för att undvika "prop drilling".
 
 ### [AppContext.tsx](src/context/AppContext.tsx)
 Detta är appens hjärna. Här hanteras:
-- Inläsning av listor från Firestore.
+- Inläsning av den första listposten som `currentList` från Firestore.
 - Exponering av funktioner som `updateListItems`, `deleteItem` och `updateListName`.
-- **Viktigt**: AppContext konverterar den Map-baserade datan från databasen till arrayer (`Item[]`) som UI:t förväntar sig genom hjälp-gettern `listsWithArrayItems`.
+- **Viktigt**: AppContext konverterar den Map-baserade datan från databasen till en `Item[]` som UI:t förväntar sig.
+- Den äldre `users/{uid}/lists`-collectionen behålls för bakåtkompatibilitet; en separat datamigrering krävs om den ska ersättas av ett enda dokument.
 
 ---
 
@@ -60,6 +61,7 @@ Vi använder en modulär struktur med fokus på återanvändbarhet.
 - **[TodoListView.tsx](src/components/TodoListView.tsx)**: Huvudvyn för den dagliga listan. Hanterar filtrering på taggar och sortering. Filtrerar ut `parentId`-satta items ur den draggbara listan och skickar dem som `subtasks` till respektive förälder-`SortableItem`. Hanterar `handleAddSubtask` som skapar ett nytt Item med `parentId` satt.
 - **[SortableItem.tsx](src/components/SortableItem.tsx)**: Representerar en rad i listan. Innehåller logik för swipe-to-delete, editering och keyboard-navigering. Renderar en inbäddad `SubtaskRow`-lista (indragen med vänsterkant) för sina barn. En `ListTree`-knapp triggar `onAddSubtask` – synlig på hover (desktop) eller alltid (mobil via Tailwind `sm:opacity-0`).
 - **[InlineAutocompleteInput.tsx](src/components/InlineAutocompleteInput.tsx)**: En smart textruta som föreslår ord baserat på historik och hanterar taggar.
+- **[TagFilterView.tsx](src/components/TagFilterView.tsx)**: Visar alla items med en tagg och låter användaren ändra taggens namn och färg globalt.
 
 ---
 

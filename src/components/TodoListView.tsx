@@ -270,7 +270,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                         dueDate: dueDate,
                         tags: tagIds.length > 0 ? tagIds : undefined
                     };
-                    await updateListItems(list.id, [...list.items, newItem]);
+                    await updateListItems(list.id, [newItem, ...list.items]);
                     await addToHistory(textToAdd);
                 }
             } catch (error) {
