@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { AppProvider, useApp } from './AppContext';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Category, List } from '../types';
+import { List } from '../types';
 
 // Mocks
 const mockAddItem = vi.fn();
@@ -12,16 +12,12 @@ const mockShowToast = vi.fn();
 vi.mock('../hooks/useFirestoreSync', () => ({
     useFirestoreSync: (path: string) => {
         // Return different data based on path for basic structure
-        let data: Array<Category | List> = [];
+        let data: List[] = [];
         if (path.includes('lists')) {
             data = [
                 { id: 'list1', name: 'List 1', categoryId: 'cat1', items: [] },
                 { id: 'list2', name: 'List 2', categoryId: 'cat1', items: [] },
                 { id: 'list3', name: 'List 3', categoryId: 'cat1', items: [] }
-            ];
-        } else if (path.includes('categories')) {
-            data = [
-                { id: 'cat1', name: 'Category 1', order: 0 }
             ];
         }
 
@@ -58,59 +54,6 @@ describe('AppContext', () => {
         vi.clearAllMocks();
     });
 
-    it('deleteList calls firestore deleteItem', async () => {
-        const { result } = renderHook(() => useApp(), { wrapper: AppProvider });
-
-        await act(async () => {
-            await result.current.deleteList('list1');
-        });
-
-        expect(mockDeleteItem).toHaveBeenCalledWith('list1');
-    });
-
-    it('addList calls firestore addItem', async () => {
-        const { result } = renderHook(() => useApp(), { wrapper: AppProvider });
-
-        await act(async () => {
-            await result.current.addList('New List', 'cat1');
-        });
-
-        expect(mockAddItem).toHaveBeenCalledWith(expect.objectContaining({
-            name: 'New List',
-            categoryId: 'cat1',
-            items: {},
-            itemOrder: []
-        }));
-    });
-
-
-    it('addCategory calls firestore addItem', async () => {
-        const { result } = renderHook(() => useApp(), { wrapper: AppProvider });
-
-        await act(async () => {
-            await result.current.addCategory('New Category');
-        });
-
-        expect(mockAddItem).toHaveBeenCalledWith(expect.objectContaining({
-            name: 'New Category',
-        }));
-    });
-
-    it('deleteCategory calls firestore deleteItem', async () => {
-        const { result } = renderHook(() => useApp(), { wrapper: AppProvider });
-
-        // Deleting category should also cascade delete lists? 
-        // Logic check: deleteCategory in AppContext usually calls deleteItem for the category.
-        // It might also delete lists within it. Let's check AppContext impl or assume just category delete for now unless verified.
-        // Actually, let's just check the deleteCategory call first.
-
-        await act(async () => {
-            await result.current.deleteCategory('cat1');
-        });
-
-        expect(mockDeleteItem).toHaveBeenCalledWith('cat1');
-    });
-
     it('addSection adds new section at the top (order 0)', async () => {
         const { result } = renderHook(() => useApp(), { wrapper: AppProvider });
 
@@ -125,7 +68,7 @@ describe('AppContext', () => {
         // Let's assume list1 works perfectly.
 
         await act(async () => {
-            await result.current.addSection('list1', 'New Top Section');
+            await result.current.addSection('New Top Section');
         });
 
         expect(mockUpdateItem).toHaveBeenCalledWith('list1', expect.objectContaining({

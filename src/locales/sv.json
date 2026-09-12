@@ -315,5 +315,31 @@
             "Du gör stora framsteg idag.",
             "Unna dig något fint!"
         ]
+    },
+    "tags": {
+        "title": "Taggar",
+        "addTag": "Lägg till tagg",
+        "removeTag": "Ta bort tagg",
+        "changeColor": "Ändra färg",
+        "clickToFilter": "Klicka för att filtrera på denna tagg",
+        "itemsWithTag": "uppgifter",
+        "noItemsWithTag": "Inga uppgifter med denna tagg",
+        "filterByTag": "Filtrera på tagg",
+        "allTags": "Alla taggar",
+        "popularTags": "Populära taggar",
+        "more": "fler",
+        "tagNotFound": "Taggen hittades inte",
+        "usedInLists": "Används i {{count}} listor",
+        "colorPicker": "Välj färg",
+        "selectColor": "Välj en färg",
+        "noTags": "Inga taggar än",
+        "edit": "Redigera tagg",
+        "name": "Taggnamn",
+        "nameRequired": "Taggnamn krävs",
+        "nameTaken": "En tagg med detta namn finns redan",
+        "updateFailed": "Kunde inte uppdatera taggen"
+    },
+    "common": {
+        "back": "Tillbaka"
     }
 }

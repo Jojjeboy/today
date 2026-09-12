@@ -8,6 +8,7 @@ import { ActivityLog } from './components/ActivityLog'
 import { StatisticsView } from './components/StatisticsView'
 import { SettingsView } from './components/SettingsView'
 import { HistoryView } from './components/HistoryView'
+import { TagFilterView } from './components/TagFilterView'
 import { ToastProvider } from './context/ToastContext'
 import { ToastContainer } from './components/ToastContainer'
 import { UpdatePrompt } from './components/UpdatePrompt'
@@ -51,6 +52,10 @@ const router = createHashRouter([
             {
                 path: "/settings",
                 element: <SettingsView />,
+            },
+            {
+                path: "/tag/:tagId",
+                element: <TagFilterView />,
             },
         ],
     },

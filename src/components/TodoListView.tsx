@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
 import { useToast } from '../context/ToastContext';
-import type { Item, List } from '../types';
+import type { Item } from '../types';
+import { extractTagNamesFromText, removeTagsFromText } from '../utils/tags';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
@@ -23,7 +24,7 @@ const chronoParse = (chronoNode as unknown as { parse?: typeof chronoNode.parse 
 
 export const TodoListView: React.FC = React.memo(function TodoListView() {
     const { t } = useTranslation();
-    const { lists, defaultListId, updateListItems, deleteItem, updateListAccess, updateListSettings, loading, itemHistory, addToHistory, deleteFromHistory } = useApp();
+    const { currentList: list, updateListItems, deleteItem, updateListSettings, loading, itemHistory, addToHistory, deleteFromHistory, allTags, createTag } = useApp();
     const { showToast } = useToast();
     const [newItemText, setNewItemText] = useState('');
     const [showConfetti, setShowConfetti] = useState(false);
@@ -40,7 +41,6 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     const isSearchMode = searchParams.get('search') === '1';
     const searchQuery = searchParams.get('q') || '';
     const highlightedItemId = searchParams.get('highlight');
-    const list: List | undefined = lists.find((l) => l.id === defaultListId);
 
     useEffect(() => {
         setMobileFooterSlot(document.getElementById('mobile-footer-form-slot'));
@@ -79,11 +79,8 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
     }, [highlightedItemId, list, setSearchParams]);
 
     React.useEffect(() => {
-        if (list) {
-            document.title = `today - ${t('lists.groceryTitle')}`;
-            updateListAccess(list.id);
-        }
-    }, [list?.id, t, updateListAccess]);
+        if (list) document.title = `today - ${t('lists.groceryTitle')}`;
+    }, [list?.id, t]);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -247,11 +244,31 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                         dueDate = undefined;
                     }
 
+                    // Extract tags from text (e.g., "#food" -> "food")
+                    const tagNames = extractTagNamesFromText(textToAdd);
+                    const cleanedText = removeTagsFromText(finalTitle);
+
+                    // Create or get existing tags
+                    const tagIds: string[] = [];
+                    for (const tagName of tagNames) {
+                        let tag = allTags.find(t => t.name.toLowerCase() === tagName.toLowerCase());
+                        if (!tag) {
+                            const newTag = await createTag(tagName);
+                            if (newTag) {
+                                tag = newTag;
+                            }
+                        }
+                        if (tag) {
+                            tagIds.push(tag.id);
+                        }
+                    }
+
                     const newItem: Item = { 
                         id: uuidv4(), 
-                        text: finalTitle, 
+                        text: cleanedText || finalTitle, // Use cleaned text if tags were removed
                         completed: false,
-                        dueDate: dueDate
+                        dueDate: dueDate,
+                        tags: tagIds.length > 0 ? tagIds : undefined
                     };
                     await updateListItems(list.id, [...list.items, newItem]);
                     await addToHistory(textToAdd);
@@ -602,6 +619,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                                         onChange={isSearchMode ? handleSearchChange : setNewItemText}
                                         onSubmit={() => handleAddItem()}
                                         suggestions={isSearchMode ? [] : suggestions}
+                                        tags={allTags}
                                         placeholder={isSearchMode ? t('common.searchPlaceholder') : t('lists.addItemPlaceholder')}
                                         className="w-full pl-8 pr-4 py-2 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none font-medium text-base"
                                         inputPaddingClass="pl-8"

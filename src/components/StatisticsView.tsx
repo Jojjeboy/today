@@ -11,7 +11,7 @@ import {
 
 export const StatisticsView: React.FC = () => {
     const { t } = useTranslation();
-    const { lists, todos, itemHistory } = useApp();
+    const { currentList, todos, itemHistory } = useApp();
 
     // Color constants for charts
     const PRIORITY_COLORS = {
@@ -22,9 +22,8 @@ export const StatisticsView: React.FC = () => {
 
     // Calculate overall metrics
     const metrics = useMemo(() => {
-        const totalItems = lists.reduce((acc, list) => acc + list.items.length, 0);
-        const totalCompletedItems = lists.reduce((acc, list) =>
-            acc + list.items.filter(item => item.completed).length, 0);
+        const totalItems = currentList?.items.length || 0;
+        const totalCompletedItems = currentList?.items.filter(item => item.completed).length || 0;
         const completionRate = totalItems > 0 ? Math.round((totalCompletedItems / totalItems) * 100) : 0;
 
         return [
@@ -33,7 +32,7 @@ export const StatisticsView: React.FC = () => {
             { id: 'rate', label: t('stats.completionRate', 'Genomförandegrad'), value: `${completionRate}%`, icon: Activity, color: 'text-orange-600', bg: 'bg-orange-100/50' },
             { id: 'todos', label: t('stats.metrics.totalTodos'), value: todos.length, icon: ListTodo, color: 'text-purple-600', bg: 'bg-purple-100/50' },
         ];
-    }, [lists, todos, t]);
+    }, [currentList, todos, t]);
 
     // Data for Priority Distribution
     const priorityData = useMemo(() => {

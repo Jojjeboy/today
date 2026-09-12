@@ -11,11 +11,10 @@ import type { Item } from '../types';
 export const SettingsView: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { user, logout } = useAuth();
-    const { lists, defaultListId, updateListSettings, updateListItems, theme, toggleTheme } = useApp();
+    const { currentList: list, updateListSettings, updateListItems, theme, toggleTheme } = useApp();
     const { showToast } = useToast();
     const [importAccordionOpen, setImportAccordionOpen] = React.useState(false);
     const [jsonText, setJsonText] = React.useState('');
-    const list = lists.find(l => l.id === defaultListId);
     const sortBy = list?.settings?.defaultSort || 'manual';
 
     const { isSupported, isLocked, requestWakeLock, releaseWakeLock } = useWakeLock();

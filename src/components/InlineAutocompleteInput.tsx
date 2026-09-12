@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
+import type { Tag } from '../types';
 
 interface InlineAutocompleteInputProps {
     value: string;
     onChange: (value: string) => void;
     onSubmit: () => void;
     suggestions: Array<{ id: string; text: string }>;
+    tags?: Tag[]; // Available tags for autocomplete
+    onTagSelected?: (tag: Tag) => void; // Callback when a tag is selected
     placeholder?: string;
     className?: string; // Class for the input element
     autoFocus?: boolean;
@@ -18,6 +21,8 @@ export const InlineAutocompleteInput: React.FC<InlineAutocompleteInputProps> = (
     onChange,
     onSubmit,
     suggestions,
+    tags = [],
+    onTagSelected,
     placeholder = '',
     className = '',
     autoFocus = false,
@@ -27,6 +32,8 @@ export const InlineAutocompleteInput: React.FC<InlineAutocompleteInputProps> = (
 }) => {
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const [showTooltip, setShowTooltip] = useState(false);
+    const [showTagSuggestions, setShowTagSuggestions] = useState(false);
+    const [tagSearch, setTagSearch] = useState('');
 
     // Auto-resize logic
     useEffect(() => {
@@ -66,6 +73,37 @@ export const InlineAutocompleteInput: React.FC<InlineAutocompleteInputProps> = (
             return () => clearTimeout(timer);
         }
     }, [shadowText]);
+
+    // Extract tag search when user types #
+    useEffect(() => {
+        if (value.includes('#')) {
+            const lastHashIndex = value.lastIndexOf('#');
+            const searchText = value.substring(lastHashIndex + 1);
+            setTagSearch(searchText);
+            setShowTagSuggestions(true);
+        } else {
+            setShowTagSuggestions(false);
+            setTagSearch('');
+        }
+    }, [value]);
+
+    // Filter tags based on search
+    const filteredTags = tags.filter(tag =>
+        tag.name.toLowerCase().includes(tagSearch.toLowerCase())
+    );
+
+    // Handle tag selection
+    const handleTagSelect = (tag: Tag) => {
+        const lastHashIndex = value.lastIndexOf('#');
+        const beforeHash = value.substring(0, lastHashIndex);
+        const afterHash = value.substring(lastHashIndex + 1 + tagSearch.length);
+
+        // Replace #searchText with #tagName
+        const newValue = `${beforeHash}#${tag.name} ${afterHash}`.trim();
+        onChange(newValue);
+        setShowTagSuggestions(false);
+        onTagSelected?.(tag);
+    };
 
     // Handle tap on shadow text (mobile)
     const handleShadowClick = () => {
@@ -132,6 +170,25 @@ export const InlineAutocompleteInput: React.FC<InlineAutocompleteInputProps> = (
             {showTooltip && shadowText && (
                 <div className="absolute top-full left-0 mt-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg shadow-lg z-10 whitespace-nowrap animate-in fade-in slide-in-from-top-2 duration-300">
                     Press <kbd className="px-1.5 py-0.5 bg-gray-700 dark:bg-gray-600 rounded">Tab</kbd> or tap to complete
+                </div>
+            )}
+
+            {/* Tag suggestions dropdown */}
+            {showTagSuggestions && filteredTags.length > 0 && (
+                <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-20 max-h-40 overflow-y-auto w-48">
+                    {filteredTags.map(tag => (
+                        <button
+                            key={tag.id}
+                            onClick={() => handleTagSelect(tag)}
+                            className="w-full flex items-center gap-2 px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        >
+                            <div
+                                className="w-3 h-3 rounded-full flex-shrink-0"
+                                style={{ backgroundColor: tag.color || '#e5e7eb' }}
+                            />
+                            <span>#{tag.name}</span>
+                        </button>
+                    ))}
                 </div>
             )}
         </div>

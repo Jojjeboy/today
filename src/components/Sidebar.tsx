@@ -1,5 +1,6 @@
 import { NavLink, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import React from 'react';
 import {
     ListTodo,
     SquareCheck,
@@ -7,10 +8,13 @@ import {
     Activity,
     BarChart3,
     History,
-    RefreshCw
+    RefreshCw,
+    Tag as TagIcon
 } from 'lucide-react';
 import { Commit } from '../types';
 import commitsData from '../commits.json';
+import { useApp } from '../context/AppContext';
+import { TagCloud } from './TagCloud';
 
 const commits = commitsData as Commit[];
 
@@ -21,7 +25,9 @@ interface SidebarProps {
 // eslint-disable-next-line react/prop-types
 export const Sidebar: React.FC<SidebarProps> = ({ onNavClick }) => {
     const { t } = useTranslation();
+    const { allTags } = useApp();
     const latestCommit = commits[0];
+    const [selectedTag, setSelectedTag] = React.useState<string | null>(null);
 
     const navItems = [
         { path: '/', icon: ListTodo, label: t('nav.home') },
@@ -79,6 +85,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNavClick }) => {
                     <RefreshCw size={20} className="group-hover:scale-110 transition-transform duration-200" />
                     <span>{t('settings.reloadUpdate', 'Reload & Update')}</span>
                 </button>
+
+                {/* Tags Section */}
+                {allTags.length > 0 && (
+                    <div className="px-4 py-3">
+                        <div className="flex items-center gap-2 px-4 py-2">
+                            <TagIcon size={16} className="text-gray-400" />
+                            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                {t('tags.title', 'Tags')}
+                            </span>
+                        </div>
+                        <TagCloud
+                            tags={allTags}
+                            selectedTag={selectedTag || undefined}
+                            onTagClick={(tagId) => setSelectedTag(tagId)}
+                            maxTags={8}
+                            showMore={true}
+                            className="px-2"
+                        />
+                    </div>
+                )}
             </nav>
 
             {/* Bottom Actions */}

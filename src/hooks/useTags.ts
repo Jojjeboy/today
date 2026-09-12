@@ -7,8 +7,8 @@ import { generateRandomColor } from '../utils/tags';
 
 export interface UseTagsResult {
   allTags: Tag[];
-  getTagById: (tagId: string) => Tag | undefined;
-  getTagByName: (name: string) => Tag | undefined;
+  getTagById: (tagId: string) => Tag | null;
+  getTagByName: (name: string) => Tag | null;
   createTag: (name: string) => Promise<Tag | null>;
   updateTag: (tagId: string, updates: Partial<Tag>) => Promise<void>;
   deleteTag: (tagId: string) => Promise<void>;
@@ -29,13 +29,13 @@ export const useTags = (): UseTagsResult => {
   const allTags = useMemo(() => tagsSync.data, [tagsSync.data]);
 
   // Get tag by ID
-  const getTagById = useCallback((tagId: string) => {
-    return allTags.find(tag => tag.id === tagId);
+  const getTagById = useCallback((tagId: string): Tag | null => {
+    return allTags.find(tag => tag.id === tagId) || null;
   }, [allTags]);
 
   // Get tag by name (case-insensitive)
-  const getTagByName = useCallback((name: string) => {
-    return allTags.find(tag => tag.name.toLowerCase() === name.toLowerCase());
+  const getTagByName = useCallback((name: string): Tag | null => {
+    return allTags.find(tag => tag.name.toLowerCase() === name.toLowerCase()) || null;
   }, [allTags]);
 
   // Create a new tag with a random color

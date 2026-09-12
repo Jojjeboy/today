@@ -1,5 +1,61 @@
 [
   {
+    "hash": "f7e7de3743ec616411ff5511c3ccf7221606247a",
+    "author": "Johannes Kärnstam",
+    "date": "2026-09-12 16:58:57 +0200",
+    "message": "Collapsed",
+    "body": "",
+    "url": "https://github.com/Jojjeboy/today/commit/f7e7de3743ec616411ff5511c3ccf7221606247a"
+  },
+  {
+    "hash": "505c008385157eb64e9ebe60e2c8706a795102f9",
+    "author": "Johannes Kärnstam",
+    "date": "2026-09-12 16:52:08 +0200",
+    "message": "merge: visa vad som är nytt",
+    "body": "",
+    "url": "https://github.com/Jojjeboy/today/commit/505c008385157eb64e9ebe60e2c8706a795102f9"
+  },
+  {
+    "hash": "2ab52a3252d18c1a0e1813f81681307917ec1c7a",
+    "author": "Johannes Kärnstam",
+    "date": "2026-09-12 16:52:03 +0200",
+    "message": "feat: visa vad som är nytt i appen",
+    "body": "",
+    "url": "https://github.com/Jojjeboy/today/commit/2ab52a3252d18c1a0e1813f81681307917ec1c7a"
+  },
+  {
+    "hash": "6f37e932f8a3e4c964496e71a41a12edc92f6717",
+    "author": "Johannes Kärnstam",
+    "date": "2026-09-12 16:42:14 +0200",
+    "message": "merge: släpp version 1.1.1",
+    "body": "",
+    "url": "https://github.com/Jojjeboy/today/commit/6f37e932f8a3e4c964496e71a41a12edc92f6717"
+  },
+  {
+    "hash": "ba000cebb7c52482edca5bfca82827165c23acec",
+    "author": "Johannes Kärnstam",
+    "date": "2026-09-12 16:42:10 +0200",
+    "message": "release: höj version till 1.1.1",
+    "body": "",
+    "url": "https://github.com/Jojjeboy/today/commit/ba000cebb7c52482edca5bfca82827165c23acec"
+  },
+  {
+    "hash": "ed6df68b2b2c00f18afc508eaa65731d40341210",
+    "author": "Johannes Kärnstam",
+    "date": "2026-09-12 16:41:21 +0200",
+    "message": "merge: lägg till dropdown-fix",
+    "body": "",
+    "url": "https://github.com/Jojjeboy/today/commit/ed6df68b2b2c00f18afc508eaa65731d40341210"
+  },
+  {
+    "hash": "ae07ef11aeee9d99b4917a924cb9818ed62c5ff8",
+    "author": "Johannes Kärnstam",
+    "date": "2026-09-12 16:41:17 +0200",
+    "message": "fix: håll endast en dropdown öppen",
+    "body": "",
+    "url": "https://github.com/Jojjeboy/today/commit/ae07ef11aeee9d99b4917a924cb9818ed62c5ff8"
+  },
+  {
     "hash": "0c415aab264093ab6a179d6575e8165247378c09",
     "author": "Johannes Kärnstam",
     "date": "2026-09-12 16:30:21 +0200",
@@ -102,61 +158,5 @@
     "message": "Sorting",
     "body": "",
     "url": "https://github.com/Jojjeboy/today/commit/60f5a7b139edcda74e599dd3b985521684e837bc"
-  },
-  {
-    "hash": "6b02fc89215380915a7936cba27901740200eace",
-    "author": "Johannes Kärnstam",
-    "date": "2026-07-02 17:16:58 +0200",
-    "message": "distance",
-    "body": "",
-    "url": "https://github.com/Jojjeboy/today/commit/6b02fc89215380915a7936cba27901740200eace"
-  },
-  {
-    "hash": "f512c6f6cf064d7622991b6c7ad7a35c1117d388",
-    "author": "Johannes Kärnstam",
-    "date": "2026-07-02 16:57:35 +0200",
-    "message": "Ongoing",
-    "body": "",
-    "url": "https://github.com/Jojjeboy/today/commit/f512c6f6cf064d7622991b6c7ad7a35c1117d388"
-  },
-  {
-    "hash": "3b812501e34c52c9ee60e60f9b8e36cfd1b01407",
-    "author": "Johannes Kärnstam",
-    "date": "2026-07-02 16:11:43 +0200",
-    "message": "npm audit fix",
-    "body": "",
-    "url": "https://github.com/Jojjeboy/today/commit/3b812501e34c52c9ee60e60f9b8e36cfd1b01407"
-  },
-  {
-    "hash": "9322da28f918b1729d6bef6165ab1a31fb2561e0",
-    "author": "Johannes Kärnstam",
-    "date": "2026-07-02 16:01:04 +0200",
-    "message": "feat: implement more actions menu and delete confirmation modal in SortableItem component",
-    "body": "",
-    "url": "https://github.com/Jojjeboy/today/commit/9322da28f918b1729d6bef6165ab1a31fb2561e0"
-  },
-  {
-    "hash": "22e71448f2430acb9b7aafa3a49b9e942acfaf3a",
-    "author": "Johannes Kärnstam",
-    "date": "2026-05-07 13:30:36 +0200",
-    "message": "Fixed 6 packages",
-    "body": "",
-    "url": "https://github.com/Jojjeboy/today/commit/22e71448f2430acb9b7aafa3a49b9e942acfaf3a"
-  },
-  {
-    "hash": "5c50aa8b36eb91be9c289e50c8b10ff291338d7c",
-    "author": "Johannes Kärnstam",
-    "date": "2026-05-07 13:27:25 +0200",
-    "message": "Added stuff",
-    "body": "",
-    "url": "https://github.com/Jojjeboy/today/commit/5c50aa8b36eb91be9c289e50c8b10ff291338d7c"
-  },
-  {
-    "hash": "6c7e37a23723c5145e9cf191b4859ab54aeeb276",
-    "author": "Johannes Kärnstam",
-    "date": "2026-04-08 16:26:57 +0200",
-    "message": "Light/darkmode toggle",
-    "body": "",
-    "url": "https://github.com/Jojjeboy/today/commit/6c7e37a23723c5145e9cf191b4859ab54aeeb276"
   }
 ]

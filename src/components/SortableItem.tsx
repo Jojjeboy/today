@@ -3,8 +3,10 @@ import { createPortal } from 'react-dom';
 import { Modal } from './Modal';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import type { Item, Priority } from '../types';
+import type { Item, Priority, Tag as TagType } from '../types';
 import { Trash2, GripVertical, CloudUpload, Plus, ListTree, Flag, Moon, MoreVertical, ChevronDown, Calendar, ArrowUp, ArrowDown } from 'lucide-react';
+import { Tag } from './Tag';
+import { useApp } from '../context/AppContext';
 import {
     SwipeableList,
     SwipeableListItem,
@@ -13,6 +15,33 @@ import {
     LeadingActions,
     Type as ListType,
 } from 'react-swipeable-list';
+
+// Component to display tags for an item
+interface TagsDisplayProps {
+  item: Item;
+  disabled?: boolean;
+}
+
+const TagsDisplay: React.FC<TagsDisplayProps> = ({ item, disabled = false }) => {
+  const { allTags } = useApp();
+
+  // Get tag objects from tag IDs
+  const itemTags = item.tags?.map(tagId => allTags.find(t => t.id === tagId)).filter(Boolean) as TagType[];
+
+  if (!itemTags || itemTags.length === 0) return null;
+
+  return (
+    <div className="flex flex-wrap gap-1 mt-1 pl-1">
+      {itemTags.map(tag => (
+        <Tag
+          key={tag.id}
+          tag={tag}
+          interactive={!disabled}
+        />
+      ))}
+    </div>
+  );
+};
 import { MAX_ITEM_LENGTH } from '../constants';
 import { useTranslation } from 'react-i18next';
 import 'react-swipeable-list/dist/styles.css';
@@ -361,7 +390,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                         {item.priority && (
                             <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${getPriorityColor(item.priority)}`} />
                         )}
-                        
+
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -455,6 +484,11 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                                 </div>
                             )}
                         </div>
+                        
+                        {/* Tags */}
+                        {item.tags && item.tags.length > 0 && !isEditing && (
+                            <TagsDisplay item={item} disabled={isReadOnly} />
+                        )}
 
                         {item.isPending && (
                             <div className="flex-shrink-0 text-blue-400 dark:text-blue-500 animate-in fade-in duration-300" title="Syncing...">

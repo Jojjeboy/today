@@ -5,18 +5,16 @@ import { ListTodo, CheckSquare, CloudUpload, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export const SearchResults: React.FC = () => {
-    const { lists, todos } = useApp();
+    const { currentList, todos } = useApp();
     const { t } = useTranslation();
     const [searchParams] = useSearchParams();
     const query = (searchParams.get('q') || '').toLowerCase();
 
     if (!query) return null;
 
-    const matchedGroceries = lists.flatMap(list =>
-        list.items
+    const matchedGroceries = (currentList?.items || [])
             .filter(item => item.text.toLowerCase().includes(query))
-            .map(item => ({ ...item, listId: list.id, listName: list.name, listIsPending: list.isPending }))
-    );
+            .map(item => ({ ...item, listId: currentList?.id, listName: currentList?.name, listIsPending: currentList?.isPending }));
 
     const matchedTodos = todos.filter(todo =>
         todo.title.toLowerCase().includes(query) ||

@@ -297,5 +297,31 @@
             "completedItems": "Done Tasks",
             "totalTodos": "Detailed To-dos"
         }
+    },
+    "tags": {
+        "title": "Tags",
+        "addTag": "Add tag",
+        "removeTag": "Remove tag",
+        "changeColor": "Change color",
+        "clickToFilter": "Click to filter by this tag",
+        "itemsWithTag": "items",
+        "noItemsWithTag": "No items with this tag",
+        "filterByTag": "Filter by tag",
+        "allTags": "All tags",
+        "popularTags": "Popular tags",
+        "more": "more",
+        "tagNotFound": "Tag not found",
+        "usedInLists": "Used in {{count}} lists",
+        "colorPicker": "Choose color",
+        "selectColor": "Select a color",
+        "noTags": "No tags yet",
+        "edit": "Edit tag",
+        "name": "Tag name",
+        "nameRequired": "Tag name is required",
+        "nameTaken": "A tag with this name already exists",
+        "updateFailed": "Could not update tag"
+    },
+    "common": {
+        "back": "Back"
     }
 }

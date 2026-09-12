@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { List, ListDB, Item, Todo, ListSettings, Section, Category, HistoryItem, Priority, Tag } from '../types';
+import { List, ListDB, Item, Todo, ListSettings, Section, HistoryItem, Priority, Tag } from '../types';
 import { MAX_ITEM_LENGTH } from '../constants';
 
 
@@ -9,14 +9,12 @@ import { useToast } from './ToastContext';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 import { useFirestoreSync } from '../hooks/useFirestoreSync';
+import { useTags } from '../hooks/useTags';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { deleteField } from 'firebase/firestore';
-import { useTags } from '../hooks/useTags';
-import { extractTagNamesFromText, removeTagsFromText } from '../utils/tags';
 
 interface AppContextType {
-    lists: List[]; // Keep lists array for now but we only use one
-    defaultListId: string | undefined; // Helper to get the main list
+    currentList: List | null;
     theme: 'light' | 'dark';
     
     // Core List Operations
@@ -39,27 +37,10 @@ interface AppContextType {
     // Loading
     loading: boolean;
     
-    // Access
-    updateListAccess: (id: string) => Promise<void>;
-    
     // Sections
-    addSection: (listId: string, name: string) => Promise<void>;
-    updateSection: (listId: string, sectionId: string, name: string) => Promise<void>;
-    deleteSection: (listId: string, sectionId: string) => Promise<void>;
-
-    // Categories
-    categories: Category[];
-    
-    // Archiving
-    archiveList: (id: string, archived: boolean) => Promise<void>;
-
-    // Lists
-    addList: (name: string, categoryId: string) => Promise<void>;
-    deleteList: (id: string) => Promise<void>;
-
-    // Categories
-    addCategory: (name: string) => Promise<void>;
-    deleteCategory: (id: string) => Promise<void>;
+    addSection: (name: string) => Promise<void>;
+    updateSection: (sectionId: string, name: string) => Promise<void>;
+    deleteSection: (sectionId: string) => Promise<void>;
 
     // History
     itemHistory: HistoryItem[];
@@ -69,9 +50,12 @@ interface AppContextType {
     
     // Tags
     allTags: Tag[];
+    createTag: (name: string) => Promise<Tag | null>;
+    updateTag: (tagId: string, updates: Partial<Tag>) => Promise<void>;
+    getTagById: (tagId: string) => Tag | null;
     getItemsByTag: (tagId: string) => Item[];
-    addTagToItem: (listId: string, itemId: string, tagName: string) => Promise<void>;
-    removeTagFromItem: (listId: string, itemId: string, tagId: string) => Promise<void>;
+    addTagToItem: (itemId: string, tagName: string) => Promise<void>;
+    removeTagFromItem: (itemId: string, tagId: string) => Promise<void>;
     updateTagColor: (tagId: string, color: string) => Promise<void>;
 }
 
@@ -87,7 +71,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     const listsSync = useFirestoreSync<ListDB>('users/{uid}/lists', user?.uid);
     const todosSync = useFirestoreSync<Todo>('users/{uid}/notes', user?.uid);
-    const categoriesSync = useFirestoreSync<Category>('users/{uid}/categories', user?.uid);
     const historySync = useFirestoreSync<HistoryItem>('users/{uid}/history', user?.uid);
     const tagsSync = useFirestoreSync<Tag>('users/{uid}/tags', user?.uid);
 
@@ -172,18 +155,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     const updateListSettings = async (id: string, settings: Partial<ListSettings>) => {
         await listsSync.updateItem(id, { settings });
-    };
-
-    const updateListAccess = async (id: string) => {
-        const list = listsWithArrayItems.find((l: List) => l.id === id);
-        if (list) {
-            const lastAccessed = list.lastAccessedAt ? new Date(list.lastAccessedAt).getTime() : 0;
-            const now = Date.now();
-            // Only update if it's been more than 5 minutes since the last access update
-            if (now - lastAccessed > 300000) {
-                 await listsSync.updateItem(id, { lastAccessedAt: new Date().toISOString() });
-            }
-        }
     };
 
     const updateListItems = async (listId: string, items: Item[]) => {
@@ -316,8 +287,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         await todosSync.deleteItem(id);
     };
 
-    const addSection = async (listId: string, name: string) => {
-        const list = listsWithArrayItems.find((l: List) => l.id === listId);
+    const addSection = async (name: string) => {
+        const list = currentList;
         if (list) {
             const sections = list.sections || [];
             const newSection: Section = {
@@ -331,22 +302,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 order: index
             }));
 
-            await listsSync.updateItem(listId, { sections: updatedSections });
+            await listsSync.updateItem(list.id, { sections: updatedSections });
         }
     };
 
-    const updateSection = async (listId: string, sectionId: string, name: string) => {
-        const list = listsWithArrayItems.find((l: List) => l.id === listId);
+    const updateSection = async (sectionId: string, name: string) => {
+        const list = currentList;
         if (list && list.sections) {
             const updatedSections = list.sections.map(section =>
                 section.id === sectionId ? { ...section, name } : section
             );
-            await listsSync.updateItem(listId, { sections: updatedSections });
+            await listsSync.updateItem(list.id, { sections: updatedSections });
         }
     };
 
-    const deleteSection = async (listId: string, sectionId: string) => {
-        const list = listsWithArrayItems.find((l: List) => l.id === listId);
+    const deleteSection = async (sectionId: string) => {
+        const list = currentList;
         if (list) {
             const updatedSections = (list.sections || []).filter(s => s.id !== sectionId);
             const updatedItems = list.items.map(item => {
@@ -358,44 +329,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 return item;
             });
 
-            await updateListItems(listId, updatedItems);
+            await updateListItems(list.id, updatedItems);
             // After triggering items update (which handles map vs array automatically), manually update sections
-            await listsSync.updateItem(listId, {
+            await listsSync.updateItem(list.id, {
                 sections: updatedSections
             });
         }
-    };
-
-    const archiveList = async (id: string, archived: boolean = true) => {
-        await listsSync.updateItem(id, { archived });
-    };
-
-    const addList = async (name: string, categoryId: string) => {
-        await listsSync.addItem({
-            id: uuidv4(),
-            name,
-            categoryId,
-            items: {} as Record<string, Item>, // Init as map right away!
-            itemOrder: [],
-            lastAccessedAt: new Date().toISOString(),
-            settings: { defaultSort: 'priority', threeStageMode: false }
-        });
-    };
-
-    const deleteList = async (id: string) => {
-        await listsSync.deleteItem(id);
-    };
-
-    const addCategory = async (name: string) => {
-        await categoriesSync.addItem({
-            id: uuidv4(),
-            name,
-            order: categoriesSync.data.length
-        });
-    };
-
-    const deleteCategory = async (id: string) => {
-        await categoriesSync.deleteItem(id);
     };
 
     const addToHistory = async (text: string) => {
@@ -432,13 +371,89 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         await Promise.all(deletePromises);
     };
 
-    const defaultListId = listsWithArrayItems.length > 0 ? listsWithArrayItems[0].id : undefined;
+    const currentList = listsWithArrayItems[0] || null;
+
+    // Tags functionality
+    const { createTag, updateTag, incrementTagUsage } = useTags();
+
+    // Get tag by ID
+    const getTagById = useCallback((tagId: string): Tag | null => {
+      return tagsSync.data.find(tag => tag.id === tagId) || null;
+    }, [tagsSync.data]);
+
+    // Get tag by name
+    const getTagByName = useCallback((name: string): Tag | null => {
+      return tagsSync.data.find(tag => tag.name.toLowerCase() === name.toLowerCase()) || null;
+    }, [tagsSync.data]);
+
+    // Get all items with a specific tag (across all lists)
+        const getItemsByTag = useCallback((tagId: string): Item[] => {
+            return currentList?.items.filter(item => item.tags?.includes(tagId)) || [];
+        }, [currentList]);
+
+    // Add tag to an item (by name)
+    const addTagToItem = useCallback(async (itemId: string, tagName: string) => {
+      if (!user) throw new Error('User not authenticated');
+
+      // Get or create the tag
+      let tag = getTagByName(tagName);
+      if (!tag) {
+        const newTag = await createTag(tagName);
+        if (newTag) {
+          tag = newTag;
+        }
+      }
+
+      if (!tag) return;
+
+      // Update the item to include the tag
+    const list = currentList;
+      if (!list) return;
+
+      const updatedItems = list.items.map(item => {
+        if (item.id === itemId) {
+          const existingTags = item.tags || [];
+          if (!existingTags.includes(tag.id)) {
+            return { ...item, tags: [...existingTags, tag.id] };
+          }
+        }
+        return item;
+      });
+
+    await updateListItems(list.id, updatedItems);
+      await incrementTagUsage(tag.id);
+    }, [user, currentList, getTagByName, createTag, updateListItems, incrementTagUsage]);
+
+    // Remove tag from an item
+    const removeTagFromItem = useCallback(async (itemId: string, tagId: string) => {
+      if (!user) throw new Error('User not authenticated');
+
+    const list = currentList;
+      if (!list) return;
+
+      const updatedItems = list.items.map(item => {
+        if (item.id === itemId) {
+          return {
+            ...item,
+            tags: (item.tags || []).filter(id => id !== tagId)
+          };
+        }
+        return item;
+      });
+
+            await updateListItems(list.id, updatedItems);
+        }, [user, currentList, updateListItems]);
+
+    // Update tag color
+    const updateTagColor = useCallback(async (tagId: string, color: string) => {
+      if (!user) throw new Error('User not authenticated');
+      await updateTag(tagId, { color });
+    }, [user, updateTag]);
 
     return (
         <AppContext.Provider
             value={{
-                lists: listsWithArrayItems as List[],
-                defaultListId,
+                currentList,
                 theme,
                 updateListName,
                 updateListSettings,
@@ -451,20 +466,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 toggleTodo,
                 deleteTodo,
                 loading: listsSync.loading || todosSync.loading || isCreatingDefault,
-                updateListAccess,
                 addSection,
                 updateSection,
                 deleteSection,
-                categories: categoriesSync.data,
-                archiveList,
-                addList,
-                deleteList,
-                addCategory,
-                deleteCategory,
                 itemHistory: historySync.data,
                 addToHistory,
                 deleteFromHistory,
                 clearAllHistory,
+                allTags: tagsSync.data,
+                createTag,
+                updateTag,
+                getTagById,
+                getItemsByTag,
+                addTagToItem,
+                removeTagFromItem,
+                updateTagColor,
             }}
         >
             <ErrorBoundary>

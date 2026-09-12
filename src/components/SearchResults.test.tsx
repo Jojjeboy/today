@@ -32,6 +32,7 @@ describe('SearchResults', () => {
 
     const setup = (query: string) => {
         vi.spyOn(AppContext, 'useApp').mockReturnValue({
+            currentList: mockLists[0],
             lists: mockLists,
             todos: mockTodos,
             loading: false,

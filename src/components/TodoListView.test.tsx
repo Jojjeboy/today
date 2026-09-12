@@ -64,6 +64,13 @@ const mockUpdateListItems = vi.fn().mockResolvedValue(undefined);
 const mockAddToHistory = vi.fn().mockResolvedValue(undefined);
 
 const makeAppMock = () => ({
+    currentList: {
+        id: 'list1',
+        name: 'My List',
+        items: [{ id: 'item1', text: 'Milk', completed: false }],
+        categoryId: 'cat1',
+        settings: { defaultSort: 'manual', threeStageMode: false },
+    },
     lists: [
         {
             id: 'list1',
