@@ -204,4 +204,19 @@ describe('SortableItem - Priority Controls', () => {
         expect(screen.getByText('Subtask')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Veckla in underpunkter' })).toBeInTheDocument();
     });
+
+    it('shows completed subtasks out of the total count', () => {
+        render(
+            <SortableItem
+                item={baseItem}
+                subtasks={[
+                    { id: 'subtask1', text: 'Done', completed: true },
+                    { id: 'subtask2', text: 'Ongoing', completed: false, state: 'ongoing' },
+                    { id: 'subtask3', text: 'Completed state', completed: false, state: 'completed' },
+                ]}
+            />
+        );
+
+        expect(screen.getByText('2/3')).toBeInTheDocument();
+    });
 });

@@ -415,21 +415,29 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                         </button>
 
                         {subtasks.length > 0 && (
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setIsExpanded(!isExpanded);
-                                }}
-                                className="flex-shrink-0 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                                aria-label={isExpanded ? 'Veckla in underpunkter' : 'Veckla ut underpunkter'}
-                                onMouseDown={(e) => e.stopPropagation()}
-                                onTouchStart={(e) => e.stopPropagation()}
-                            >
-                                <ChevronDown
-                                    size={16}
-                                    className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                                />
-                            </button>
+                            <>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setIsExpanded(!isExpanded);
+                                    }}
+                                    className="flex-shrink-0 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                                    aria-label={isExpanded ? 'Veckla in underpunkter' : 'Veckla ut underpunkter'}
+                                    onMouseDown={(e) => e.stopPropagation()}
+                                    onTouchStart={(e) => e.stopPropagation()}
+                                >
+                                    <ChevronDown
+                                        size={16}
+                                        className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                    />
+                                </button>
+                                <span
+                                    className="flex-shrink-0 text-xs font-semibold text-gray-500 dark:text-gray-400"
+                                    aria-label={`${subtasks.filter(subtask => subtask.completed || subtask.state === 'completed').length} av ${subtasks.length} underpunkter avklarade`}
+                                >
+                                    {subtasks.filter(subtask => subtask.completed || subtask.state === 'completed').length}/{subtasks.length}
+                                </span>
+                            </>
                         )}
 
                         <div className="flex-1 min-w-0 flex items-center h-full relative">
