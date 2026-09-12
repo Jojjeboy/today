@@ -9,12 +9,19 @@ const __dirname = path.dirname(__filename);
 const outputPath = path.join(__dirname, '../src/commits.json');
 
 try {
-    const logOutput = execSync('git log -n 20 --pretty=format:"%H|%ad|%s" --date=iso', { encoding: 'utf-8' });
+    const logOutput = execSync('git log -n 20 --pretty=format:"%H%x1f%an%x1f%ad%x1f%s%x1f%b%x1e" --date=iso', { encoding: 'utf-8' });
 
-    const commits = logOutput.split('\n').map(line => {
-        const [hash, date, message] = line.split('|');
+    const commits = logOutput.split('\x1e').map(entry => {
+        const [hash, author, date, message, body] = entry.trim().split('\x1f');
         if (!hash) return null;
-        return { hash, date, message };
+        return {
+            hash,
+            author,
+            date,
+            message,
+            body: body?.trim() || '',
+            url: `https://github.com/Jojjeboy/today/commit/${hash}`,
+        };
     }).filter(commit => commit !== null);
 
     const jsonContent = JSON.stringify(commits, null, 2);
