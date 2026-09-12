@@ -23,7 +23,7 @@ const chronoParse = (chronoNode as unknown as { parse?: typeof chronoNode.parse 
 
 export const TodoListView: React.FC = React.memo(function TodoListView() {
     const { t } = useTranslation();
-    const { lists, defaultListId, updateListItems, deleteItem, updateListAccess, loading, itemHistory, addToHistory, deleteFromHistory } = useApp();
+    const { lists, defaultListId, updateListItems, deleteItem, updateListAccess, updateListSettings, loading, itemHistory, addToHistory, deleteFromHistory } = useApp();
     const { showToast } = useToast();
     const [newItemText, setNewItemText] = useState('');
     const [showConfetti, setShowConfetti] = useState(false);
@@ -92,7 +92,7 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
         })
     );
 
-    const [sortBy, setSortBy] = useState<'manual' | 'alphabetical' | 'completed' | 'priority' | 'dueDate'>('manual');
+    const [sortBy, setSortBy] = useState<'manual' | 'alphabetical' | 'completed' | 'priority' | 'dueDate'>('priority');
 
     useEffect(() => {
         if (list?.settings?.defaultSort) {
@@ -436,7 +436,13 @@ export const TodoListView: React.FC = React.memo(function TodoListView() {
                 ].map(sortOption => (
                     <button
                         key={sortOption.id}
-                        onClick={() => setSortBy(sortOption.id as 'manual' | 'alphabetical' | 'completed' | 'priority' | 'dueDate')}
+                        onClick={() => {
+                            const newSort = sortOption.id as 'manual' | 'alphabetical' | 'completed' | 'priority' | 'dueDate';
+                            setSortBy(newSort);
+                            if (list) {
+                                updateListSettings(list.id, { defaultSort: newSort });
+                            }
+                        }}
                         className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-200
                             ${sortBy === sortOption.id
                                 ? 'bg-primary text-black shadow-md shadow-primary/20 ring-1 ring-primary/50'

@@ -19,7 +19,7 @@ interface AppContextType {
     
     // Core List Operations
     updateListName: (id: string, name: string) => Promise<void>;
-    updateListSettings: (id: string, settings: ListSettings) => Promise<void>;
+    updateListSettings: (id: string, settings: Partial<ListSettings>) => Promise<void>;
     updateListItems: (listId: string, items: Item[]) => Promise<void>;
     deleteItem: (listId: string, itemId: string) => Promise<void>;
     
@@ -108,6 +108,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             
             return {
                 ...list,
+                settings: list.settings || { defaultSort: 'priority', threeStageMode: false },
                 items: [...sortedItems, ...unorderedItems]
             } as List;
         });
@@ -159,7 +160,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         await listsSync.updateItem(id, { name });
     };
 
-    const updateListSettings = async (id: string, settings: ListSettings) => {
+    const updateListSettings = async (id: string, settings: Partial<ListSettings>) => {
         await listsSync.updateItem(id, { settings });
     };
 
@@ -366,7 +367,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             categoryId,
             items: {} as Record<string, Item>, // Init as map right away!
             itemOrder: [],
-            lastAccessedAt: new Date().toISOString()
+            lastAccessedAt: new Date().toISOString(),
+            settings: { defaultSort: 'priority', threeStageMode: false }
         });
     };
 

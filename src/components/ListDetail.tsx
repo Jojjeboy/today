@@ -156,7 +156,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
         }
     }, [calendarStartTime]);
 
-    // Load sort setting from list or default to manual
+    // Load sort setting from list or default to priority
     useEffect(() => {
         if (list?.settings?.defaultSort) {
             setSortBy(list.settings.defaultSort);
@@ -445,7 +445,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
 
     const updateSettings = async (newSettings: Partial<typeof list.settings>) => {
         if (!list) return;
-        const currentSettings = list.settings || { threeStageMode: false, defaultSort: 'manual' };
+        const currentSettings = list.settings || { threeStageMode: false, defaultSort: 'priority' };
         const updated: ListSettings = { ...currentSettings, ...newSettings } as ListSettings;
         await updateListSettings(list.id, updated);
     };
@@ -937,7 +937,7 @@ export const ListDetail: React.FC = React.memo(function ListDetail() {
                             {t('lists.settings.sort')}
                         </label>
                         <div className="space-y-2">
-                            {(['manual', 'alphabetical', 'completed'] as const).map((mode) => (
+                            {(['manual', 'priority', 'dueDate', 'alphabetical', 'completed'] as const).map((mode) => (
                                 <button
                                     key={mode}
                                     onClick={() => {

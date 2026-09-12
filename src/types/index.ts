@@ -32,8 +32,8 @@ export interface Todo {
 }
 
 export interface ListSettings {
-  threeStageMode: boolean;
-  defaultSort: "manual" | "alphabetical" | "completed" | "priority" | "dueDate";
+  threeStageMode?: boolean;
+  defaultSort?: "manual" | "alphabetical" | "completed" | "priority" | "dueDate";
   calendarStartTime?: string;
   calendarEndTime?: string;
   pinned?: boolean; // Kept for interface compatibility but logic disabled
@@ -66,6 +66,8 @@ export interface Commit {
   author: string;
   date: string;
   message: string;
+  body?: string;
+  url?: string;
   files?: {
     status: string;
     path: string;
