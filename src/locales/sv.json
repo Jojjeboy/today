@@ -156,6 +156,14 @@
         "more": "Mer",
         "logout": "Logga ut"
     },
+    "whatsNew": {
+        "title": "Vad är nytt?",
+        "subtitle": "{{count}} nya ändringar",
+        "noDetails": "Ingen längre beskrivning finns för den här ändringen.",
+        "viewCommit": "Visa commit på GitHub",
+        "viewAll": "Visa alla commits",
+        "dismiss": "Markera som läst"
+    },
     "settings": {
         "title": "Inställningar",
         "subtitle": "Hantera dina appinställningar",

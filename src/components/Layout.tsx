@@ -7,6 +7,7 @@ import { Sidebar } from './Sidebar';
 import { OfflineIndicator } from './OfflineIndicator';
 import { MobileFooter } from './MobileFooter';
 import { useWakeLock } from '../hooks/useWakeLock';
+import { WhatsNewModal } from './WhatsNewModal';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { t } = useTranslation();
@@ -90,6 +91,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
                 {/* Mobile Footer */}
                 <MobileFooter />
+                <WhatsNewModal />
             </div>
         </div>
     );

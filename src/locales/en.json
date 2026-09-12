@@ -157,6 +157,14 @@
         "more": "More",
         "logout": "Log out"
     },
+    "whatsNew": {
+        "title": "What's new?",
+        "subtitle": "{{count}} new changes",
+        "noDetails": "No longer description is available for this change.",
+        "viewCommit": "View commit on GitHub",
+        "viewAll": "View all commits",
+        "dismiss": "Mark as read"
+    },
     "settings": {
         "title": "Settings",
         "subtitle": "Manage your app preferences",
